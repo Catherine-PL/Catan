@@ -1,0 +1,15 @@
+Wzorce:
+1.	MVC (Observer) to chyba to, o czym mówił M. na wykładzie – podzielić program na warstwy.
+2.	BUILDER http://javadevelopers.pl/wzorce-projektowe-builder/
+To może się przydać przy tworzeniu płytek i innych. Bylo na wykladzie że przydaje si do tworzenia podobnych rzeczy o innych parametrach.
+I do tego może si przydać też Abstract Factory ale nie sluchalam jak dokladnie.
+3.	COMMAND http://gameprogrammingpatterns.com/command.html - zuniwersalizowanie wywołania funkcji w grze
+4.	FLYWEIGHT http://gameprogrammingpatterns.com/flyweight.html - wykorzystać do płytek, bo będą często miały ten sam kolor.
+5.	STATE? http://gameprogrammingpatterns.com/state.html -  to czy pola dają dochód/nie dają dochodu
+
+
+Biblioteka graficzna:
+Slick-Util http://ninjacave.com/slickutilintro
+	https://libgdx.badlogicgames.com/ polecana
+Połączenie między graczami:
+
