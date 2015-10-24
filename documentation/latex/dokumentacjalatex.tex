@@ -1,0 +1,215 @@
+\documentclass[a4paper, 11pt]{article}
+\usepackage[polish]{babel}
+\usepackage[MeX]{polski}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+%\usepackage{times}
+\usepackage{graphicx,wrapfig}
+%\usepackage{anysize}
+%\usepackage{tikz}
+%\usetikzlibrary{calc,through,backgrounds,positioning}
+\usepackage{anysize}
+\usepackage{float}
+%\usepackage{stmaryrd}
+%\usepackage{amssymb}
+%\usepackage{amsthm}
+%\marginsize{3cm}{3cm}{3cm}{3cm}
+%\usepackage{amsmath}
+%\usepackage{color}
+%\usepackage{listings}
+%\usepackage{enumerate}
+%\lstloadlanguages{Ada,C++}
+
+
+\begin{document}	
+	% \noindent -  w tym akapicie nie bedzie wciecia
+	% \ indent - to jest aut., ale powoduje ze jest wciecie
+	% \begin{flushleft}, flushright, center - wyrownianie akapitu
+	% \textbf{pogrubiany tekst}
+	% \textit{kursywa} 
+	% 					STRONY 
+	%  http://www.codecogs.com/latex/eqneditor.php 
+	%  http://www.matematyka.pl/latex.htm
+	% 
+	\begin{titlepage}
+	
+	
+		
+		\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+		
+		\center % Center everything on the page
+		
+		%----------------------------------------------------------------------------------------
+		%	HEADING SECTIONS
+		%----------------------------------------------------------------------------------------
+		
+		\textsc{\LARGE Akademia Górniczo-Hutnicza im. Stanisława Staszica}\\[1.5cm] % Name of your university/college
+		\textsc{\Large Kraków}\\[0.5cm] % Major heading such as course name
+		\textsc{\large }\\[0.5cm] % Minor heading such as course title
+		
+		%----------------------------------------------------------------------------------------
+		%	TITLE SECTION
+		%----------------------------------------------------------------------------------------
+		
+		\HRule \\[0.4cm]
+		{\fontsize{38}{50}\selectfont Osadnicy z Catan - Gra sieciowa}
+	%	{ \Huge \bfseries} Osadnicy z Catan - Gra sieciowa\\[0.3cm] % Title of your document
+		\HRule \\[1.5cm]
+		
+		%----------------------------------------------------------------------------------------
+		%	AUTHOR SECTION
+		%----------------------------------------------------------------------------------------
+		
+		% If you don't want a supervisor, uncomment the two lines below and remove the section above
+		\Large \emph{Autorzy:}\\
+		Marcin \textsc{Jędrzejczyk}\\ % Your name
+		Sebastian \textsc{Katszer}\\ % Your name
+		Katarzyna \textsc{Kosiak} \\
+		Paweł \textsc{Ogorzały}\\[3cm]\ % Your name
+
+		
+		%----------------------------------------------------------------------------------------
+		%	DATE SECTION
+		%----------------------------------------------------------------------------------------
+		
+		{\large \today}\\[3cm] % Date, change the \today to a set date if you want to be precise
+		
+		%----------------------------------------------------------------------------------------
+		%	LOGO SECTION
+		%----------------------------------------------------------------------------------------
+		
+		%\includegraphics{Logo}\\[1cm] % Include a department/university logo - this will require the graphicx package
+		
+		%----------------------------------------------------------------------------------------
+		
+		\vfill % Fill the rest of the page with whitespace
+		
+	\end{titlepage}
+	
+	%SPIS TRESI
+	%
+	%
+	%
+	%
+	%
+	%
+	%
+	%
+	%
+	
+	\tableofcontents
+	\vfill
+	\newpage	%\pagebreak
+	
+	%SEKCJE
+	%opis zagadnienia, temat, problem, dlaczego chcemy to rozwiązacyać metodą ewolucyjnę
+	%jakie są metody rozwiącania problemu, przegląd literatury,
+	%proponowane rozwiązania (spójność)
+	%czym się inspierowałyśmy
+	%
+	%
+	%
+	
+	%\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+	
+	\section{Wstęp}
+	\indent
+	
+	Niniejszy dokument stanowi dokumentację projektu ``Osadnicy z Catanu - Gra sieciowa'' z przedmiotu Wprowadzenie do Wzorców Projektowych.
+	Nasz projekt zrealizowaliśmy
+	\subsection{Dlaczego Catan?}
+	\indent 
+	
+	Nasza grupa projektowa składa się z osób zafascynowanych światem zarówno gier planszowych jak i komputerowych. Projekt ten umożliwia nam połączenie naszych zainteresowań. Wybór padł na grę ``Osadnicy z Catanu'' z bardzo prostego powodu: dzięki prostocie i przejrzystości zasad stanowi ona idealny start dla osób, które chcą rozpocząć swoją przygodę z grami planszowymi. \\ 
+	
+	Dzięki wprowadzeniu rozgrywki sieciowej możliwe jest rozegranie partii z przyjaciółmi z całego świata bez dodatkowych wydatków, a także rozpowszechnienie tej gry i ułatwienie wejścia w świat gier planszowych. 
+	\subsection{Opis gry}
+	\indent
+	
+Osadnicy z Catanu (Settlers of Catan) to jedna z najpopularniejszych rodzinno-ekonomicznych gier planszowych na świecie. 
+%do cytatu
+Gracze są osadnikami na niedawno odkrytej wyspie Catan. Każdy z nich przewodzi świeżo założonej kolonii i rozbudowuje ją stawiając na dostępnych obszarach nowe drogi i miasta. Każda kolonia zbiera dostępne dobra naturalne, które są niezbędne do rozbudowy osiedli.
+ 
+Gracz musi rozważnie stawiać nowe osiedla i drogi, aby zapewnić sobie dostateczny, ale zrównoważony dopływ zasobów, a jeśli ma ich nadmiar - prowadzić handel z innymi graczami sprzedając im owce, drewno, cegły, zboże lub żelazo a pozyskując od nich te zasoby, których ciągle mu brakuje.
+ 
+Pierwszy z graczy, który uzyska 10 punktów z wybudowanych przez siebie dróg, osiedli i specjalnych kart - wygrywa.
+	
+%skrócone zasady	
+
+%	automaty gdzies!!!!!!\\
+	
+	
+	
+	
+	
+	\section{Użyte wzorce projektowe}
+	\subsection{Singleton}
+	kostka \\
+	Singleton Pattern says that just"define a class that has only one instance and provides a global point of access to it".
+
+In other words, a class must ensure that only single instance should be created and single object can be used by all other classes.
+
+	\subsection{Builder}
+	kafelki,plansza\\
+	\subsection{Abstract Factory}
+	do buildera???,generowanie kart itp\\
+	\subsection{Observer}
+	komunikacja\\
+	\subsection{State}
+	złodziej,karty specjalne, drogi\\
+	\subsection{Command}
+		fghfghfgh\\gfhfghfgh
+	\section{Użyte biblioteki zewnętrzne}
+	\subsection{Biblioteka graficzna}
+	libgtx\\
+	 https://libgdx.badlogicgames.com/
+	\subsection{Biblioteka sieciowa}
+	jxta\\
+	https://jxta.kenai.com/
+	\section{Architektura}
+	\indent
+	
+	Poniżej prezentujemy opis wszystkich warstw, na które podzieliliśmy naszą aplikację.
+	%screen z głównym uml
+	\begin{figure}[H]%[!htb]
+		\includegraphics[scale=0.5]{uml/main.jpg}\caption{Podział na warstwy}
+	\end{figure}
+
+	\subsection{Warstwa prezentacji}	
+	\begin{figure}[H]%[!htb]
+		\includegraphics[scale=0.5]{uml/main.jpg}
+	\end{figure}
+	\subsection{Warstwa interakcji}
+	\begin{figure}[H]%[!htb]
+		\includegraphics[scale=0.5]{uml/main.jpg}
+	\end{figure}	
+	\subsection{Warstwa logiki gry}	
+	\begin{figure}[H]%[!htb]
+		\includegraphics[scale=0.5]{uml/main.jpg}
+	\end{figure}
+	\subsection{Warstwa baz danych}	
+	\begin{figure}[H]%[!htb]
+		\includegraphics[scale=0.5]{uml/main.jpg}
+	\end{figure}
+	\subsection{Warstwa komunikacji sieciowej}
+	\begin{figure}[H]%[!htb]
+		\includegraphics[scale=0.5]{uml/main.jpg}
+	\end{figure}	
+	
+	
+	
+	\section{Podsumowanie}
+	
+
+	\section{Testy}
+	
+
+	\section{Wnioski}
+	
+
+	\section{Literatura}
+	
+\textbf{Asensio MI, Ferragut L., Simon J.:} Modelling of convective phenomena in forest fire. Rev Real Academia de Ciencias, 2002, 96:299–313\\
+
+
+\end{document}
