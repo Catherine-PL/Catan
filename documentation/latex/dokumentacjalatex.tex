@@ -144,15 +144,41 @@ Pierwszy z graczy, który uzyska 10 punktów z wybudowanych przez siebie dróg, 
 	
 	\section{Użyte wzorce projektowe}
 	\subsection{Singleton}
-	kostka \\
-	Singleton Pattern says that just"define a class that has only one instance and provides a global point of access to it".
+\indent
 
-In other words, a class must ensure that only single instance should be created and single object can be used by all other classes.
+Singleton jest kreacyjnym wzorcem projektowym, którego zadaniem jest ograniczenie możliwości tworzenia obiektów danej klasy do jednej instancji, oraz zapewnienie globalnego dostępu do stworzonego obiektu.
+
+Singleton implementuje się poprzez stworzenie klasy, która posiada statyczną metodę, która sprawdza czy istnieje instancja danej klasy, w razie potrzeby tworząc ją. Następnie instancja zwracana jest przez referencję. Aby uniemożliwić tworzenie dodatkowych instancji, konstruktor klasy deklaruje się jako prywatny lub chroniony.
+
+Wzorzec ten ma u nas zastosowanie w przypadku klas odpowiadajacych za kostkę, planszę. Zapewnia on globalny dostęp oraz ogranicza możliwość tworzenia większej liczby instancji. 
 
 	\subsection{Builder}
-	kafelki,plansza\\
+	\indent
+	
+Builder jest wzorcem konstrukcyjnym, który ma za zadanie oddzielenie tworzenia obiektów od ich reprezentacji. 
+Proces tworzenia obiektu podzielony jest na mniejsze etapy, a każdy z nich może być implementowany na wiele różnych sposobów. Umożliwia to tworzenie różnych reprezentacji obiektów w tym samym procesie konstrukcyjnym.
+Konstruowanie obiektu następuje poprzez wcześniejsze stworzenie jego fragmentów.
+
+
+Na wzorzec składa się:
+\begin{itemize}
+
+\item Builder - dostarcza inferfejs do tworzenia obiektów nazywanych produktami,
+\item ConcreteBuilder - tworzy konkretne reprezentacje produktów przy pomocy zaimplementowanego interfejsu Builder,
+\item Director - zleca konstrukcję produktów poprzez obiekt Builder.
+\end{itemize}
+
+W naszym projekcie wzorzec ten znajduje zastosowanie przy tworzeniu planszy, która składa się z kafli.
+
+
 	\subsection{Abstract Factory}
-	do buildera???,generowanie kart itp\\
+\indent
+
+Kreacyjny wzorzec projektowy, który pozwala tworzyć całe rodziny produktów. Dostarcza on interfejs do tworzenia różnych obiektów jednego typu bez specyfikowania ich konkretnych klas.
+
+Wzorzec ten wykorzysytwany będzie przy konstruowaniu kafli oraz generowaniu kart.
+
+
 	\subsection{Observer}
 	komunikacja\\
 	\subsection{State}
