@@ -5,18 +5,18 @@
 \contentsline {section}{\numberline {2}U\IeC {\.z}yte wzorce projektowe}{2}
 \contentsline {subsection}{\numberline {2.1}Singleton}{2}
 \contentsline {subsection}{\numberline {2.2}Builder}{2}
-\contentsline {subsection}{\numberline {2.3}Abstract Factory}{2}
+\contentsline {subsection}{\numberline {2.3}Abstract Factory}{3}
 \contentsline {subsection}{\numberline {2.4}Observer}{3}
 \contentsline {subsection}{\numberline {2.5}State}{3}
 \contentsline {subsection}{\numberline {2.6}Command}{3}
 \contentsline {section}{\numberline {3}U\IeC {\.z}yte biblioteki zewn\IeC {\k e}trzne}{3}
 \contentsline {subsection}{\numberline {3.1}Biblioteka graficzna}{3}
 \contentsline {subsection}{\numberline {3.2}Biblioteka sieciowa}{3}
-\contentsline {section}{\numberline {4}Architektura}{3}
+\contentsline {section}{\numberline {4}Architektura}{4}
 \contentsline {subsection}{\numberline {4.1}Warstwa prezentacji}{4}
-\contentsline {subsection}{\numberline {4.2}Warstwa interakcji}{4}
+\contentsline {subsection}{\numberline {4.2}Warstwa interakcji}{5}
 \contentsline {subsection}{\numberline {4.3}Warstwa logiki gry}{5}
-\contentsline {subsection}{\numberline {4.4}Warstwa baz danych}{5}
+\contentsline {subsection}{\numberline {4.4}Warstwa baz danych}{6}
 \contentsline {subsection}{\numberline {4.5}Warstwa komunikacji sieciowej}{6}
 \contentsline {section}{\numberline {5}Podsumowanie}{6}
 \contentsline {section}{\numberline {6}Testy}{6}
