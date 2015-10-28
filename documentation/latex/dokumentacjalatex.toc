@@ -9,16 +9,16 @@
 \contentsline {subsection}{\numberline {2.4}Observer}{3}
 \contentsline {subsection}{\numberline {2.5}State}{3}
 \contentsline {subsection}{\numberline {2.6}Command}{3}
-\contentsline {section}{\numberline {3}U\IeC {\.z}yte biblioteki zewn\IeC {\k e}trzne}{3}
-\contentsline {subsection}{\numberline {3.1}Biblioteka graficzna}{3}
-\contentsline {subsection}{\numberline {3.2}Biblioteka sieciowa}{3}
+\contentsline {section}{\numberline {3}U\IeC {\.z}yte biblioteki zewn\IeC {\k e}trzne}{4}
+\contentsline {subsection}{\numberline {3.1}Biblioteka graficzna}{4}
+\contentsline {subsection}{\numberline {3.2}Biblioteka sieciowa}{4}
 \contentsline {section}{\numberline {4}Architektura}{4}
-\contentsline {subsection}{\numberline {4.1}Warstwa prezentacji}{4}
+\contentsline {subsection}{\numberline {4.1}Warstwa prezentacji}{5}
 \contentsline {subsection}{\numberline {4.2}Warstwa interakcji}{5}
-\contentsline {subsection}{\numberline {4.3}Warstwa logiki gry}{5}
+\contentsline {subsection}{\numberline {4.3}Warstwa logiki gry}{6}
 \contentsline {subsection}{\numberline {4.4}Warstwa baz danych}{6}
-\contentsline {subsection}{\numberline {4.5}Warstwa komunikacji sieciowej}{6}
-\contentsline {section}{\numberline {5}Podsumowanie}{6}
-\contentsline {section}{\numberline {6}Testy}{6}
-\contentsline {section}{\numberline {7}Wnioski}{6}
-\contentsline {section}{\numberline {8}Literatura}{6}
+\contentsline {subsection}{\numberline {4.5}Warstwa komunikacji sieciowej}{7}
+\contentsline {section}{\numberline {5}Podsumowanie}{7}
+\contentsline {section}{\numberline {6}Testy}{7}
+\contentsline {section}{\numberline {7}Wnioski}{7}
+\contentsline {section}{\numberline {8}Literatura}{7}
