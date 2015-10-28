@@ -180,11 +180,27 @@ Wzorzec ten wykorzysytwany będzie przy konstruowaniu kafli oraz generowaniu kar
 
 
 	\subsection{Observer}
-	komunikacja\\
+	Wzorzec "Observer" jest używany jeśli występuje relacja jeden do wielu pomiędzy obiektami. Modyfikacja jednego obiektu powoduje, że zależne obiekty są powiadamiane automatycznie. Wzorzec ten podchodzi pod kategorię wzorców czynnościowych.\\
+	%Observer pattern is used when there is one-to-many relationship between objects such as if one object is modified, its depenedent objects are to be notified automatically. Observer pattern falls under behavioral pattern category.\\
+%	"That’s what the observer pattern is for. It lets one piece of code announce that something interesting happened without actually caring who receives the notification."\\
+%	komunikacja\\
+Wzorzec ten pomoże nam w komunikacji między graczami. Będziemy wysyłać informacje o tym co się zmieniło na planszy. A OBSERVER każdego gracza będzie je wyłapywał i egzekwował.
 	\subsection{State}
-	złodziej,karty specjalne, drogi\\
+	\indent
+We wzorcy "State" zachowanie klasy zmienia się w zalezności od jej stanu. Ten typ wzorca wchodzi pod wzorce czynnościowe.\\
+%	In State pattern a class behavior changes based on its state. This type of design pattern comes under behavior pattern.
+Tworzymy obiekty, które reprezentują różne stany i konteksty obiektu, którego zachowanie zmienia się tak jak jego stan.
+%%In State pattern, we create objects which represent various states and a context object whose behavior varies as its state object changes.\\
+W zależności od tego jaką kartę zagramy stan planszy może się zmienić. Możemy wybudować drogi, wejść w interakcję z innymi graczami, czy zablokować dochód z danego pola. Dlatego potrzebujemy wzorca odpowiedzialnego za zajmowanie się stanem klasy.
+%złodziej,karty specjalne, drogi\\
 	\subsection{Command}
-		fghfghfgh\\gfhfghfgh
+	
+	%Command pattern is a data driven design pattern and falls under behavioral pattern category. A request is wrapped under an object as command and passed to invoker object. Invoker object looks for the appropriate object which can handle this command and passes the command to the corresponding object which executes the command.
+	Wzorzec "Command" opakowuje żądania w obiekty jako rozkaz i przesyła do obiektu wzywającego (z ang. invoker). Obiekt wzywający szuka obiektu właściwego, który może zająć się tym rozkazem i   przesyła rozkaz do odpowiedniego obiektu który wykonuje rozkaz.\\  
+	Wzorzec ten należy do wzorców czynnościowych, czyli opisujących sposób przepływu danych w złożonych aplikacjach.%to z Polskiej strony mam
+	??? Skorzystamy z niego, by móc zagrywać karty rozwoju, które są swoistymi rozkazami. Wzorzec ten będzie musiał u nas współpracować z kodem napisanym pod wzorzec "State". %??? co wy na to
+	TO DO gdzie z tego skorzystamy
+	Commands are an object-oriented replacement for callbacks.\\
 	\section{Użyte biblioteki zewnętrzne}
 	\subsection{Biblioteka graficzna}
 	libgtx\\
