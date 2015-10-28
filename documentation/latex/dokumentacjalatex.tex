@@ -32,8 +32,8 @@
 	%  http://www.matematyka.pl/latex.htm
 	% 
 	\begin{titlepage}
-	
-	
+		
+		
 		
 		\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
 		
@@ -53,7 +53,7 @@
 		
 		\HRule \\[0.4cm]
 		{\fontsize{38}{50}\selectfont Osadnicy z Catan - Gra sieciowa}
-	%	{ \Huge \bfseries} Osadnicy z Catan - Gra sieciowa\\[0.3cm] % Title of your document
+		%	{ \Huge \bfseries} Osadnicy z Catan - Gra sieciowa\\[0.3cm] % Title of your document
 		\HRule \\[1.5cm]
 		
 		%----------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@
 		Sebastian \textsc{Katszer}\\ % Your name
 		Katarzyna \textsc{Kosiak} \\
 		Paweł \textsc{Ogorzały}\\[3cm]\ % Your name
-
+		
 		
 		%----------------------------------------------------------------------------------------
 		%	DATE SECTION
@@ -126,17 +126,17 @@
 	\subsection{Opis gry}
 	\indent
 	
-Osadnicy z Catanu (Settlers of Catan) to jedna z najpopularniejszych rodzinno-ekonomicznych gier planszowych na świecie. 
-%do cytatu
-Gracze są osadnikami na niedawno odkrytej wyspie Catan. Każdy z nich przewodzi świeżo założonej kolonii i rozbudowuje ją stawiając na dostępnych obszarach nowe drogi i miasta. Każda kolonia zbiera dostępne dobra naturalne, które są niezbędne do rozbudowy osiedli.
- 
-Gracz musi rozważnie stawiać nowe osiedla i drogi, aby zapewnić sobie dostateczny, ale zrównoważony dopływ zasobów, a jeśli ma ich nadmiar - prowadzić handel z innymi graczami sprzedając im owce, drewno, cegły, zboże lub żelazo a pozyskując od nich te zasoby, których ciągle mu brakuje.
- 
-Pierwszy z graczy, który uzyska 10 punktów z wybudowanych przez siebie dróg, osiedli i specjalnych kart - wygrywa.
+	Osadnicy z Catanu (Settlers of Catan) to jedna z najpopularniejszych rodzinno-ekonomicznych gier planszowych na świecie. 
+	%do cytatu
+	Gracze są osadnikami na niedawno odkrytej wyspie Catan. Każdy z nich przewodzi świeżo założonej kolonii i rozbudowuje ją stawiając na dostępnych obszarach nowe drogi i miasta. Każda kolonia zbiera dostępne dobra naturalne, które są niezbędne do rozbudowy osiedli.
 	
-%skrócone zasady	
-
-%	automaty gdzies!!!!!!\\
+	Gracz musi rozważnie stawiać nowe osiedla i drogi, aby zapewnić sobie dostateczny, ale zrównoważony dopływ zasobów, a jeśli ma ich nadmiar - prowadzić handel z innymi graczami sprzedając im owce, drewno, cegły, zboże lub żelazo a pozyskując od nich te zasoby, których ciągle mu brakuje.
+	
+	Pierwszy z graczy, który uzyska 10 punktów z wybudowanych przez siebie dróg, osiedli i specjalnych kart - wygrywa.
+	
+	%skrócone zasady	
+	
+	%	automaty gdzies!!!!!!\\
 	
 	
 	
@@ -144,55 +144,55 @@ Pierwszy z graczy, który uzyska 10 punktów z wybudowanych przez siebie dróg, 
 	
 	\section{Użyte wzorce projektowe}
 	\subsection{Singleton}
-\indent
-
-Singleton jest kreacyjnym wzorcem projektowym, którego zadaniem jest ograniczenie możliwości tworzenia obiektów danej klasy do jednej instancji, oraz zapewnienie globalnego dostępu do stworzonego obiektu.
-
-Singleton implementuje się poprzez stworzenie klasy, która posiada statyczną metodę, która sprawdza czy istnieje instancja danej klasy, w razie potrzeby tworząc ją. Następnie instancja zwracana jest przez referencję. Aby uniemożliwić tworzenie dodatkowych instancji, konstruktor klasy deklaruje się jako prywatny lub chroniony.
-
-Wzorzec ten ma u nas zastosowanie w przypadku klas odpowiadajacych za kostkę, planszę. Zapewnia on globalny dostęp oraz ogranicza możliwość tworzenia większej liczby instancji. 
-
+	\indent
+	
+	Singleton jest kreacyjnym wzorcem projektowym, którego zadaniem jest ograniczenie możliwości tworzenia obiektów danej klasy do jednej instancji, oraz zapewnienie globalnego dostępu do stworzonego obiektu.
+	
+	Singleton implementuje się poprzez stworzenie klasy, która posiada statyczną metodę, która sprawdza czy istnieje instancja danej klasy, w razie potrzeby tworząc ją. Następnie instancja zwracana jest przez referencję. Aby uniemożliwić tworzenie dodatkowych instancji, konstruktor klasy deklaruje się jako prywatny lub chroniony.
+	
+	Wzorzec ten ma u nas zastosowanie w przypadku klas odpowiadajacych za kostkę, planszę. Zapewnia on globalny dostęp oraz ogranicza możliwość tworzenia większej liczby instancji. 
+	
 	\subsection{Builder}
 	\indent
 	
-Builder jest wzorcem konstrukcyjnym, który ma za zadanie oddzielenie tworzenia obiektów od ich reprezentacji. 
-Proces tworzenia obiektu podzielony jest na mniejsze etapy, a każdy z nich może być implementowany na wiele różnych sposobów. Umożliwia to tworzenie różnych reprezentacji obiektów w tym samym procesie konstrukcyjnym.
-Konstruowanie obiektu następuje poprzez wcześniejsze stworzenie jego fragmentów.
-
-
-Na wzorzec składa się:
-\begin{itemize}
-
-\item Builder - dostarcza inferfejs do tworzenia obiektów nazywanych produktami,
-\item ConcreteBuilder - tworzy konkretne reprezentacje produktów przy pomocy zaimplementowanego interfejsu Builder,
-\item Director - zleca konstrukcję produktów poprzez obiekt Builder.
-\end{itemize}
-
-W naszym projekcie wzorzec ten znajduje zastosowanie przy tworzeniu planszy, która składa się z kafli.
-
-
+	Builder jest wzorcem konstrukcyjnym, który ma za zadanie oddzielenie tworzenia obiektów od ich reprezentacji. 
+	Proces tworzenia obiektu podzielony jest na mniejsze etapy, a każdy z nich może być implementowany na wiele różnych sposobów. Umożliwia to tworzenie różnych reprezentacji obiektów w tym samym procesie konstrukcyjnym.
+	Konstruowanie obiektu następuje poprzez wcześniejsze stworzenie jego fragmentów.
+	
+	
+	Na wzorzec składa się:
+	\begin{itemize}
+		
+		\item Builder - dostarcza inferfejs do tworzenia obiektów nazywanych produktami,
+		\item ConcreteBuilder - tworzy konkretne reprezentacje produktów przy pomocy zaimplementowanego interfejsu Builder,
+		\item Director - zleca konstrukcję produktów poprzez obiekt Builder.
+	\end{itemize}
+	
+	W naszym projekcie wzorzec ten znajduje zastosowanie przy tworzeniu planszy, która składa się z kafli.
+	
+	
 	\subsection{Abstract Factory}
-\indent
-
-Kreacyjny wzorzec projektowy, który pozwala tworzyć całe rodziny produktów. Dostarcza on interfejs do tworzenia różnych obiektów jednego typu bez specyfikowania ich konkretnych klas.
-
-Wzorzec ten wykorzysytwany będzie przy konstruowaniu kafli oraz generowaniu kart.
-
-
+	\indent
+	
+	Kreacyjny wzorzec projektowy, który pozwala tworzyć całe rodziny produktów. Dostarcza on interfejs do tworzenia różnych obiektów jednego typu bez specyfikowania ich konkretnych klas.
+	
+	Wzorzec ten wykorzysytwany będzie przy konstruowaniu kafli oraz generowaniu kart.
+	
+	
 	\subsection{Observer}
 	Wzorzec "Observer" jest używany jeśli występuje relacja jeden do wielu pomiędzy obiektami. Modyfikacja jednego obiektu powoduje, że zależne obiekty są powiadamiane automatycznie. Wzorzec ten podchodzi pod kategorię wzorców czynnościowych.\\
 	%Observer pattern is used when there is one-to-many relationship between objects such as if one object is modified, its depenedent objects are to be notified automatically. Observer pattern falls under behavioral pattern category.\\
-%	"That’s what the observer pattern is for. It lets one piece of code announce that something interesting happened without actually caring who receives the notification."\\
-%	komunikacja\\
-Wzorzec ten pomoże nam w komunikacji między graczami. Będziemy wysyłać informacje o tym co się zmieniło na planszy. A OBSERVER każdego gracza będzie je wyłapywał i egzekwował.
+	%	"That’s what the observer pattern is for. It lets one piece of code announce that something interesting happened without actually caring who receives the notification."\\
+	%	komunikacja\\
+	Wzorzec ten pomoże nam w komunikacji między graczami. Będziemy wysyłać informacje o tym co się zmieniło na planszy. A OBSERVER każdego gracza będzie je wyłapywał i egzekwował.
 	\subsection{State}
 	\indent
-We wzorcy "State" zachowanie klasy zmienia się w zalezności od jej stanu. Ten typ wzorca wchodzi pod wzorce czynnościowe.\\
-%	In State pattern a class behavior changes based on its state. This type of design pattern comes under behavior pattern.
-Tworzymy obiekty, które reprezentują różne stany i konteksty obiektu, którego zachowanie zmienia się tak jak jego stan.
-%%In State pattern, we create objects which represent various states and a context object whose behavior varies as its state object changes.\\
-W zależności od tego jaką kartę zagramy stan planszy może się zmienić. Możemy wybudować drogi, wejść w interakcję z innymi graczami, czy zablokować dochód z danego pola. Dlatego potrzebujemy wzorca odpowiedzialnego za zajmowanie się stanem klasy.
-%złodziej,karty specjalne, drogi\\
+	We wzorcy "State" zachowanie klasy zmienia się w zalezności od jej stanu. Ten typ wzorca wchodzi pod wzorce czynnościowe.\\
+	%	In State pattern a class behavior changes based on its state. This type of design pattern comes under behavior pattern.
+	Tworzymy obiekty, które reprezentują różne stany i konteksty obiektu, którego zachowanie zmienia się tak jak jego stan.
+	%%In State pattern, we create objects which represent various states and a context object whose behavior varies as its state object changes.\\
+	W zależności od tego jaką kartę zagramy stan planszy może się zmienić. Możemy wybudować drogi, wejść w interakcję z innymi graczami, czy zablokować dochód z danego pola. Dlatego potrzebujemy wzorca odpowiedzialnego za zajmowanie się stanem klasy.
+	%złodziej,karty specjalne, drogi\\
 	\subsection{Command}
 	
 	%Command pattern is a data driven design pattern and falls under behavioral pattern category. A request is wrapped under an object as command and passed to invoker object. Invoker object looks for the appropriate object which can handle this command and passes the command to the corresponding object which executes the command.
@@ -203,8 +203,13 @@ W zależności od tego jaką kartę zagramy stan planszy może się zmienić. Mo
 	Commands are an object-oriented replacement for callbacks.\\
 	\section{Użyte biblioteki zewnętrzne}
 	\subsection{Biblioteka graficzna}
-	libgtx\\
-	 https://libgdx.badlogicgames.com/
+	\indent
+	
+	Jeśli chodzi o bibliotekę graficzną, to nasz wybór padł na libGDX - crossplatformową bibliotekę z licencją opensource (oficjalna strona internetowa: www.libgdx.badlogicgames.com). 
+	
+	Jedną z głównych zalet tej biblioteki jest jej szybkość - twórcy postawili bardzo duży nacisk na rozsądne zarządzanie pamięcią.  Dodatkowo libGDX dostarcza narzędzi do obsługi dźwięku i interpretacji wejścia dostarczonego przez użytkownika. Mimo, że renderowanie zachodzi przy użyciu OpenGL ES 2.0, to w większości przypadków nie trzeba znać szczegółów działania tego API, ponieważ biblioteka libGDX dostarcza wygodnych, wysokopoziomowych metod, dzięki którym sprawnie można uzyskać pożądane efekty - od wyświetlania dwuwymiarowych obiektów po tworzenie trójwymiarowych scen.
+	
+
 	\subsection{Biblioteka sieciowa}
 	jxta\\
 	https://jxta.kenai.com/
@@ -216,7 +221,7 @@ W zależności od tego jaką kartę zagramy stan planszy może się zmienić. Mo
 	\begin{figure}[H]%[!htb]
 		\includegraphics[scale=0.5]{uml/main.jpg}\caption{Podział na warstwy}
 	\end{figure}
-
+	
 	\subsection{Warstwa prezentacji}	
 	\begin{figure}[H]%[!htb]
 		\includegraphics[scale=0.5]{uml/main.jpg}
@@ -227,7 +232,7 @@ W zależności od tego jaką kartę zagramy stan planszy może się zmienić. Mo
 	\end{figure}	
 	\subsection{Warstwa logiki gry}	
 	\begin{figure}[H]%[!htb]
-		\includegraphics[scale=0.5]{uml/main.jpg}
+	%	\includegraphics[scale=0.5]{uml/main.jpg}
 	\end{figure}
 	\subsection{Warstwa baz danych}	
 	\begin{figure}[H]%[!htb]
@@ -242,16 +247,16 @@ W zależności od tego jaką kartę zagramy stan planszy może się zmienić. Mo
 	
 	\section{Podsumowanie}
 	
-
+	
 	\section{Testy}
 	
-
+	
 	\section{Wnioski}
 	
-
+	
 	\section{Literatura}
 	
-\textbf{Asensio MI, Ferragut L., Simon J.:} Modelling of convective phenomena in forest fire. Rev Real Academia de Ciencias, 2002, 96:299–313\\
-
-
+	\textbf{Asensio MI, Ferragut L., Simon J.:} Modelling of convective phenomena in forest fire. Rev Real Academia de Ciencias, 2002, 96:299–313\\
+	
+	
 \end{document}
