@@ -211,8 +211,13 @@
 	
 
 	\subsection{Biblioteka sieciowa}
-	jxta\\
-	https://jxta.kenai.com/
+	\indent
+	
+	Jako architekturę do połączeń internetowych wybraliśmy Peer-2-Peer. Powodem jest brak zewnętrznego serwera jak i chęć nauczenia się nowych technologii. Do jej implementacji wykorzystana zostanie biblioteka JXTA, która rozpowszechniona jest na licencji opensource. JXTA jest zbiorem sześciu protokołów, za pomocą których jesteśmy w stanie połączyć się z innymi węzłami w sieci, nawet jeśli znajdują się one za NAT-em czy też za Firewallem. Jest on niezależny od systemu operacyjnego, języka programowania, wykorzystywanego protokołu transportowego oraz jest dla każdego urządzenia cyfrowego. 
+	
+	Nawiązanie połączenia pomiędzy węzłami jest możliwe dzięki peer groups.  Dla każdej grupy urządzeń tworzona jest grupa, sieć wirtualna, która jest niezależna od rzeczywistej topologii, w ramach której udostępniane są usługi i następuje wymiana danych. Utworzenie tej grupy jak i jej znalezienie przez innych użytkowników jest możliwe dzięki advertisment, która jest swoistą wizytówką. Każdy korzystający z JXTA znajduje się domyślnie w światowej grupie, w której może wyszukać czy też propagować grupę. Wszystkie informacje są przekazywane za pomocą pipe-ów, które dzielą się na wejściowe i wyjściowe. Umożliwiają one komunikację typu jeden do jeden, jeden do wielu, wielu do wielu.
+	
+		
 	\section{Architektura}
 	\indent
 	
