@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2015.10.26)  29 OCT 2015 08:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2015.10.26)  30 OCT 2015 09:27
 entering extended mode
 **dokumentacjalatex.tex
 (dokumentacjalatex.tex
@@ -456,44 +456,60 @@ File: uml/main.jpg Graphic file (type jpg)
 Package pdftex.def Info: uml/main.jpg used on input line 227.
 (pdftex.def)             Requested size: 352.81726pt x 204.26262pt.
 
-[4]
-File: uml/main.jpg Graphic file (type jpg)
- <use uml/main.jpg>
-Package pdftex.def Info: uml/main.jpg used on input line 232.
-(pdftex.def)             Requested size: 352.81726pt x 204.26262pt.
-File: uml/main.jpg Graphic file (type jpg)
- <use uml/main.jpg>
-Package pdftex.def Info: uml/main.jpg used on input line 236.
-(pdftex.def)             Requested size: 352.81726pt x 204.26262pt.
- [5 <./uml/main.jpg>]
-File: uml/main.jpg Graphic file (type jpg)
+[4] <uml/UseCasePrezentacja.jpg, id=29, 697.60625pt x 401.5pt>
+File: uml/UseCasePrezentacja.jpg Graphic file (type jpg)
 
-<use uml/main.jpg>
-Package pdftex.def Info: uml/main.jpg used on input line 244.
-(pdftex.def)             Requested size: 352.81726pt x 204.26262pt.
-File: uml/main.jpg Graphic file (type jpg)
- <use uml/main.jpg>
-Package pdftex.def Info: uml/main.jpg used on input line 248.
-(pdftex.def)             Requested size: 352.81726pt x 204.26262pt.
- [6]
+<use uml/UseCasePrezentacja.jpg>
+Package pdftex.def Info: uml/UseCasePrezentacja.jpg used on input line 232.
+(pdftex.def)             Requested size: 348.80226pt x 200.7495pt.
+
+<uml/UseCaseInterakcja.jpg, id=30, 826.08624pt x 425.59pt>
+File: uml/UseCaseInterakcja.jpg Graphic file (type jpg)
+
+<use uml/UseCaseInterakcja.jpg>
+Package pdftex.def Info: uml/UseCaseInterakcja.jpg used on input line 236.
+(pdftex.def)             Requested size: 413.0421pt x 212.79446pt.
+ [5 <./uml/main.jpg> <./uml/UseCasePrezentacja.jpg>] <uml/UseCaseLogikaGry.jpg,
+ id=34, 649.42625pt x 428.60126pt>
+File: uml/UseCaseLogikaGry.jpg Graphic file (type jpg)
+
+<use uml/UseCaseLogikaGry.jpg>
+Package pdftex.def Info: uml/UseCaseLogikaGry.jpg used on input line 240.
+(pdftex.def)             Requested size: 324.71233pt x 214.3001pt.
+
+<uml/UseCaseBazaDanych.jpg, id=35, 667.49374pt x 405.515pt>
+File: uml/UseCaseBazaDanych.jpg Graphic file (type jpg)
+
+<use uml/UseCaseBazaDanych.jpg>
+Package pdftex.def Info: uml/UseCaseBazaDanych.jpg used on input line 244.
+(pdftex.def)             Requested size: 333.74606pt x 202.75699pt.
+ [6 <./uml/UseCaseInterakcja.jpg> <./uml/UseCaseLogikaGry.jpg>] <uml/UseCaseKom
+unikacja.jpg, id=40, 798.985pt x 472.76625pt>
+File: uml/UseCaseKomunikacja.jpg Graphic file (type jpg)
+
+<use uml/UseCaseKomunikacja.jpg>
+Package pdftex.def Info: uml/UseCaseKomunikacja.jpg used on input line 248.
+(pdftex.def)             Requested size: 399.49152pt x 236.38254pt.
+
 Underfull \hbox (badness 10000) in paragraph at lines 264--265
 
  []
 
-[7] (dokumentacjalatex.aux)
+[7 <./uml/UseCaseBazaDanych.jpg> <./uml/UseCaseKomunikacja.jpg>] [8]
+(dokumentacjalatex.aux)
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 2.17pt have occurred.
 
  ) 
 Here is how much of TeX's memory you used:
- 2441 strings out of 493673
- 28334 string characters out of 3151263
+ 2466 strings out of 493673
+ 29039 string characters out of 3151263
  91926 words of memory out of 3000000
- 5746 multiletter control sequences out of 15000+200000
+ 5766 multiletter control sequences out of 15000+200000
  16680 words of font info for 38 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
- 27i,7n,24p,764b,221s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,7n,24p,764b,222s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\Sebastian\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi
 600\ecbx1200.pk> <C:\Users\Sebastian\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\j
 knappen\ec\dpi600\ecrm1095.pk> <C:\Users\Sebastian\AppData\Local\MiKTeX\2.9\fon
@@ -507,9 +523,9 @@ our\jknappen\ec\dpi600\ecrm3583.pk> <C:\Users\Sebastian\AppData\Local\MiKTeX\2.
 9\fonts\pk\ljfour\jknappen\ec\dpi600\eccc1440.pk> <C:\Users\Sebastian\AppData\L
 ocal\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\eccc1728.pk><D:/MiKTeX/fonts
 /type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on dokumentacjalatex.pdf (8 pages, 161616 bytes).
+Output written on dokumentacjalatex.pdf (9 pages, 410243 bytes).
 PDF statistics:
- 382 PDF objects out of 1000 (max. 8388607)
+ 391 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 31 words of extra memory for PDF output out of 10000 (max. 10000000)
 
