@@ -4,12 +4,12 @@ import java.util.Random;
 
 public class Dice {
 	Random generator = new Random();
-	int wynik=0;
-	int throwDice(){
+	//int result=0;
+	int throDice(){
 		//rzut dwoma koœæmi
-		
-		wynik=generator.nextInt(5)+1+generator.nextInt(5)+1;
-		return wynik;
+		return generator.nextInt(11)+1;
+		//result=generator.nextInt(5)+1+generator.nextInt(5)+1;
+		//return result;
 		//					0-11+1=1-12
 		//return generator.nextInt(11)+1; alternatywa krótsza
 	}
