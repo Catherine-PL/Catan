@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -11,29 +13,35 @@ import java.net.Socket;
 
 class Peer{
 	
-	Socket socket = null;
-	DataOutputStream output = null;
-	DataInputStream input = null;
+	Socket socketOut = null;
+	Socket socketIn = null;
+	ObjectOutputStream output = null;
+	ObjectInputStream input = null;
 
-	Peer(String nick, InetAddress ip, int port) throws IOException {		
-		socket = new Socket(ip,port);
-		System.out.println("Stworzono PeerSocket na porcie: " + socket.getLocalPort());
+	Peer(String nick, String ip, int port) throws IOException {		
+		socketOut = new Socket(ip,port);
+		System.out.println("Stworzono PeerSocket na porcie: " + socketOut.getLocalPort());
 		
-		output = new DataOutputStream(socket.getOutputStream());
-		output.writeInt(socket.getLocalPort());
-		output.flush();
-		
-		input = new DataInputStream(socket.getInputStream());
+		output = new ObjectOutputStream(socketOut.getOutputStream());
+		output.writeInt(socketOut.getLocalPort());
+		output.flush();		
 		 
 	}
-	
-	void close() throws IOException
+		
+	void send(Object ob) throws IOException
 	{
-		
-		input.close();
+		output.writeObject(ob);
+	}
+	Object receive() throws ClassNotFoundException, IOException
+	{
+		return input.readObject();
+	}
+	void close() throws IOException
+	{		
 		output.close();
-		socket.close();
-		
+		socketOut.close();
+		input.close();
+		socketIn.close();
 	}
 
 }

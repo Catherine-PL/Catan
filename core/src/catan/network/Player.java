@@ -6,18 +6,19 @@ import java.net.UnknownHostException;
 public class Player {
 
 	private String nickname;
-	private InetAddress address;
+	private String address;
 	
 	Player(String nick, String ip) throws UnknownHostException
 	{
 		nickname = nick;
-		address = InetAddress.getByName(ip);
+		address = ip;
+		//address = InetAddress.getByName(ip);
 	}
 	public String getNickname()
 	{
 		return nickname;
 	}	
-	public InetAddress getIp()
+	public String getIp()
 	{
 		return address;
 	}
