@@ -12,10 +12,11 @@ public class Board {
 	public Map<Integer, Tile> numberToTileID;//stare <Integer,Integer>
 	private Map<Character ,Integer> letterToNumber;
 	public int thiefPosition=0;
-	private Tile tiles[]={new Tile("Forest"),new Tile("Forest"),new Tile("Forest"),new Tile("Forest"),
-			new Tile("Desert"),new Tile("Mountains"),new Tile("Mountains"),new Tile("Mountains"),new Tile("Fields"),
-			new Tile("Fields"),new Tile("Fields"),new Tile("Fields"),new Tile("Pasture"),new Tile("Pasture"),new Tile("Pasture"),
-			new Tile("Pasture")};
+	private Tile tiles[]={new Tile.Builder("Forest",0,false).build(),new Tile.Builder("Forest",0,false).build(),new Tile.Builder("Forest",0,false).build(),
+			new Tile.Builder("Forest",0,false).build(),new Tile.Builder("Desert",0,false).build(),new Tile.Builder("Mountains",0,false).buil(),
+			new Tile.Builder("Mountains",0,false).build(),new Tile.Builder("Mountains",0,false).build(),new Tile.Builder("Fields",0,false).build(),
+			new Tile.Builder("Fields",0,false).build(),new Tile.Builder("Fields",0,false).build(),new Tile.Builder("Fields",0,false).build(),new Tile.Builder("Pasture",0,false).build(),
+			new Tile.Builder("Pasture",0,false).build(),new Tile.Builder("Pasture",0,false).build(),new Tile.Builder("Pasture",0,false).build()};
 	
 	
 	//make the constructor private so that this class cannot be
