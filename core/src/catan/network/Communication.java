@@ -1,25 +1,18 @@
 package catan.network;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Communication implements Runnable {
+public class Communication{			// jako singleton?
 
-	private Player[]			players;
 	private Map<String,Peer>	peers;
 	private ServerSocket		serv;
 	private int					servport = 8080;
@@ -30,16 +23,17 @@ public class Communication implements Runnable {
 	{
 		serv = new ServerSocket(servport);
 	}
-	private void initPeers(Player[] players) throws IOException	// dodaæ oczekiwanie i ewentualnie zmiana portu na wy¿szy	
+	private void initPeers(String nickname, PlayerIP[] players) throws IOException, ClassNotFoundException
 	{
+		LinkedList<Peer> l = new LinkedList<Peer>(); 
 		
-		for(Player p : players)
+		for(PlayerIP p : players)
 		{			
 			for(int i=0; i<5; i++)
 			{
 				try
 				{
-					peers.put(p.getNickname(), new Peer(p.getNickname(), p.getIp(), port+i));	// stworzenie peera i przypisanie socketa
+					l.add(new Peer(nickname, p.getIp(), port+i));					
 					break;
 				}
 				catch(IOException e)
@@ -55,8 +49,8 @@ public class Communication implements Runnable {
 		
 		// Accepting connection and adding to peer socketIn and InputStream
 		
-		Set set = peers.entrySet();
-		Iterator it = set.iterator();
+		Iterator it = l.iterator();
+		
 		
 		for(int i=0; i<players.length; i++)
 		{
@@ -68,15 +62,28 @@ public class Communication implements Runnable {
 			
 			while(it.hasNext())
 			{
-				Map.Entry<String, Peer> pair = (Map.Entry<String, Peer>) it.next();
+				Peer peer = (Peer)it.next(); 
 															
 				// jezeli moj zapisany peer socket = ten ktory do mnie napisal
-				if(pair.getValue().socketOut.getInetAddress().getHostAddress().equals(client.getInetAddress().getHostAddress()))
+				if(peer.socketOut.getInetAddress().getHostAddress().equals(client.getInetAddress().getHostAddress()))
 				{	
-					pair.getValue().socketIn = client;
-					pair.getValue().input = new ObjectInputStream(client.getInputStream());
+					peer.socketIn = client;
+					peer.input = new ObjectInputStream(client.getInputStream());
 					
-					System.out.println("Wiadomosc: " + pair.getValue().input.readInt());
+					String nick = (String)peer.input.readObject();					
+					System.out.println("Wiadomosc: " + nickname);		
+					
+					peers.put(nick, peer);				// wpisanie do mapy peera z jego nickname	
+					for(PlayerIP p : players)
+					{						
+						if(p.address.equals(peer.socketOut.getInetAddress().getHostAddress())) 
+						{
+							if(p.nickname!=null) continue;				// potrzebne tylko dla localhosta
+								p.nickname = nick;
+							break;
+						}
+					}
+					
 					
 					break;
 				}
@@ -85,40 +92,7 @@ public class Communication implements Runnable {
 		}
 		
 	}
-	private void close() throws IOException
-	{
-		serv.close();
-		for(Player p : players)
-		{
-			peers.get(p.getNickname()).close();
-		}
-	}
-	
-	public Communication(Player[] p)
-	{
-		players = p;
-	}
-	public Communication(Player[] p, int servPort, int peerPort)
-	{
-		players = p;
-		servport = servPort;
-		port = peerPort;
-	}
-	public int getServPort()
-	{
-		return servport;
-	}
-	
-	public void send(String nick, Message msg) throws IOException
-	{
-		peers.get(nick).send(msg);
-	}
-	Object receive(String nick) throws ClassNotFoundException, IOException
-	{
-		return peers.get(nick).receive();
-	}
-		
-	public void run() 
+	private void initCommunication(String nickname, PlayerIP[] players)
 	{
 		System.out.println("Tworzenie po³¹czenia z graczami ...");
 		peers = new HashMap<String,Peer>();
@@ -143,37 +117,76 @@ public class Communication implements Runnable {
 					
 		// inicjalizacji wszystkich peer, ich socketow i streamow. Wysy³anie od razu wiadomoœci o porcie lokalnym
 		try {
-			initPeers(players);
-		} catch (IOException e1) {
+			initPeers(nickname, players);
+		} catch (Exception e1) {
 			System.err.println("Niepowodzenie z utworzeniem Peers");
 			e1.printStackTrace();
 		}		
 		
 			
+		System.out.println("Inicjalizacja po³¹czeñ zosta³a zakoñczona.");
 		
-		// Closing everything
+		for(PlayerIP p : players)
+			System.out.println(p.nickname + ", ");
+				
+	}
+		
+	public Communication(String myName, PlayerIP[] p)
+	{
+		initCommunication(myName, p);				
+	}
+	public void close() throws IOException
+	{
+		serv.close();
+		for(String p : peers.keySet())
+		{
+			peers.get(p).close();
+		}
+	}
+	public void send(String nick, Message msg) throws IOException
+	{
+		peers.get(nick).send(msg);
+	}
+	public Message receive(String nick) throws ClassNotFoundException, IOException
+	{
+		return (Message)peers.get(nick).receive();
+	}	
+	
+	
+	public static void main(String[] args) throws IOException, ClassNotFoundException {
+		
+		PlayerIP[] players = {new PlayerIP("127.0.0.1"), new PlayerIP("127.0.0.1")};	// nick i ip z hamachi
+		
+		//ExecutorService exec = Executors.newSingleThreadExecutor();
+		//exec.execute(com);
+		//exec.shutdown();
+		
+		
+		Communication com = new Communication("Sebastian",players);		
+							
+		Message m;
+		
 		try {
-			close();
-		} catch (IOException e) {
-			System.err.println("Error with closing");
-			e.printStackTrace();
+			m = MessageFactory.createMessage(Message.Type.DICE, 6);
+			com.send("Sebastian", m);
+			m = com.receive("Sebastian");
+			System.out.println(m.getType() + ": " + m.getContent());
+			
+			Integer i =(Integer)m.getContent();
+			
+			if(i.equals(6))
+				System.out.println("TAK");
+
+		} catch (ContentException e) {
+			System.out.println("Blednie ustawiona zawortosc wiadomosci!");		
 		}
 		
-			
 		
-	}
-	
-	
-	public static void main(String[] args) throws IOException {
-		Player[] players = {new Player("ja","localhost"), new Player("ja2","localhost")};	// nick i ip z hamachi
+		//if(m.getType()==Message.Type.DICE)
 		
-		ExecutorService exec = Executors.newSingleThreadExecutor();
-						
-		System.out.println("...................");
-		
-		Communication com = new Communication(players);		
-		exec.execute(com);
-							
+				
+		com.close();		
+
 	}
 
 

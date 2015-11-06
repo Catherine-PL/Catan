@@ -1,14 +1,8 @@
 package catan.network;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 
 class Peer{
@@ -23,7 +17,7 @@ class Peer{
 		System.out.println("Stworzono PeerSocket na porcie: " + socketOut.getLocalPort());
 		
 		output = new ObjectOutputStream(socketOut.getOutputStream());
-		output.writeInt(socketOut.getLocalPort());
+		output.writeObject(nick);
 		output.flush();		
 		 
 	}

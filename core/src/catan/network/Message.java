@@ -1,13 +1,31 @@
 package catan.network;
 
-public interface Message 
-{
+import java.io.Serializable;
+
+public abstract class Message implements Serializable {
+	
 	public enum Type
 	{
-		GRACZ, MAPA, KOSC, ZLODZIEJ, HANDEL, KARTA, BUDYNEK;
+		DICE, THIEF, TRADE, CARD, MAP, BUDYNEK, GRACZ;
 	}
 	
-	public Type getType();
-	public Object getContent();
+	private Type type;
+	private Object content;
+	
+	Message(Type t, Object obj)
+	{
+		type = t;
+		content = obj;
+	}
+	
+	public Type getType()
+	{
+		return type;
+	}
+	public Object getContent()
+	{
+		return content;
+	}
+
 
 }
