@@ -11,6 +11,11 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Class which provide us P2P architecture and basic communication in an internal network.
+ * @author Sebastian
+ *
+ */
 public class Communication{			// jako singleton?
 
 	private Map<String,Peer>	peers;
@@ -131,10 +136,19 @@ public class Communication{			// jako singleton?
 				
 	}
 		
+	/**
+	 * Constructor
+	 * @param myName My nickname which is propagated to every node in P2P network. 
+	 * @param p Array of PlayerIP class which contains only IP. However, nicknames are added to this collection. 
+	 */
 	public Communication(String myName, PlayerIP[] p)
 	{
 		initCommunication(myName, p);				
 	}
+	/**
+	 * Close is a function to close every connection between nodes, and to close servSocket.
+	 * @throws IOException happens during closing streams and servSocket
+	 */
 	public void close() throws IOException
 	{
 		serv.close();
@@ -143,10 +157,23 @@ public class Communication{			// jako singleton?
 			peers.get(p).close();
 		}
 	}
+	/**
+	 * Method which sends a massage to another node.
+	 * @param nick Nickname of a node 
+	 * @param msg Message to send
+	 * @throws IOException Whenever writing to an OutputStream fails
+	 */
 	public void send(String nick, Message msg) throws IOException
 	{
 		peers.get(nick).send(msg);
 	}
+	/**
+	 * Method for reading messages from network
+	 * @param nick Defines a node from which we want receive a message  
+	 * @return Return a message
+	 * @throws ClassNotFoundException Nothing no read?
+	 * @throws IOException Whenever reading from an InputStream fails
+	 */
 	public Message receive(String nick) throws ClassNotFoundException, IOException
 	{
 		return (Message)peers.get(nick).receive();
@@ -170,13 +197,12 @@ public class Communication{			// jako singleton?
 			m = MessageFactory.createMessage(Message.Type.DICE, 6);
 			com.send("Sebastian", m);
 			m = com.receive("Sebastian");
-			System.out.println(m.getType() + ": " + m.getContent());
+			System.out.println(m.getType());
 			
-			Integer i =(Integer)m.getContent();
+			if(m.getType()==Message.Type.DICE)
+				System.out.println("Wynik rzutu: " + ((MsgDice)m).getContent() );
+						
 			
-			if(i.equals(6))
-				System.out.println("TAK");
-
 		} catch (ContentException e) {
 			System.out.println("Blednie ustawiona zawortosc wiadomosci!");		
 		}

@@ -2,30 +2,28 @@ package catan.network;
 
 import java.io.Serializable;
 
+/**
+ * Abstract class for specified messages, and using for sending and receiving messages.
+ * @author Sebastian
+ *
+ */
 public abstract class Message implements Serializable {
 	
+	/**
+	 * Types of messages
+	 * @author Sebastian
+	 *
+	 */
 	public enum Type
 	{
-		DICE, THIEF, TRADE, CARD, MAP, BUDYNEK, GRACZ;
+		DICE, THIEF, TRADE, CARD, MAP, BUDYNEK, TEXT;
 	}
 	
-	private Type type;
-	private Object content;
-	
-	Message(Type t, Object obj)
-	{
-		type = t;
-		content = obj;
-	}
-	
+	protected Type type;
+		
 	public Type getType()
 	{
 		return type;
 	}
-	public Object getContent()
-	{
-		return content;
-	}
-
-
+	
 }
