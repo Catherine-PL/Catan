@@ -2,6 +2,7 @@ package database;
 
 import java.util.Map;
 import java.util.Vector;
+import database.Players;
 
 public class Player {
 	private	int id;
@@ -19,7 +20,6 @@ public class Player {
 		resources.put("sheep", 0) ;
 		resources.put("wood", 0) ;
 	}
-	
 	public int getId() {
 		return id;
 	}
@@ -42,6 +42,17 @@ public class Player {
 	}
 	public void setPoints(int points) {
 		this.points = points;
+	}
+	
+	//Gracz sam sprawdza czy wygra³ i wysy³a o tym komunikat
+	public void checkPoints(Player player){
+	    if(getPoints() >= 10) 
+	    {
+	    	//System.out.println("WYGRA£ player " + players.getPlayer(player.getId())); //wygra³ gracz (i jego NICK do wyœwietlenia)
+	    	System.out.println("WYGRA£ player " + player.getId()); //wygra³ gracz (i jego ID do wyœwietlenia)
+
+	    	//wyœlij wiadomoœæ send coœ tam
+	    }
 	}
 	
 	public Vector<Card> getCards() {

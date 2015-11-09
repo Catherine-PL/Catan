@@ -2,19 +2,17 @@ package database;
 
 public class Tile {
 	private String type;
-	private int buildings; //??0-nic 1-osada 2-miasto ???
-	private Boolean  thiefState;
+	
+	private Boolean thiefState;
 	
 	
-	public static class Builder(){
+	public static class Builder{
 		private String type;
-		private int buildings; //??0-nic 1-osada 2-miasto ???
+		private int buildings; 
 		private Boolean  thiefState;
 		
-		public Builder(String type, int buildings, Boolean thiefState){
+		public Builder(String type){
 			this.type = type;
-			this.buildings = buildings;
-			this.thiefState = thiefState;
 		}
 		
 		public Tile build() {
@@ -27,6 +25,9 @@ public class Tile {
 		type = builder.type;
 		buildings = builder.buildings;
 		thiefState = builder.thiefState;
+		if (type == "Desert")
+			thiefState = true;
+	
 	}
 	
 	public String getType() {
@@ -43,11 +44,11 @@ public class Tile {
 		this.thiefState=!(this.thiefState);
 	}
 	public int getBuildings() {
-		return Buildings;
+		return buildings;
 	}
 	//ustaianie czy wioska,miasto czy nic
 	public void setBuildings(int buildings) {
-		Buildings = buildings;
+		this.buildings = buildings;
 	}	
 }
 
