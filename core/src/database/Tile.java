@@ -2,13 +2,11 @@ package database;
 
 public class Tile {
 	private String type;
-	
 	private Boolean thiefState;
 	
 	
 	public static class Builder{
 		private String type;
-		private int buildings; 
 		private Boolean  thiefState;
 		
 		public Builder(String type){
@@ -23,7 +21,6 @@ public class Tile {
 	
 	private Tile(Builder builder){
 		type = builder.type;
-		buildings = builder.buildings;
 		thiefState = builder.thiefState;
 		if (type == "Desert")
 			thiefState = true;
@@ -43,12 +40,5 @@ public class Tile {
 		
 		this.thiefState=!(this.thiefState);
 	}
-	public int getBuildings() {
-		return buildings;
-	}
-	//ustaianie czy wioska,miasto czy nic
-	public void setBuildings(int buildings) {
-		this.buildings = buildings;
-	}	
 }
 

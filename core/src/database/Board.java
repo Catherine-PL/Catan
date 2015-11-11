@@ -1,17 +1,21 @@
 package database;
 
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Board {
-	//reprezntacje grafu musimy wybraæ
-	//public graph 
-	private static Board instance=new Board();
-	public Map<Integer, Tile> numberToTileID;//stare <Integer,Integer>
 	private Map<Character ,Integer> letterToNumber;
 	public int thiefPosition=0;
+	private Node[] nodes = new Node[54];
+	private int[][] adjencyMatrix=new int[54][54];//54 wierzcho³ki
+
+	
 	private Tile tiles[]={new Tile.Builder("Forest").build(),new Tile.Builder("Forest").build(),new Tile.Builder("Forest").build(),
 			new Tile.Builder("Forest").build(),new Tile.Builder("Desert").build(),new Tile.Builder("Mountains").build(),
 			new Tile.Builder("Mountains").build(),new Tile.Builder("Mountains").build(),new Tile.Builder("Fields").build(),
@@ -21,9 +25,9 @@ public class Board {
 	
 	//make the constructor private so that this class cannot be
 	//instantiated
-	private Board(){
+	protected Board(){
 		//tabelka na cyferkê przy tile, nie wiem jak j¹ zrobiæ szyciej, na razie
-		letterToNumber.put('A', 5);
+	/*	letterToNumber.put('A', 5);
 		letterToNumber.put('B', 2);
 		letterToNumber.put('C', 6);
 		letterToNumber.put('D', 3);
@@ -41,23 +45,97 @@ public class Board {
 		letterToNumber.put('P', 6);
 		letterToNumber.put('Q', 3);
 		letterToNumber.put('R', 11);
-
+*/
 		//generowanie planszy
 		//przemieszanie kafli l¹du
 		Collections.shuffle(Arrays.asList(tiles));
-		for(int i=0;i<19;i++){
-			numberToTileID.put(i, getTile(i));
+		
+		//indeksowanie wierzcho³ków
+		for(int i=0;i<54;i++){
+			nodes[i] = new Node(i);		
 		}
-		
-		
+
 	}
-	public static Board getInstance(){
-		return instance;
+	/*
+	private static class BoardHolder { 
+	    private static final Board instance = new Board();
+	}
+
+	public static Board getInstance() {
+		return BoardHolder.instance;
+	}
+	*/
+	
+	public void setNeighbours(){
+		for(int i=0;i<54;i++){
+    		for(int j=0;j<54;j++){
+    			if(adjencyMatrix[i][j] == 1){
+    				nodes[i].addNeighbour(nodes[j]);
+    				nodes[j].addNeighbour(nodes[i]);
+
+    		}
+		}
+	}
 	}
 	
-		
+	public void loadMatrix(){
+		 //wczytanie macierzy sasiedztwa
+			Scanner scanner;
+			try {
+				scanner = new Scanner(new File("adjencymatrix.txt"));
+				for(int i=0;i<54;i++){
+		    		for(int j=0;j<54;j++){
+		    			while(scanner.hasNextInt())
+		    			{
+		    			    adjencyMatrix[i][j] = scanner.nextInt();
+		    			    //tutaj jak wypisuje tê macierz jest git, ale póŸniej jakoœ zamienia siê na same 0 
+		    			}
+		    		}
+			    }
+				scanner.close();
+			}
+			catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+	}
+	
 	Tile getTile(int index){
 		return tiles[index];
+	}
+	public Node[] getNodes() {
+		return nodes;
+	}
+	
+	public Node getNode(int i){
+		return nodes[i];
+	}
+	
+	public static void main(String [ ] args) throws FileNotFoundException{
+		Board board = new Board();
+		board.nodes = board.getNodes();
+		board.loadMatrix();
+		board.setNeighbours();
+		//test
+		System.out.print(board.nodes[5].getNodeNumber());
+		System.out.print(board.nodes[5].getNeighbours());
+		
+		//Dafuq, czemu same 0?!
+		for(int i=0;i<54;i++)
+    		for(int j=0;j<54;j++)
+    			System.out.println(board.adjencyMatrix[i][j]);
+
+		//test, wypisanie s¹siadów
+		for(int i=0;i<54;i++){
+			System.out.print(i + " - ");
+			if(!board.nodes[i].getNeighbours().isEmpty()){
+				for (Node node : board.nodes[i].getNeighbours()) {
+				        System.out.print(node.getNodeNumber() + " ");
+				} 
+			}
+	        System.out.println();
+		}
+		
 	}
 	
 	
