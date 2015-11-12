@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -28,11 +29,11 @@ public class Communication{			// jako singleton?
 	{
 		serv = new ServerSocket(servport);
 	}
-	private void initPeers(String nickname, PlayerIP[] players) throws IOException, ClassNotFoundException
+	private void initPeers(String nickname, Collection<PlayerIP> p2) throws IOException, ClassNotFoundException
 	{
 		LinkedList<Peer> l = new LinkedList<Peer>(); 
 		
-		for(PlayerIP p : players)
+		for(PlayerIP p : p2)
 		{			
 			for(int i=0; i<5; i++)
 			{
@@ -57,7 +58,7 @@ public class Communication{			// jako singleton?
 		Iterator it = l.iterator();
 		
 		
-		for(int i=0; i<players.length; i++)
+		for(int i=0; i<p2.size(); i++)
 		{
 			Socket client = serv.accept();
 					
@@ -79,7 +80,7 @@ public class Communication{			// jako singleton?
 					System.out.println("Wiadomosc: " + nickname);		
 					
 					peers.put(nick, peer);				// wpisanie do mapy peera z jego nickname	
-					for(PlayerIP p : players)
+					for(PlayerIP p : p2)
 					{						
 						if(p.address.equals(peer.socketOut.getInetAddress().getHostAddress())) 
 						{
@@ -97,7 +98,7 @@ public class Communication{			// jako singleton?
 		}
 		
 	}
-	private void initCommunication(String nickname, PlayerIP[] players)
+	private void initCommunication(String nickname, Collection<PlayerIP> p2)
 	{
 		System.out.println("Tworzenie po³¹czenia z graczami ...");
 		peers = new HashMap<String,Peer>();
@@ -122,7 +123,7 @@ public class Communication{			// jako singleton?
 					
 		// inicjalizacji wszystkich peer, ich socketow i streamow. Wysy³anie od razu wiadomoœci o porcie lokalnym
 		try {
-			initPeers(nickname, players);
+			initPeers(nickname, p2);
 		} catch (Exception e1) {
 			System.err.println("Niepowodzenie z utworzeniem Peers");
 			e1.printStackTrace();
@@ -131,19 +132,77 @@ public class Communication{			// jako singleton?
 			
 		System.out.println("Inicjalizacja po³¹czeñ zosta³a zakoñczona.");
 		
-		for(PlayerIP p : players)
-			System.out.println(p.nickname + ", ");
+		System.out.println("Collection PlayerIP");
+		for(PlayerIP p : p2)
+			System.out.print(p.nickname + ": " + p.address + "; ");
 				
+		System.out.println("");
 	}
-		
+	
 	/**
 	 * Constructor
 	 * @param myName My nickname which is propagated to every node in P2P network. 
 	 * @param p Array of PlayerIP class which contains only IP. However, nicknames are added to this collection. 
 	 */
-	public Communication(String myName, PlayerIP[] p)
+	public Communication(String myName, Collection<PlayerIP> p)
 	{
 		initCommunication(myName, p);				
+	}	
+	/**
+	 * Adding new PlayerIP to PlayerIP collection with adding nickname, creating new peer
+	 * @param players Collection for PlayerIP
+	 * @param p New PlayerIP 
+	 * @param nickname Nickname to propagate
+	 * @throws IOException Sometimes heppens
+	 * @throws ClassNotFoundException Nothing to read, or it wasn't Object.
+	 */
+	public void addPlayerIP(Collection<PlayerIP> players, PlayerIP p, String nickname) throws IOException, ClassNotFoundException
+	{
+				
+		Peer n = null;
+		
+		// 5 krotna proba polaczenia sie
+		for(int i=0; i<5; i++)
+		{
+			try
+			{
+				n = new Peer(nickname, p.getIp(), port+i);					
+				break;
+			}
+			catch(IOException e)
+			{
+				System.out.println("Problem z utworzeniem po³aczenia");
+				if(i==4)
+					throw new IOException();
+				System.out.println("Kolejna próba z portem o 1 wiêkszym");								
+			}
+		}
+		
+		
+						
+		Socket client = serv.accept();	// nowe polaczenie
+		
+		System.out.println("zakaceptowano polaczenie, które przysz³o z: " + client.getInetAddress() + " : " + client.getPort());
+		System.out.println("Aktualnie przypisany mu port: " + client.getLocalPort());			
+		
+			
+			// jezeli moj zapisany peer socket = ten ktory do mnie napisal
+		if(n.socketOut.getInetAddress().getHostAddress().equals(client.getInetAddress().getHostAddress()))
+		{	
+			n.socketIn = client;
+			n.input = new ObjectInputStream(client.getInputStream());
+			
+			String nick = (String)n.input.readObject();					
+			System.out.println("Wiadomosc: " + nick);		
+
+			peers.put(nick, n);				// wpisanie do mapy peera z jego nickname
+			
+			p.nickname = nick;
+			players.add(p);				
+							
+		}									
+		
+		
 	}
 	/**
 	 * Close is a function to close every connection between nodes, and to close servSocket.
@@ -182,7 +241,9 @@ public class Communication{			// jako singleton?
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		
-		PlayerIP[] players = {new PlayerIP("127.0.0.1"), new PlayerIP("127.0.0.1")};	// nick i ip z hamachi
+		LinkedList<PlayerIP> players = new LinkedList();	// nick i ip z hamachi
+		players.add(new PlayerIP("127.0.0.1"));
+		players.add(new PlayerIP("127.0.0.1"));
 		
 		//ExecutorService exec = Executors.newSingleThreadExecutor();
 		//exec.execute(com);
@@ -193,7 +254,8 @@ public class Communication{			// jako singleton?
 							
 		Message m;
 		
-		try {
+		try 
+		{
 			m = MessageFactory.createMessage(Message.Type.DICE, 6);
 			com.send("Sebastian", m);
 			m = com.receive("Sebastian");
@@ -203,13 +265,19 @@ public class Communication{			// jako singleton?
 				System.out.println("Wynik rzutu: " + ((MsgDice)m).getContent() );
 						
 			
-		} catch (ContentException e) {
+		} catch (ContentException e) 
+		{
 			System.out.println("Blednie ustawiona zawortosc wiadomosci!");		
-		}
+		}	
 		
+		com.addPlayerIP(players, new PlayerIP("127.0.0.1"), "Sebastian");
 		
-		//if(m.getType()==Message.Type.DICE)
-		
+		System.out.println("Collection PlayerIP");
+		for(PlayerIP p : players)
+			System.out.print(p.nickname + ": " + p.address + "; ");
+				
+		System.out.println("");
+	
 				
 		com.close();		
 
