@@ -16,7 +16,7 @@ public abstract class Message implements Serializable {
 	 */
 	public enum Type
 	{
-		DICE, THIEF, TRADE, CARD, MAP, BUDYNEK, TEXT;
+		DICE, THIEF, TRADE, CARD, MAP, BUDYNEK, TEXT, PEER, END;
 	}
 	
 	protected Type type;

@@ -17,7 +17,7 @@ class Peer{
 		System.out.println("Stworzono PeerSocket na porcie: " + socketOut.getLocalPort());
 		
 		output = new ObjectOutputStream(socketOut.getOutputStream());
-		output.writeObject(nick);
+		output.writeObject(new MsgPeer(nick));
 		output.flush();		
 		 
 	}
