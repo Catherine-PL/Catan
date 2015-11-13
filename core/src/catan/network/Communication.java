@@ -19,11 +19,11 @@ import java.util.concurrent.Executors;
  */
 public class Communication implements Runnable{			// jako singleton?
 	
-	private Collection<PlayerIP>	playersIP;
+	private Collection<PlayerIP>	playersIP;			// operacje nie sa zsynchronizowane
 	private String 					nickname;
-	private Map<String,Peer>		peers;
+	private Map<String,Peer>		peers;				// nie sa zsynchronizowane
 	private ServerSocket			serv;
-	private int						servport = 8082;	
+	private final int				servport = 8080;	
 	
 		
 	private void handleMsgPeer(Socket client, ObjectInputStream input, Message msg2) throws IOException
@@ -87,8 +87,8 @@ public class Communication implements Runnable{			// jako singleton?
 		{	
 			try
 			{
-				p.nickname = Integer.toString(i);
-				peers.put(p.nickname , new Peer(nickname, p.getIp(), servport));				
+				p.nickname = Integer.toString(i);	// przypisane tymczasowej nazwy
+				peers.put(p.nickname , new Peer(nickname, p.getIp(), servport));		// proba polaczenia i wyslania wiadomosci z nickiem		
 			}
 			catch(IOException e)
 			{
@@ -118,7 +118,7 @@ public class Communication implements Runnable{			// jako singleton?
 		}
 	
 					
-		// inicjalizacji wszystkich peer, ich socketow i streamow. Wysy³anie od razu wiadomoœci o porcie lokalnym
+		// inicjalizacji wszystkich peer. Wysy³anie od razu wiadomoœci o nicku
 		try 
 		{
 			initPeers();								
@@ -140,29 +140,13 @@ public class Communication implements Runnable{			// jako singleton?
 	}
 	
 	/**
-	 * Constructor
+	 * Constructor which tries to connect with Players and send them a message with a nickname
 	 * @param myName My nickname which is propagated to every node in P2P network. 
 	 * @param p Array of PlayerIP class which contains only IP. However, nicknames are added to this collection. 
 	 */
 	public Communication(String myName, Collection<PlayerIP> p)
-	{
-		// zawsze bedzie mozliwosc wyslania wiadomosci do siebie :)
-		/*
-		PlayerIP myself = new PlayerIP("127.0.0.1");
-		int i=0;
-		PlayerIP player = null;
-		Iterator<PlayerIP> it = p.iterator();		
-		while(it.hasNext())
-		{
-			player = it.next();
-			if(player.address.equals("127.0.0.1"))
-				break;			
-		}
-		if(p.size() == i-1)
-			p.add(player);
-		*/
-		// koniec tego zabezpieczenia				
-		
+	{			
+		// dostaje moj nick jak i graczy (nick, ip, online)
 		playersIP = p;
 		nickname = myName;
 		try 
@@ -181,62 +165,28 @@ public class Communication implements Runnable{			// jako singleton?
 	 * @throws IOException Sometimes heppens
 	 * @throws ClassNotFoundException Nothing to read, or it wasn't Object.
 	 */
-	public void addPlayerIP(Collection<PlayerIP> players, PlayerIP p, String nickname) throws IOException, ClassNotFoundException
-	{
-				
-		Peer n = null;
-		
+	public synchronized void addPlayerIP(PlayerIP p)
+	{								
 		try
 		{
-			n = new Peer(nickname, p.getIp(), servport);
+			
+			p.nickname = Integer.toString(-1);
+			this.playersIP.add(p);
+			peers.put(p.nickname , new Peer(nickname, p.getIp(), servport));		// proba polaczenia i wyslania wiadomosci z nickiem
 			
 		}
 		catch(IOException e)
 		{
-			System.err.println("Problem z utworzeniem po³aczenia z: " + p.getIp());
-			throw new IOException();
-									
-
-		}
-		
-		
-						
-		Socket client = serv.accept();	// nowe polaczenie
-		
-		System.out.println("zakaceptowano polaczenie, które przysz³o z: " + client.getInetAddress() + " : " + client.getPort());
-		System.out.println("Aktualnie przypisany mu port: " + client.getLocalPort());			
-		
-			
-			// jezeli moj zapisany peer socket = ten ktory do mnie napisal
-		if(n.socketOut.getInetAddress().getHostAddress().equals(client.getInetAddress().getHostAddress()))
-		{	
-			n.socketIn = client;
-			n.input = new ObjectInputStream(client.getInputStream());							
-			
-			String nick = null;
-			Message msg	= (Message)n.input.readObject();
-			if (msg.type == Message.Type.PEER)
-				nick = ((MsgPeer)msg).getContent();
-			else
-				System.err.println("Uwaga w addPeer odczytana wiadomosc nie PEER");
-			
-			System.out.println("Wiadomosc: " + nick);		
-
-			peers.put(nick, n);				// wpisanie do mapy peera z jego nickname
-			
-			p.nickname = nick;
-			p.online = true;
-			players.add(p);				
-							
-		}									
-		
+			System.out.println("Problem z utworzeniem po³aczenia z: " + p.getIp());	
+			playersIP.remove(p);
+		}												
 		
 	}
 	/**
 	 * Close is a function to close every connection between nodes, and to close servSocket.
 	 * @throws IOException happens during closing streams and servSocket
 	 */
-	public void close() throws IOException
+	public synchronized void close() throws IOException
 	{	
 		System.out.println("closing...");
 		serv.close();
@@ -275,7 +225,7 @@ public class Communication implements Runnable{			// jako singleton?
 			try 
 			{
 				Socket client = serv.accept();
-				System.out.println("zakaceptowano polaczenie, które przysz³o z: " + client.getInetAddress() + " : " + client.getPort());
+				System.out.println("zakaceptowano nowe polaczenie, które przysz³o z: " + client.getInetAddress() + " : " + client.getPort());
 				System.out.println("Aktualnie przypisany mu port: " + client.getLocalPort());		
 								
 				ObjectInputStream input = new ObjectInputStream(client.getInputStream());								
@@ -300,8 +250,14 @@ public class Communication implements Runnable{			// jako singleton?
 			catch (IOException e) 
 			{
 				System.err.println("method run, serv.accept(), closing server before cleaning or problem with sending");
-				e.printStackTrace();
-				break;
+				try {
+					this.close();
+				} catch (IOException e1)
+				{
+					e1.printStackTrace();
+					break;
+				}
+				
 			}
 			catch (ClassNotFoundException e) 
 			{
@@ -320,32 +276,26 @@ public class Communication implements Runnable{			// jako singleton?
 		
 		LinkedList<PlayerIP> players = new LinkedList();	// nick i ip z hamachi
 		players.add(new PlayerIP("127.0.0.1"));
-		//players.add(new PlayerIP("25.87.222.13"));		
-		
-		
-		
+		players.add(new PlayerIP("25.155.87.12"));			
 		
 		//ExecutorService exec = Executors.newSingleThreadExecutor();
 		//exec.execute(com);		
 		//exec.shutdown();
 		
 		
+		// inicjalizacja portu, wyslanie wiadomosci
 		Communication com = new Communication("Sebastian",players);		
 		
+		com.addPlayerIP(new PlayerIP("127.0.0.1"));
+		
+		// odbieranie nnowych polaczen
 		Thread deamon = new Thread(com);
 		deamon.setDaemon(true);
 		deamon.start();
 		
 						
 		Thread.yield();
-		try {
-			Thread.sleep(6000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
+			
 		
 		/*
 		Message m;
@@ -366,8 +316,27 @@ public class Communication implements Runnable{			// jako singleton?
 			System.out.println("Blednie ustawiona zawortosc wiadomosci!");		
 		}	
 		
-		com.addPlayerIP(players, new PlayerIP("127.0.0.1"), "Sebastian");
+		
 		*/		
+		
+		
+		
+		
+		
+		
+		// Tutaj musi coœ siê dziaæ by tamten w¹tek mia³ mo¿liwoœc zaktualizowania danych
+		
+		Thread.yield();
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		
 		
 		
 		System.out.println("");
@@ -383,16 +352,7 @@ public class Communication implements Runnable{			// jako singleton?
 		
 		
 		
-		Thread.yield();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
-				
-		com.close();		
+		
 
 	}
 	

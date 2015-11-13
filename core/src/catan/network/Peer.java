@@ -13,11 +13,11 @@ class Peer{
 	ObjectInputStream input = null;
 
 	Peer(String nick, String ip, int port) throws IOException {		
-		socketOut = new Socket(ip,port);
+		socketOut = new Socket(ip,port);	// chêæ nawiazania polaczenia
 		System.out.println("Stworzono PeerSocket na porcie: " + socketOut.getLocalPort());
 		
 		output = new ObjectOutputStream(socketOut.getOutputStream());
-		output.writeObject(new MsgPeer(nick));
+		output.writeObject(new MsgPeer(nick));	// wys³anie od razu wiadomosci z moim nickiem
 		output.flush();		
 		 
 	}
