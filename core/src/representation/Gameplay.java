@@ -29,6 +29,11 @@ public class Gameplay extends View
 		{
 			return y;
 		}
+		void set(int _x,int _y)
+		{
+			x=_x;
+			y=_y;
+		}
 		
 	}
 	
@@ -44,17 +49,27 @@ public class Gameplay extends View
 	private Texture nobuilding;
 	private Texture village;
 	
+	private Texture roadSWNE;
+	private Texture roadNWSE;
+	private Texture roadSN;
+	
 	private Board board;
+	
 	//tekstury na wszystkie tile
 	private ArrayList<Texture> textures = new ArrayList<Texture>();
 	//tablica na miasta
-	private Coordinates[] buildingsXY = new Coordinates[54];
-	
-
+	private Coordinates[] buildingsXY;
 	public void init()
 	{
+		buildingsXY = new Coordinates[54];
+		for(int i=0;i<54;i++)
+		{
+			buildingsXY[i] = new Coordinates(100,100);
+		}
+
 		batch = new SpriteBatch();
 		board = Board.getInstance();
+		board.setNeighbours();
 		initTiles();
 		background = new Texture(Gdx.files.internal("ocean.png"));
 		cubePlayer = new Texture(Gdx.files.internal("actualplayer1.png"));
@@ -63,21 +78,22 @@ public class Gameplay extends View
 		city = new Texture(Gdx.files.internal("city.png"));
 		nobuilding = new Texture(Gdx.files.internal("nobuilding.png"));
 		village = new Texture(Gdx.files.internal("village.png"));
+		roadSWNE = new Texture(Gdx.files.internal("roadSWNE.png"));;
+		roadNWSE = new Texture(Gdx.files.internal("roadNWSE.png"));;
+		roadSN = new Texture(Gdx.files.internal("roadNS.png"));;
+		
 	}
 	
 	public void batch()
 	{
+		
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-		//menu i t³o w czasie rozgrywki
 		batchMenuGameplay();
-		//plansza - kafelki
 		batchTiles();
-		//plansza - miasta
+		batchRoads();
 		batchBuildings();
-		//TODO plansza - drogi
-		
 		batch.end();
 	}	
 	
@@ -120,7 +136,9 @@ public class Gameplay extends View
 		int cX=560;
 		int cY=700;
 		int counter=0;
+		//number of cities in the row
 		int row=3;
+		//12 rows
 		for (int i =0;i<12;i++)
 		{
 			cY=cY-30;
@@ -153,12 +171,71 @@ public class Gameplay extends View
 					batch.draw(city, cX+j*110, cY);
 					break;
 				}
-				buildingsXY[counter] = new Coordinates(cX+j*110, cY);
+				buildingsXY[counter].set(cX+j*110, cY);
 				counter=counter+1;
 			}	
 		}
 	}
 	
+	
+	private void batchRoads()
+	{
+		int x=0;
+		int y=0;
+		int myX=0;
+		int myY=0;
+		
+		for (int i =0;i<54;i++)
+		{				
+			myX=buildingsXY[i].getX();
+			myY=buildingsXY[i].getY();
+			for (Node n : board.getNode(i).getNeighbours())
+			{
+				x=buildingsXY[n.getNodeNumber()].getX();
+				y=buildingsXY[n.getNodeNumber()].getY();
+				
+				
+				if ((x ==myX) || (y>myY))
+				{
+					batch.draw(roadSN, myX+10, myY);
+				}
+				if ((x ==myX) || (y<myY))
+				{
+					batch.draw(roadSN, myX+10, y);
+				}
+				if ((x >myX) || (y<myY))
+				{
+					batch.draw(roadNWSE, myX+10, y);					
+				}
+				if ((x <myX) || (y>myY))
+				{
+					batch.draw(roadNWSE, x+10, myY);					
+				}
+				if ((x <myX) || (y<myY))
+				{
+					batch.draw(roadSWNE, x+10, y);					
+				}
+				if ((x >myX) || (y>myY))
+				{
+					batch.draw(roadSWNE, myX+10, myY);					
+				}
+			}
+			
+			if ((i ==6) || (i==43))
+			{
+				i=i+5;
+			}
+			if ((i ==15) || (i==37))
+			{
+				i=i+6;
+			}
+			if (i ==26)
+			{
+				i=i+7;
+			}
+		}
+		
+	}
 	
 	
 	private void batchTiles()
