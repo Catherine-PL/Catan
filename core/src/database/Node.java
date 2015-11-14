@@ -11,9 +11,9 @@ public class Node extends Element {
 	private int building; //0-nic 1-osada 2-miasto
 	private int playerNumber;//ID gracza
 	private int nodeNumber;//numer ID noda
-	private Vector <Node> neighbours = new Vector<Node>();//referencja do s¹siednich Node
-	private Vector <Tile> nearResources = new Vector<Tile>(); //referencja do  kafli, potrzebne do surowców
-	public Vector <Road> roads = new Vector<Road>();
+	private Vector <Node> neighbours;//referencja do s¹siednich Node
+	private Vector <Tile> nearResources; //referencja do  kafli, potrzebne do surowców
+	public Vector <Road> roads;
 	
 	public Node(int id){
 		nodeNumber = id;
@@ -33,7 +33,7 @@ public class Node extends Element {
 	}
 	
 	public void addNeighbour(Node node){
-		neighbours.addElement(node);
+		this.neighbours.addElement(node);
 	}
 	
 	//sprawdza czy s¹siednie nody s¹ zabudowane

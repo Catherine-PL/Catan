@@ -56,7 +56,7 @@ public class Board {
 		}
 
 	}
-	
+	/*
 	private static class BoardHolder { 
 	    private static final Board instance = new Board();
 	}
@@ -64,7 +64,7 @@ public class Board {
 	public static Board getInstance() {
 		return BoardHolder.instance;
 	}
-	
+	*/
 	
 	public void setNeighbours(){
 		for(int i=0;i<54;i++){
@@ -72,6 +72,7 @@ public class Board {
     			if(adjencyMatrix[i][j] == 1){
     				nodes[i].addNeighbour(nodes[j]);
     				nodes[j].addNeighbour(nodes[i]);
+
     		}
 		}
 	}
@@ -84,8 +85,11 @@ public class Board {
 				scanner = new Scanner(new File("adjencymatrix.txt"));
 				for(int i=0;i<54;i++){
 		    		for(int j=0;j<54;j++){
-		    			if(scanner.hasNextInt())
+		    			while(scanner.hasNextInt())
+		    			{
 		    			    adjencyMatrix[i][j] = scanner.nextInt();
+		    			    //tutaj jak wypisuje tê macierz jest git, ale póŸniej jakoœ zamienia siê na same 0 
+		    			}
 		    		}
 			    }
 				scanner.close();
@@ -108,10 +112,19 @@ public class Board {
 	}
 	
 	public static void main(String [ ] args) throws FileNotFoundException{
-		Board board = Board.getInstance();
+		Board board = new Board();
+		board.nodes = board.getNodes();
 		board.loadMatrix();
 		board.setNeighbours();
-	
+		//test
+		System.out.print(board.nodes[5].getNodeNumber());
+		System.out.print(board.nodes[5].getNeighbours());
+		
+		//Dafuq, czemu same 0?!
+		for(int i=0;i<54;i++)
+    		for(int j=0;j<54;j++)
+    			System.out.println(board.adjencyMatrix[i][j]);
+
 		//test, wypisanie s¹siadów
 		for(int i=0;i<54;i++){
 			System.out.print(i + " - ");
