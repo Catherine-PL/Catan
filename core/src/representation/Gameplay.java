@@ -1,4 +1,4 @@
-package representation;
+ï»¿package representation;
 
 
 import java.util.ArrayList;
@@ -248,23 +248,23 @@ public class Gameplay extends View
 		batch.draw(textures.get(1), cX, cY);
 		batch.draw(textures.get(2), cX-tileX+1, cY);
 		batch.draw(textures.get(0), cX+tileX-1, cY);
-		//2rz¹d
+		//2rzÄ…d
 		batch.draw(textures.get(4), cX-tileX/2+1, cY-tileY+tileY/4+2);
 		batch.draw(textures.get(5), cX+tileX/2-1, cY-tileY+tileY/4+2);
 		batch.draw(textures.get(3), cX-tileX/2+2-tileX, cY-tileY+tileY/4+2);
 		batch.draw(textures.get(6), cX+tileX/2-2+tileX, cY-tileY+tileY/4+2);
-		//3rz¹d
+		//3rzÄ…d
 		batch.draw(textures.get(9), cX, cY-2*tileY+2*tileY/4+2);
 		batch.draw(textures.get(8), cX-tileX+1, cY-2*tileY+2*tileY/4+2);
 		batch.draw(textures.get(10), cX+tileX-1, cY-2*tileY+2*tileY/4+2);
 		batch.draw(textures.get(7), cX-2*tileX+2, cY-2*tileY+2*tileY/4+2);
 		batch.draw(textures.get(11), cX+2*tileX-2, cY-2*tileY+2*tileY/4+2);
-		//4rz¹d 
+		//4rzÄ…d 
 		batch.draw(textures.get(13), cX-tileX/2+1, cY-3*tileY+3*tileY/4+3);
 		batch.draw(textures.get(14), cX+tileX/2-1, cY-3*tileY+3*tileY/4+3);
 		batch.draw(textures.get(12), cX-tileX/2+2-tileX, cY-3*tileY+3*tileY/4+3);
 		batch.draw(textures.get(15), cX+tileX/2-2+tileX, cY-3*tileY+3*tileY/4+3);
-		//5rz¹d
+		//5rzÄ…d
 		batch.draw(textures.get(17), cX, cY-4*tileY+4*tileY/4+4);
 		batch.draw(textures.get(16), cX-tileX+1, cY-4*tileY+4*tileY/4+4);
 		batch.draw(textures.get(18), cX+tileX-1, cY-4*tileY+4*tileY/4+4);
@@ -278,7 +278,7 @@ public class Gameplay extends View
 		batch.draw(playerAvatar,0,0);
 		//wyswietlenie paska na zasoby, opcje,miasta,drogi i punkty
 		batch.draw(gameplayMenu,0,0);
-		//wyswietlenie postaci gracza który aktualnie gra
+		//wyswietlenie postaci gracza ktÃ³ry aktualnie gra
 		batch.draw(cubePlayer,1050,400);
 	}
 	
