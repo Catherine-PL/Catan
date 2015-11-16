@@ -1,13 +1,13 @@
 package catan.network;
 
-class ContentException extends Exception{}
-
 /**
  * Class needed to create messages
  * @author Sebastian
  *
  */
-public class MessageFactory {
+class SystemMessageFactory extends AbstractMessageFactory {
+	
+	
 	
 	/**
 	 * 
@@ -16,25 +16,21 @@ public class MessageFactory {
 	 * @return Message of your type with content, ready to send	
 	 * @throws ContentException In case of mismatching content to message type
 	 */
-	public static Message createMessage(Message.Type t, Object content) throws ContentException
+	public SystemMessage getSystemMessage(SystemMessage.SystemType type, Object content) throws ContentException
 	{
-		switch(t)
+		switch(type)
 		{
-		case TEXT:
+		
+		case PEER:
 			if (content.getClass()!=String.class)
 				throw new ContentException();
 			else
-				return new MsgText((String)content);
-		case DICE:
-			if (content.getClass()!=Integer.class)				// zabezpieczenie
-				throw new ContentException();
-			else
-				return new MsgDice(((Integer)content).intValue());
+				return new MsgPeer((String)content);
+			
 		default:
 			System.out.println("Podany zosta³ niepoprawny typ wiadomosci");
 			return null;
 		
 		}
-	}
-
+	}		
 }

@@ -1,18 +1,18 @@
 package catan.network;
 
-class MsgPeer extends Message {
-
+class MsgPeer extends SystemMessage{	
+	
 	private String content;
 	
-	MsgPeer(String cont)
-	{
-		this.type = Message.Type.PEER;
-		content = cont;
+	MsgPeer(String nickname) {
+		super(SystemMessage.SystemType.PEER);
+		this.content = nickname;
 	}
 	
 	public String getContent()
 	{
 		return content;
 	}
+
 	
 }

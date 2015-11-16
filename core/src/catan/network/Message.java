@@ -7,23 +7,30 @@ import java.io.Serializable;
  * @author Sebastian
  *
  */
-public abstract class Message implements Serializable {
-	
+public abstract class Message implements Serializable{
+			
 	/**
 	 * Types of messages
 	 * @author Sebastian
 	 *
 	 */
-	public enum Type
+	enum Type		
 	{
-		DICE, THIEF, TRADE, CARD, MAP, BUDYNEK, TEXT, PEER, END;
-	}
+		TRADE, SYSTEM, UPDATE;
+	}	
 	
 	protected Type type;
-		
+			
+	Message(Type type)
+	{
+		this.type = type;
+	}
 	public Type getType()
 	{
 		return type;
 	}
+	
+	
+	
 	
 }
