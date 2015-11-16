@@ -3,7 +3,9 @@ package catan.network;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 
 class Peer{
 	
@@ -13,7 +15,11 @@ class Peer{
 	ObjectInputStream input = null;
 
 	Peer(String nick, String ip, int port) throws IOException {		
-		socketOut = new Socket(ip,port);	// chêæ nawiazania polaczenia
+		SocketAddress sockaddr = new InetSocketAddress(ip, port);
+		socketOut = new Socket();
+		socketOut.connect(sockaddr, 5*1000);		// 5 sekund na pol¹czenie
+		
+		//socketOut = new Socket(ip,port);	// chêæ nawiazania polaczenia  -- w jednej lini to co wyzej, bez timeout
 		System.out.println("Stworzono PeerSocket na porcie: " + socketOut.getLocalPort());
 		
 		output = new ObjectOutputStream(socketOut.getOutputStream());

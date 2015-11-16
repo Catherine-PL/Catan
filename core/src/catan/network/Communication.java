@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,7 +24,7 @@ public class Communication implements Runnable{			// jako singleton?
 	private String 					nickname;
 	private Map<String,Peer>		peers;				// nie sa zsynchronizowane
 	private ServerSocket			serv;
-	private final int				servport = 8080;	
+	private final int				servport = 8081;	
 	
 		
 	private void handleMsgPeer(Socket client, ObjectInputStream input, Message msg2) throws IOException
@@ -76,11 +77,11 @@ public class Communication implements Runnable{			// jako singleton?
 			playersIP.add(pip);				
 		}
 	}									
-	private void initServPort() throws IOException
+	private void initServPort() throws IOException							// a co gdy jednak nam wywali blad? obs³uzyæ czy nie?
 	{
 		serv = new ServerSocket(servport);
 	}
-	private void initPeers() throws IOException, ClassNotFoundException
+	private void initPeers() throws IOException, ClassNotFoundException		// moze ustawic jakis timeout?
 	{			
 		int i = 0;
 		for(PlayerIP p : playersIP)
@@ -90,12 +91,19 @@ public class Communication implements Runnable{			// jako singleton?
 				p.nickname = Integer.toString(i);	// przypisane tymczasowej nazwy
 				peers.put(p.nickname , new Peer(nickname, p.getIp(), servport));		// proba polaczenia i wyslania wiadomosci z nickiem		
 			}
-			catch(IOException e)
+			catch(SocketTimeoutException e)
 			{
-				System.out.println("Problem z utworzeniem po³aczenia z: " + p.getIp());	
+				System.out.println("Problem z utworzeniem po³aczenia (timeout) z: " + p.getIp());					
 				playersIP.remove(p);
 				//continue;
-			}		
+			}
+			catch(IOException e)
+			{
+				System.out.println("Problem z utworzeniem po³aczenia z: " + p.getIp());					
+				playersIP.remove(p);
+				//continue;
+			}
+			
 			i++;
 		}			
 	}
