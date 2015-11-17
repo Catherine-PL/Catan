@@ -6,7 +6,7 @@ public class FactoryProducer {
 	
 	public enum FactoryType		
 	{
-		SYSTEM;
+		SYSTEM, TRADE, UPDATE;
 	}
 	
 	public static AbstractMessageFactory getFactory(FactoryType type)
@@ -16,6 +16,12 @@ public class FactoryProducer {
 		
 		case SYSTEM:
 			return new SystemMessageFactory();
+		
+		case TRADE:
+			return new TradeMessageFactory();
+			
+		case UPDATE:
+			return new UpdateMessageFactory();
 			
 		default:
 			System.out.println("Podany zosta³ niepoprawny typ Factory");

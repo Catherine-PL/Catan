@@ -10,8 +10,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import catan.network.FactoryProducer.FactoryType;
+import catan.network.SystemMessage.SystemType;
 
 /**
  * Class which provide us P2P architecture and basic communication in an internal network.
@@ -24,7 +29,7 @@ public class Communication implements Runnable{			// jako singleton?
 	private String 					nickname;
 	private Map<String,Peer>		peers;				// nie sa zsynchronizowane
 	private ServerSocket			serv;
-	private final int				servport = 8081;	
+	private final int				servport = 8080;	
 	
 			
 	private void initServPort() throws IOException							// a co gdy jednak nam wywali blad? obs³uzyæ czy nie?
@@ -232,9 +237,18 @@ public class Communication implements Runnable{			// jako singleton?
 	 * @param msg Message to send
 	 * @throws IOException Whenever writing to an OutputStream fails
 	 */
-	public void send(String nick, Message msg) throws IOException
+	public void sendTo(String nick, Message msg) throws IOException
 	{
-		peers.get(nick).send(msg);
+		peers.get(nick).send(msg);		
+	}
+	public void sendToAll(Message msg) throws IOException
+	{
+		Set<Entry<String, Peer>> entrySet = peers.entrySet();
+		Iterator<Entry<String, Peer>> it = entrySet.iterator();
+		while(it.hasNext())
+		{
+			sendTo(it.next().getKey(), msg);
+		}
 	}
 	/**
 	 * Method for reading messages from network
@@ -305,13 +319,15 @@ public class Communication implements Runnable{			// jako singleton?
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		
+		/*
+		ExecutorService exec = Executors.newSingleThreadExecutor();
+		exec.execute(com);		
+		exec.shutdown();
+		*/
+		
 		LinkedList<PlayerIP> players = new LinkedList();	// nick i ip z hamachi
 		players.add(new PlayerIP("127.0.0.1"));
 		players.add(new PlayerIP("25.155.87.12"));			
-		
-		//ExecutorService exec = Executors.newSingleThreadExecutor();
-		//exec.execute(com);		
-		//exec.shutdown();
 		
 		
 		// inicjalizacja portu, wyslanie wiadomosci
@@ -322,36 +338,8 @@ public class Communication implements Runnable{			// jako singleton?
 						
 		Thread.yield();
 			
-		
-		/*
-		Message m;
-		
-		try 
-		{
-			m = MessageFactory.createMessage(Message.Type.DICE, 6);
-			com.send("Dominik", m);
-			m = com.receive("Dominik");
-			System.out.println(m.getType());
-			
-			if(m.getType()==Message.Type.DICE)
-				System.out.println("Wynik rzutu: " + ((MsgDice)m).getContent() );
-						
-			
-		} catch (ContentException e) 
-		{
-			System.out.println("Blednie ustawiona zawortosc wiadomosci!");		
-		}	
-		
-		
-		*/		
-		
-		
-		
-		
-		
-		
-		// Tutaj musi coœ siê dziaæ by tamten w¹tek mia³ mo¿liwoœc zaktualizowania danych
-		
+					
+		// Tutaj musi coœ siê dziaæ by tamten w¹tek mia³ mo¿liwoœc zaktualizowania danych		
 		Thread.yield();
 		try {
 			Thread.sleep(5000);
@@ -359,9 +347,6 @@ public class Communication implements Runnable{			// jako singleton?
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
 		
 		
 		
@@ -379,14 +364,20 @@ public class Communication implements Runnable{			// jako singleton?
 		
 		
 		
-
+		// Sending msg
+		AbstractMessageFactory mf = FactoryProducer.getFactory(FactoryType.UPDATE);
+		Message msg = null;
+		try {
+			msg = mf.getUpdateMessage(UpdateMessage.UpdateType.DICE, 6);
+			com.sendTo("Sebastian", msg);
+			System.out.println(((MsgDice)com.receive("Sebastian")).getContent().toString());
+		} catch (ContentException e) {
+			e.printStackTrace();
+		}		
+		
+		
 	}
 	
-
-
-
-
-
-
+	
 
 }

@@ -12,7 +12,7 @@ class Peer{
 	Socket socketOut = null;
 	Socket socketIn = null;
 	ObjectOutputStream output = null;
-	ObjectInputStream input = null;
+	ObjectInputStream input = null;	
 
 	Peer(String nick, String ip, int port) throws IOException {		
 		SocketAddress sockaddr = new InetSocketAddress(ip, port);

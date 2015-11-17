@@ -1,5 +1,8 @@
 package catan.network;
 
+import catan.network.TradeMessage.TradeType;
+import catan.network.UpdateMessage.UpdateType;
+
 /**
  * Class needed to create messages
  * @author Sebastian
@@ -32,5 +35,13 @@ class SystemMessageFactory extends AbstractMessageFactory {
 			return null;
 		
 		}
+	}
+
+
+	TradeMessage getTradeMessage(TradeType type, Object content) throws ContentException {
+		return null;
+	}
+	UpdateMessage getUpdateMessage(UpdateType type, Object content) throws ContentException {
+		return null;
 	}		
 }
