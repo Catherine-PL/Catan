@@ -30,6 +30,9 @@ class SystemMessageFactory extends AbstractMessageFactory {
 			else
 				return new MsgPeer((String)content);
 			
+		case INVITATION:
+			return new MsgInvitation();
+			
 		default:
 			System.out.println("Podany zosta³ niepoprawny typ wiadomosci");
 			return null;

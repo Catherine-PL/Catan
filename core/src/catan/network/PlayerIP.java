@@ -41,6 +41,10 @@ public class PlayerIP {
 		return online;
 	}
 
+	public String toString()
+	{
+		return (nickname + ": " + address + ", " + online);
+	}
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

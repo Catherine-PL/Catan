@@ -30,14 +30,17 @@ public class Communication implements Runnable{			// jako singleton?
 	private Map<String,Peer>		peers;				// nie sa zsynchronizowane
 	private ServerSocket			serv;
 	private final int				servport = 8080;	
+	private ExecutorService 		exec = Executors.newCachedThreadPool();
+	private ThreadGroup 			receivers = new ThreadGroup("receivers");		// potrzebne?? 
 	
 			
 	private void initServPort() throws IOException							// a co gdy jednak nam wywali blad? obs³uzyæ czy nie?
-	{
+	{		
 		serv = new ServerSocket(servport);
 	}
-	private void initPeers() throws IOException, ClassNotFoundException		// moze ustawic jakis timeout?
+	private synchronized void initPeers() throws IOException, ClassNotFoundException		// moze ustawic jakis timeout?
 	{			
+		System.out.println("inicjalizacja Peers ... (synchronized)");
 		int i = 0;
 		for(PlayerIP p : playersIP)
 		{	
@@ -78,36 +81,70 @@ public class Communication implements Runnable{			// jako singleton?
 			throw new IOException();
 		}
 	
-					
-		// inicjalizacji wszystkich peer. Wysy³anie od razu wiadomoœci o nicku
-		try 
-		{
-			initPeers();								
-		} 
-		catch (Exception e1) {
-			System.err.println("Problem z nas³uchiwaniem, odebraniem po³¹czenia");
-			e1.printStackTrace();
-		}											
 		
-		
-		System.out.println("Wys³anie wiadomoœci online(PEER) do wszystkich graczy.");
-		
-		System.out.println("Collection PlayerIP");
-		for(PlayerIP p : playersIP)
-			System.out.print(p.nickname + ": " + p.address + "; ");
-				
-				
-		System.out.println("");
-		
-		
-		// odbieranie nowych polaczen -- watek demon
+		// stworzenie peers, nawiazanie polaczen, nasluchiwanie na nowe polaczenia 	
+		System.out.println("Tworzenie nowego watka demona");
 		Thread deamon = new Thread(this);
 		deamon.setDaemon(true);
 		deamon.start();
 		
 	}
+	private void listenPort()
+	{
+		// nasluchiwanie
+		while(true)
+		{
+			try 
+			{
+				Socket client = serv.accept();
+				System.out.println("zakaceptowano nowe polaczenie, które przysz³o z: " + client.getInetAddress() + " : " + client.getPort());
+				System.out.println("Aktualnie przypisany mu port: " + client.getLocalPort());		
+								
+				ObjectInputStream input = new ObjectInputStream(client.getInputStream());								
+				Message msg	= (Message)input.readObject();								
+				
+				// W sumie zawsze bêdzie tylko MsgPeer albo b³¹d
+				switch (msg.getType())
+				{
+					case SYSTEM:
+						handleSystemMessage(client, input, (SystemMessage)msg);
+						break;
+								
+								
+					default:
+						System.err.println("Otrzymana wiadomosc jest bledna");
+						break;					
+				}				
+				
+			} 
+			catch (IOException e) 
+			{
+				System.err.println("method run, serv.accept(), closing server before cleaning or problem with sending");
+				try {
+					this.close();
+				} catch (IOException e1)
+				{
+					e1.printStackTrace();
+					break;
+				}
+					
+			}
+			catch (ClassNotFoundException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			catch (Exception e) 
+			{
+				break;
+			}						
+						
+		}	// while
+		
+	}	
 	
-	private void handleMsgPeer(Socket client, ObjectInputStream input, MsgPeer msg) throws IOException
+	// gdy dodaje nowego gracza to jest synch by inne metody synch nei byly wykonane
+	private synchronized void handleMsgPeer(Socket client, ObjectInputStream input, MsgPeer msg) throws IOException
 	{
 		// Accepting connection and adding to peer socketIn and InputStream		
 		int i = 0;
@@ -157,7 +194,7 @@ public class Communication implements Runnable{			// jako singleton?
 			playersIP.add(pip);				
 		}
 	}									
-	private void handleSYSTEM(Socket client, ObjectInputStream input, SystemMessage msg) throws IOException 		// OBSLUGA WYJATKU !!!!
+	private void handleSystemMessage(Socket client, ObjectInputStream input, SystemMessage msg) throws IOException 		// OBSLUGA WYJATKU !!!!
 	{
 		
 		switch (msg.getSubType())
@@ -182,7 +219,7 @@ public class Communication implements Runnable{			// jako singleton?
 	public Communication(String myName, Collection<PlayerIP> p)
 	{			
 		// dostaje moj nick jak i graczy (nick, ip, online)
-		playersIP = p;
+		playersIP = p;		
 		nickname = myName;
 		try 
 		{
@@ -201,20 +238,35 @@ public class Communication implements Runnable{			// jako singleton?
 	 * @throws ClassNotFoundException Nothing to read, or it wasn't Object.
 	 */
 	public synchronized void addPlayerIP(PlayerIP p)
-	{								
+	{		
+		Iterator<PlayerIP> it = playersIP.iterator();
+		while(it.hasNext())
+		{
+			if(it.next().address.equals(p.address))
+			{
+				System.out.println("Istenieje juz taki PlayerIP");
+				return;
+			}
+		}
+		
 		try
 		{
 			
 			p.nickname = Integer.toString(-1);
-			this.playersIP.add(p);
-			peers.put(p.nickname , new Peer(nickname, p.getIp(), servport));		// proba polaczenia i wyslania wiadomosci z nickiem
+			this.playersIP.add(p);	
+			
+			// na wypadek, gdyby dodanie bylo wczesniej niz ich inicjalizacja
+			// jesli tak to dodaj tylko do playersIP a initPeers zrobi reszte
+			if(peers.size()!=0)
+				peers.put(p.nickname , new Peer(nickname, p.getIp(), servport));		// proba polaczenia i wyslania wiadomosci z nickiem
+			System.out.println("dodano nowego gracza");
 			
 		}
 		catch(IOException e)
 		{
 			System.out.println("Problem z utworzeniem po³aczenia z: " + p.getIp());	
 			playersIP.remove(p);
-		}												
+		}
 		
 	}
 	/**
@@ -251,90 +303,92 @@ public class Communication implements Runnable{			// jako singleton?
 		}
 	}
 	/**
-	 * Method for reading messages from network
+	 * Method for reading messages from network, blocks if there is nothing
 	 * @param nick Defines a node from which we want receive a message  
 	 * @return Return a message
-	 * @throws ClassNotFoundException Nothing no read?
+	 * @throws ClassNotFoundException 
 	 * @throws IOException Whenever reading from an InputStream fails
 	 */
 	public Message receive(String nick) throws ClassNotFoundException, IOException
 	{
 		return (Message)peers.get(nick).receive();
 	}		
+	
+	public void createGame(Collection<String> names) throws IOException
+	{		
+		AbstractMessageFactory sm = FactoryProducer.getFactory(FactoryType.SYSTEM);
+		Message inv = null;
+		try {
+			inv = sm.getSystemMessage(SystemType.INVITATION, null);
+		} catch (ContentException e) {
+			e.printStackTrace();
+		}
+		
+		for(String name : names)
+		{
+			sendTo(name, inv);
+		}
+	}
+	
+	
+	
 	/**
 	 * Method which is necessary to run a thread and it is done in constructor, so don't run it!
 	 */
 	public void run() 
 	{
-		while(true)
+		
+		System.out.println("#DeamonThread, playersIP.size: " + playersIP.size());
+		// inicjalizacji wszystkich peer. Wysy³anie od razu wiadomoœci o nicku
+		try 
 		{
-			try 
-			{
-				Socket client = serv.accept();
-				System.out.println("zakaceptowano nowe polaczenie, które przysz³o z: " + client.getInetAddress() + " : " + client.getPort());
-				System.out.println("Aktualnie przypisany mu port: " + client.getLocalPort());		
-								
-				ObjectInputStream input = new ObjectInputStream(client.getInputStream());								
-				Message msg	= (Message)input.readObject();								
-				
-				// W sumie zawsze bêdzie tylko MsgPeer albo b³¹d
-				switch (msg.getType())
-				{
-					case SYSTEM:
-						handleSYSTEM(client, input, (SystemMessage)msg);
-						break;
-								
-						
-					default:
-						System.err.println("Otrzymana wiadomosc jest bledna");
-						break;					
-				}				
-				
-			} 
-			catch (IOException e) 
-			{
-				System.err.println("method run, serv.accept(), closing server before cleaning or problem with sending");
-				try {
-					this.close();
-				} catch (IOException e1)
-				{
-					e1.printStackTrace();
-					break;
-				}
-				
-			}
-			catch (ClassNotFoundException e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-			catch (Exception e) 
-			{
-				break;
-			}						
-						
-		}	// while
+			initPeers();								
+		} 
+		catch (Exception e1) {
+			System.err.println("Problem z nas³uchiwaniem, odebraniem po³¹czenia");
+			e1.printStackTrace();
+		}											
+		
+		
+		
+		// Wypisanie diagnostyczne na standardowe wyjscie
+		System.out.println("Wys³anie wiadomoœci online(PEER) do wszystkich graczy.");		
+		System.out.println("Collection PlayerIP");
+		for(PlayerIP p : playersIP)
+			System.out.print(p.nickname + ": " + p.address + "; ");							
+		System.out.println("");		
+		
+		
+		
+		
+		// Nasluchiwanie portu, nowe polaczenia		
+		listenPort();
+		
+		
 	}
 	
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
-		
+			
 		/*
 		ExecutorService exec = Executors.newSingleThreadExecutor();
+	
 		exec.execute(com);		
 		exec.shutdown();
 		*/
 		
 		LinkedList<PlayerIP> players = new LinkedList();	// nick i ip z hamachi
 		players.add(new PlayerIP("127.0.0.1"));
-		players.add(new PlayerIP("25.155.87.12"));			
+		//players.add(new PlayerIP("25.155.87.12"));			
 		
 		
 		// inicjalizacja portu, wyslanie wiadomosci
 		Communication com = new Communication("Sebastian",players);		
 		
 		// od razu odpalenie watka demona
-		com.addPlayerIP(new PlayerIP("127.0.0.1"));		
+		System.out.println("dodawanie nowego gracza ... (synchronized)");
+		com.addPlayerIP(new PlayerIP("127.0.0.1"));	
+		
 						
 		Thread.yield();
 			
@@ -355,15 +409,13 @@ public class Communication implements Runnable{			// jako singleton?
 		System.out.println("Collection PlayerIP:");
 		for(PlayerIP p : players)
 		{
-			System.out.println(p.nickname + ": " + p.address + ", " + p.online);
+			System.out.println(p);
 		}
 				
 		System.out.println("");
 		System.out.println("peers size: " + com.peers.size());
 		
-		
-		
-		
+						
 		// Sending msg
 		AbstractMessageFactory mf = FactoryProducer.getFactory(FactoryType.UPDATE);
 		Message msg = null;
