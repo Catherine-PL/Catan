@@ -14,17 +14,17 @@ public class Road extends Element{
 	public Road(Player player, Node from2, Node to2, int free){//zmiena free jest potrzebna gdy zagrywamy karte rozwoju
 		if(from2.getPlayerNumber()==player.getId()){
 			//droga jest kontunyacja innej lub zaczyna siê w miescie/osdadzie
-			if(!from2.roadsIsEmpty() || from2.getBuilding()>0){
+			if(!from2.roads.isEmpty() || from2.getBuilding()>0){
 				//nie mozemy drugi raz postawiæ tej samej drogi
-				if(!from2.hasRoadTo(to2)){
+				if(!from2.hasNoRoadTo(to2)){
 					//musimy miec potrzebne surowce
-					if(player.getResources("clay")>=1 && player.getResources("wood")>=1 || free==1){
+					if(player.getResources("clay")==1 && player.getResources("wood")==1 || free==1){
 					
-						from2.addRoad(to2);
+						from2.buildRoad(to2);
 						this.to=to2;
-						to2.addRoad(from2);
+						to2.buildRoad(from2);
 						this.from=from2;
-						if(free==0){
+						if(free=0){
 							player.changeResources("clay", -1);
 							player.changeResources("wood", -1);
 						}

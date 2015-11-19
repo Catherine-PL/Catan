@@ -1,20 +1,17 @@
 package database;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import network.MsgText;
-import network.*;
+import catan.network.MsgText;
 import database.Players;
 
 public class Player {
 	private	int id;							//metody set,get
-	private	ArrayList<Card> cards=new ArrayList <Card>();			//metody add,rm,get
+	private	Vector <Card> cards;			//metody add,rm,get
 	private	int points;						//metody get,set,check
-	private HashMap <String,Integer> resources=new HashMap <String,Integer>();	//get,change
-	private	ArrayList <SpecialCard> specialCards=new ArrayList <SpecialCard>();//add,rm,get
+	private Map <String,Integer> resources;	//get,change
+	private	Vector <SpecialCard> specialCards;//add,rm,get
 	private int soldierCount;
 	
 	
@@ -22,15 +19,13 @@ public class Player {
 	//za³ó¿my mo¿e ¿e nie braknie tych 96 kart na razie
 	
 	
-	public Player(int _id){
+	Player(int _id){
 		id=_id;
 		resources.put("clay", 0) ; 
 		resources.put("grain", 0) ;
 		resources.put("ore", 0) ;
 		resources.put("sheep", 0) ;
 		resources.put("wood", 0) ;
-		soldierCount=0;
-		points=0;
 	}
 	
 	public int getId() {
@@ -40,13 +35,13 @@ public class Player {
 		this.id = id;
 	}
 	//KARY SPECIALNE
-	public ArrayList<SpecialCard> getSpecialCards() {
+	public Vector<SpecialCard> getSpecialCards() {
 		return specialCards;
 	}
 	public void addSpecialCard( SpecialCard card) {
-		this.specialCards.add(card);
+		this.specialCards.addElement(card);
 	}
-	public void rmSpecialCard(SpecialCard card){
+	public void rmSpecialCard( SpecialCard card){
 		this.specialCards.remove(card);
 	}
 	
@@ -72,7 +67,7 @@ public class Player {
 		player.addPoints(specialCardCount*2);
 				
 		//iteracja po wszystkich nodach, jeœli mój node to : dodaj wartosc pola building do moich punktów, osada 1, settlement 2
-		for(int i=0; i<54;i++){
+		for(int i; i<54;i++){
 			itNode= Board.getInstance().getNode(i);
 			if(itNode.getPlayerNumber()==player.getId()){
 				player.addPoints(itNode.getBuilding());
@@ -84,9 +79,8 @@ public class Player {
 	    	System.out.println(text); //wygra³ gracz (i jego ID do wyœwietlenia)
 	    	
 	    	//czeœæ zwi¹zana z propagacj¹
-	    	//zakomentowane bo wywa³a³o i error na razie
-	    //	MsgText msg=new MsgText(text);//przygotowanie obiekty MsgText do wys³ania
-	      //  Peer.send(msg);// tak to ma wygl¹daæ Sebastianie, chodzi mi o to czy tak bêdzie wygl¹daæ wysy³anie
+	    	MsgText msg=new MsgText(text);//przygotowanie obiekty MsgText do wys³ania
+	    	Peer.send(msg);// tak to ma wygl¹daæ Sebastianie, chodzi mi o to czy tak bêdzie wygl¹daæ wysy³anie
 	    	
 	    }
 	}
@@ -95,12 +89,12 @@ public class Player {
 	//KARTY
 	//zwracanie kart na rêce
 
-	public ArrayList<Card> getCards() {
+	public Vector<Card> getCards() {
 		return cards;
 	}
 	//dodanie karty na rêke
 	public void addCard(Card card) {
-		this.cards.add(card);
+		this.cards.addElement(card);
 	}
 	//usuniêcie karty z rêki, potrzebne przy zagrywaniu
 	public void rmCard(Card card){
@@ -123,18 +117,6 @@ public class Player {
 		int i=0;
 		resources.put(name, (resources.get(name).intValue()+amount));
 	
-	}
-	
-	
-	public static void main(String [ ] args){
-		Player p1=new Player(1);
-		System.out.println("WELCOME IN PLAYER CLASS");
-		System.out.println(p1.getPoints());
-
-		p1.addPoints(5);
-		System.out.println(p1.getId());
-		System.out.println(p1.getPoints());
-		
 	}
 	
 }

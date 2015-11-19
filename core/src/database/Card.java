@@ -5,7 +5,7 @@ public abstract class Card {
 	void playCard(){
 		
 	};
-	String getType(){
-	return type;			
+	void getType(){
+				
 	};
 }
