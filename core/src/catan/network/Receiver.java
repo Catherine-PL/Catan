@@ -35,15 +35,19 @@ class Receiver implements Runnable {
 				break;
 				
 			case ACCEPT:
+				com.msgHandler.handleMsgAccept(peer);
 				break;
 				
 			case REJECT:
+				com.msgHandler.handleMsgReject(peer);
 				break;
 				
-			case PLAY:
+			case START_GAME:
+				com.msgHandler.handleMsgStartGame(peer);
 				break;
 				
 			case ABANDON:
+				com.msgHandler.handleMsgAbandon(peer);
 				break;
 				
 			case END_TURN:

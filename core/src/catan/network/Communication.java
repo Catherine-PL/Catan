@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import catan.network.Communication.InvStatus;
 import catan.network.FactoryProducer.FactoryType;
 import catan.network.Message.Type;
 import catan.network.SystemMessage.SystemType;
@@ -27,7 +28,10 @@ import catan.network.SystemMessage.SystemType;
 public class Communication implements Runnable{			// jako singleton?
 	
 	
-	
+	public enum InvStatus
+	{
+		WAIT, ACCEPTED, REJECTED;
+	}
 	class MessageHandler 
 	{				
 		// Communication.this
@@ -96,15 +100,90 @@ public class Communication implements Runnable{			// jako singleton?
 			}
 			return peer;
 		}
-		void handleMsgInvitation(Peer peer)
+		void handleMsgInvitation(Peer peer)								// trzeba to jakos zgrac, wybor:  accept, reject
 		{
-			System.out.println("Dostales zaproszenie do gry od:" + ipToNick.get(peer.socketIn.getInetAddress().getHostAddress()) );
+			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
+			
+			// Jak juz gram to od razu odmawiam
+			if(inGame == true)
+			{
+				Message msg = null;
+				try {					
+					msg = system.getSystemMessage(SystemType.REJECT, null);
+				} catch (ContentException e) {
+					e.printStackTrace();
+				}
+				
+				try {
+					sendTo(nick, msg);
+				} catch (IOException e) {
+					System.err.println("MsgInvitation error, problem with sendTo");
+					e.printStackTrace();
+				}
+				return ;
+			}
+			
+			
+			
+			System.out.println("Dostales zaproszenie do gry od:" +  nick);
+			
+			// Tutaj musi nastapic wybor accepet albo reject wyslanie widomosci				<-----			
+			
+			Message msg = null;
+			try {
+				msg = system.getSystemMessage(SystemType.ACCEPT, null);
+				inGame = true;
+			} catch (ContentException e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				sendTo(nick, msg);
+			} catch (IOException e) {
+				System.err.println("MsgInvitation error, problem with sendTo");
+				e.printStackTrace();
+			}
+			
 		}
+		void handleMsgAccept(Peer peer)					// dodac zmienna, ze j
+		{
+			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
+			System.out.println("Gracz: " +  nick + " - zaakceptowal");
+			
+			invPlayers.remove(nick);
+			invPlayers.put(nick, InvStatus.ACCEPTED);
+			
+			System.out.println(invPlayers);
+			
+		}
+		void handleMsgReject(Peer peer)
+		{
+			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
+			System.out.println("Gracz: " +  nick + " - odrzucil");
+			
+			invPlayers.remove(nick);
+			invPlayers.put(nick, InvStatus.REJECTED);
+			
+			System.out.println(invPlayers);
+		}
+		void handleMsgStartGame(Peer peer)				// dodac metode startu gry jako takiej, ustawiæ zmienna inGame czy cos
+		{
+			System.out.println("Start gry ...");
+			// zmiana jakiegoœ swojego statusu na w grze
+			// jak ktos wtedy wysle mi zaproszenie to automat na reject
+		}
+		void handleMsgAbandon(Peer peer)				// 
+		{
+			System.out.println("Gra zostala porzucona ...");
+			inGame = false;
+		}
+		
 		void handleMsgDice(Peer peer, MsgDice msg)
 		{
 			System.out.print("From: " + ipToNick.get(peer.socketIn.getInetAddress().getHostAddress()));
 			System.out.println(" -- Wynik kosci:" + msg.getContent());
 		}
+		
 	}						
 	
 	
@@ -115,7 +194,16 @@ public class Communication implements Runnable{			// jako singleton?
 	private Map<String,String>		ipToNick;
 	private ServerSocket			serv;
 	final int						servport = 8080;	
+	private boolean					inGame;
 	MessageHandler					msgHandler;
+	Map<String, InvStatus>			invPlayers;		
+	AbstractMessageFactory			update;
+	AbstractMessageFactory			trade;
+	AbstractMessageFactory			system;
+	
+	
+	
+	
 	//private ExecutorService 		exec = Executors.newCachedThreadPool();
 	 	
 	
@@ -124,7 +212,7 @@ public class Communication implements Runnable{			// jako singleton?
 	{		
 		serv = new ServerSocket(servport);
 	}
-	private synchronized void initPeers() throws IOException, ClassNotFoundException		// moze ustawic jakis timeout?
+	private synchronized void initPeers() throws IOException, ClassNotFoundException
 	{			
 		System.out.println("inicjalizacja Peers ... (synchronized)");
 		int i = 0;
@@ -156,6 +244,13 @@ public class Communication implements Runnable{			// jako singleton?
 		peers = new HashMap<String,Peer>();
 		ipToNick = new HashMap<String,String>();
 		msgHandler = new MessageHandler();
+		invPlayers = new HashMap<String,InvStatus>();
+		inGame = false;
+		
+		update = FactoryProducer.getFactory(FactoryType.UPDATE);
+		system = FactoryProducer.getFactory(FactoryType.SYSTEM);
+		trade = FactoryProducer.getFactory(FactoryType.TRADE);
+		
 		// inicjalizacja portu servera		
 		
 		try			// moze wystapic problem z utworzeniem, wtedy trzeba zmienic port i wyslac o tym wiadomosc
@@ -247,7 +342,7 @@ public class Communication implements Runnable{			// jako singleton?
 	{			
 		// dostaje moj nick jak i graczy (nick, ip, online)
 		playersIP = p;		
-		nickname = myName;
+		nickname = myName;		
 		try 
 		{
 			initCommunication();
@@ -322,11 +417,13 @@ public class Communication implements Runnable{			// jako singleton?
 	}
 	public void sendToAll(Message msg) throws IOException
 	{
-		Set<Entry<String, Peer>> entrySet = peers.entrySet();
-		Iterator<Entry<String, Peer>> it = entrySet.iterator();
+		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
+		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
 		while(it.hasNext())
 		{
-			sendTo(it.next().getKey(), msg);
+			Entry<String, InvStatus> e = it.next();
+			if(e.getValue() == InvStatus.ACCEPTED)
+				sendTo(e.getKey(), msg);
 		}
 	}
 	/**
@@ -337,8 +434,11 @@ public class Communication implements Runnable{			// jako singleton?
 	 * @throws IOException Whenever reading from an InputStream fails
 	 */
 	
-	public void createGame(Collection<String> names) throws IOException
+	public void sendInvitations(Collection<String> names) throws IOException
 	{		
+		if(inGame == true)
+			return;
+		
 		AbstractMessageFactory sm = FactoryProducer.getFactory(FactoryType.SYSTEM);
 		Message inv = null;
 		try {
@@ -349,10 +449,100 @@ public class Communication implements Runnable{			// jako singleton?
 		
 		for(String name : names)
 		{
+			invPlayers.put(name, InvStatus.WAIT);
 			sendTo(name, inv);
 		}
+		inGame = true;							// jak sam tworze gre to w niej jestem :P
+		System.out.println(inGame);
+		System.out.println(invPlayers);
+	}
+	public void startGame()
+	{
+			
+		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
+		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
+		LinkedList<String> toRemove = new LinkedList<String>();
+		while(it.hasNext())
+		{
+			Entry<String, InvStatus> e = it.next();
+			if(e.getValue() == InvStatus.ACCEPTED)
+			{
+				try {
+					sendTo(e.getKey(), system.getSystemMessage(SystemType.START_GAME, null));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ContentException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			else if(e.getValue() == InvStatus.WAIT)
+			{
+				try {
+					sendTo(e.getKey(), system.getSystemMessage(SystemType.ABANDON, null));
+					toRemove.add(e.getKey());
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ContentException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}else	toRemove.add(e.getKey());
+				
+		}
+		
+		for(String nick : toRemove)
+			invPlayers.remove(nick);
+		
+		System.out.println("Gra rozpoczela sie wraz z: " + invPlayers);
+		
+	}
+	public void abandonGame()
+	{
+		
+		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
+		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
+		while(it.hasNext())
+		{
+			Entry<String, InvStatus> e = it.next();
+			if(e.getValue() != InvStatus.REJECTED)
+			{
+				try {
+					sendTo(e.getKey(), system.getSystemMessage(SystemType.ABANDON, null));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ContentException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}			
+				
+		}
+		inGame = false;
+		invPlayers.clear();
+		System.out.println("Gra porzucona ...");
 	}
 	
+	void sleep(long time)
+	{
+		try 
+		{
+			System.out.println("");
+			System.out.println("---" + Thread.currentThread().getName() + " sleep for " + time + " milisec.");
+			System.out.println("");
+			Thread.sleep(time);
+		} catch (InterruptedException e) 
+		{		
+			e.printStackTrace();
+		}
+		
+		System.out.println("");
+		System.out.println("---" + Thread.currentThread().getName() + " is awake.");
+		System.out.println("");
+	}
 	
 	
 	/**
@@ -411,24 +601,9 @@ public class Communication implements Runnable{			// jako singleton?
 		com.addPlayerIP(new PlayerIP("127.0.0.1"));	
 		
 						
-		Thread.yield();
-			
-					
-		// Tutaj musi coœ siê dziaæ by tamten w¹tek mia³ mo¿liwoœc zaktualizowania danych		
-		Thread.yield();
-		try 
-		{
-			System.out.println("");
-			System.out.println("---" + Thread.currentThread().getName() + " sleep for 5 sec.");
-			System.out.println("");
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("");
-		System.out.println("---" + Thread.currentThread().getName() + " is awake.");
-		System.out.println("");
+		Thread.yield();								
+		// Tutaj musi coœ siê dziaæ by tamten w¹tek mia³ mo¿liwoœc zaktualizowania danych					
+		com.sleep(5000);														// sleep
 		
 		System.out.println("");
 		
@@ -462,24 +637,42 @@ public class Communication implements Runnable{			// jako singleton?
 			msg = mf.getUpdateMessage(UpdateMessage.UpdateType.DICE, 6);
 			System.out.println("Wysylanie wiadomosci DICE=6");
 			com.sendTo("Sebastian", msg);			
+			
+			/*
+			mf = FactoryProducer.getFactory(FactoryType.SYSTEM);			
+			msg = mf.getSystemMessage(SystemType.INVITATION, null);
+			com.sendTo("Sebastian", msg);
+			*/
+			
 		} catch (ContentException e) {
 			e.printStackTrace();
 		}		
 		
 		
-		//Thread.yield();
-		try {
-			System.out.println("");
-			System.out.println("---" + Thread.currentThread().getName() + " sleep for 5 sec.");
-			System.out.println("");
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		// tworzenie gry
+		LinkedList<String> invited = new LinkedList<String>();
+		invited.add("Sebastian");
+		
+		System.out.println(com.inGame);
+	
+		
+		System.out.println("Sending invitations to: " + invited);
+		com.sendInvitations(invited);
+	
+		com.sleep(5000);													// sleep
+			
+		//com.startGame();
+		com.abandonGame();
+		
+		com.sleep(5000);													// sleep
+		
+		System.out.println("all threads:");
+		
+		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+		for(Thread t: threadSet)
+		{
+			System.out.println(t.getName());
 		}
-		System.out.println("");
-		System.out.println("---" + Thread.currentThread().getName() + " is awake.");
-		System.out.println("");
 		
 	}
 	

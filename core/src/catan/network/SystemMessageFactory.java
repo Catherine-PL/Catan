@@ -33,8 +33,25 @@ class SystemMessageFactory extends AbstractMessageFactory {
 		case INVITATION:
 			return new MsgInvitation();
 			
+		case ACCEPT:
+			return new MsgAccept();
+			
+		case REJECT:
+			return new MsgReject();
+			
+		case START_GAME:
+			return new MsgStartGame();
+			
+		case ABANDON:
+			return new MsgAbandon();
+		
+		
+		case END_GAME:
+			return new MsgReject();
+		
+			
 		default:
-			System.out.println("Podany zosta³ niepoprawny typ wiadomosci");
+			System.err.println("Podany zosta³ niepoprawny typ wiadomosci");
 			return null;
 		
 		}
