@@ -30,7 +30,7 @@ public class Communication implements Runnable{			// jako singleton?
 	
 	class MessageHandler 
 	{				
-// Communication.this
+		// Communication.this
 		Peer handleMsgPeer(Socket client, ObjectInputStream input, MsgPeer msg) throws IOException
 		{
 			Peer peer = null;
@@ -48,15 +48,23 @@ public class Communication implements Runnable{			// jako singleton?
 					// 	dopasowanie do moich peersow
 					if(p.address.equals(client.getInetAddress().getHostAddress()))
 					{
-						peer = peers.get(p.nickname);
+						peer = peers.get(p.nickname);		// tutaj jeszcze ma tymczasowa nazwe
 						peer.socketIn = client;
 						peer.input = input;
 						String nick = msg.getContent();
 						System.out.println("Otrzymana wiadomosc: " + nick);
+						int j = 0;
+						while(peers.containsKey(nick))					
+							j++;						
 					
+						if(j>0)											// zabezpieczenie jak juz istenieje taki nick
+							nick = nick + j;
+						
+						ipToNick.put(client.getInetAddress().getHostAddress(), nick);
 						peers.remove(p.nickname);
 						peers.put(nick, peer);
-					
+						System.out.println("Do peers dodano peer o kluczu: " + nick);
+						
 						//	send(nick, new MsgPeer(nickname));			// IOException
 					
 						p.nickname = nick;
@@ -90,23 +98,24 @@ public class Communication implements Runnable{			// jako singleton?
 		}
 		void handleMsgInvitation(Peer peer)
 		{
-			System.out.println("Dostales zaproszenie do gry od:" + peer.socketIn.getInetAddress().getHostAddress());
+			System.out.println("Dostales zaproszenie do gry od:" + ipToNick.get(peer.socketIn.getInetAddress().getHostAddress()) );
 		}
 		void handleMsgDice(Peer peer, MsgDice msg)
 		{
-			System.out.print("From: " + peer.socketIn.getInetAddress().getHostAddress());
-			System.out.println("; Wynik kosci:" + msg.getContent());
+			System.out.print("From: " + ipToNick.get(peer.socketIn.getInetAddress().getHostAddress()));
+			System.out.println(" -- Wynik kosci:" + msg.getContent());
 		}
 	}						
 	
 	
 	
-	private Collection<PlayerIP>	playersIP;			// operacje nie sa zsynchronizowane
+	private Collection<PlayerIP>	playersIP;			
 	private final String			nickname;
 	private Map<String,Peer>		peers;				// nie sa zsynchronizowane
+	private Map<String,String>		ipToNick;
 	private ServerSocket			serv;
 	final int						servport = 8080;	
-	MessageHandler					msgHandler = new MessageHandler();
+	MessageHandler					msgHandler;
 	//private ExecutorService 		exec = Executors.newCachedThreadPool();
 	 	
 	
@@ -145,7 +154,8 @@ public class Communication implements Runnable{			// jako singleton?
 	{
 		System.out.println("Tworzenie po³¹czenia z graczami ...");
 		peers = new HashMap<String,Peer>();
-		
+		ipToNick = new HashMap<String,String>();
+		msgHandler = new MessageHandler();
 		// inicjalizacja portu servera		
 		
 		try			// moze wystapic problem z utworzeniem, wtedy trzeba zmienic port i wyslac o tym wiadomosc
@@ -365,12 +375,11 @@ public class Communication implements Runnable{			// jako singleton?
 		
 		// Wypisanie diagnostyczne na standardowe wyjscie
 		System.out.println("Wys³anie wiadomoœci online(PEER) do wszystkich graczy.");		
+		System.out.println("");
 		System.out.println("Collection PlayerIP");
 		for(PlayerIP p : playersIP)
 			System.out.print(p.nickname + ": " + p.address + "; ");							
-		System.out.println("");		
-		
-		
+		System.out.println("");
 		
 		
 		// Nasluchiwanie portu, nowe polaczenia		
@@ -409,14 +418,17 @@ public class Communication implements Runnable{			// jako singleton?
 		Thread.yield();
 		try 
 		{
+			System.out.println("");
 			System.out.println("---" + Thread.currentThread().getName() + " sleep for 5 sec.");
+			System.out.println("");
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("");
 		System.out.println("---" + Thread.currentThread().getName() + " is awake.");
-		
+		System.out.println("");
 		
 		System.out.println("");
 		
@@ -425,6 +437,19 @@ public class Communication implements Runnable{			// jako singleton?
 		{
 			System.out.println(p);
 		}
+		
+		System.out.println("");
+		System.out.println("ipToNick");		
+		Set<Entry<String, String>> entrySet = com.ipToNick.entrySet();
+		Iterator<Entry<String, String>> it = entrySet.iterator();
+		while(it.hasNext())
+		{
+			Entry<String, String> e = it.next();					
+			System.out.print("ip: " + e.getKey() + ", nick: " + e.getValue() + "; ");
+		}				
+		System.out.println("");
+		
+		
 				
 		System.out.println("");
 		System.out.println("peers size: " + com.peers.size());
@@ -442,16 +467,19 @@ public class Communication implements Runnable{			// jako singleton?
 		}		
 		
 		
-		Thread.yield();
+		//Thread.yield();
 		try {
+			System.out.println("");
 			System.out.println("---" + Thread.currentThread().getName() + " sleep for 5 sec.");
+			System.out.println("");
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("");
 		System.out.println("---" + Thread.currentThread().getName() + " is awake.");
-		
+		System.out.println("");
 		
 	}
 	
