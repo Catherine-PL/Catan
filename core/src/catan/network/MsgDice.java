@@ -1,25 +1,16 @@
 package catan.network;
 
-/**
- * Specified type of abstract Message class
- * @author Sebastian
- *
- */
-public class MsgDice extends Message {
-		
-	private int content;
+public class MsgDice extends UpdateMessage 
+{
 	
-	MsgDice(int cont)
-	{
-		this.type = Message.Type.DICE;
-		content = cont;
+	private Integer content;
+	
+	MsgDice(Integer result) {
+		super(UpdateMessage.UpdateType.DICE);
+		this.content = result;
 	}
 	
-	/**
-	 * 
-	 * @return Received roll of the dice
-	 */
-	public int getContent()
+	public Integer getContent()
 	{
 		return content;
 	}

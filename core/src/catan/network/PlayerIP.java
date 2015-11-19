@@ -9,6 +9,7 @@ public class PlayerIP {
 	
 	String address;
 	String nickname;
+	boolean online = false;
 	
 	/**
 	 * 
@@ -35,6 +36,15 @@ public class PlayerIP {
 		return nickname;
 	}
 	
+	public boolean isOnline()
+	{
+		return online;
+	}
+
+	public String toString()
+	{
+		return (nickname + ": " + address + ", " + online);
+	}
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
