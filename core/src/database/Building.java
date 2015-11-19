@@ -22,7 +22,7 @@ public class Building extends Element {
 			if(here.getBuilding()==0){
 				//sprawdza czy pole jest puste(niczyje)
 				if(here.getPlayerNumber()==0){
-					if(player.getResources("grain")==1 && player.getResources("sheep")==1 && player.getResources("wood")==1 && player.getResources("clay")==1) {
+					if(player.getResources("grain")>=1 && player.getResources("sheep")>=1 && player.getResources("wood")>=1 && player.getResources("clay")>=1) {
 						here.setBuilding(1);
 						here.setPlayerNumber(player.getId());
 						player.changeResources("grain", -1);
@@ -57,7 +57,7 @@ public class Building extends Element {
 			if(here.getPlayerNumber()==player.getId() || here.getPlayerNumber()==0){
 				//
 				if(here.getBuilding()==1){
-					if(player.getResources("grain")==2 && player.getResources("ore")==3){
+					if(player.getResources("grain")>=2 && player.getResources("ore")>=3){
 						here.setBuilding(2);
 						player.changeResources("grain", -2);
 						player.changeResources("ore", -3);
@@ -68,7 +68,7 @@ public class Building extends Element {
 				
 				
 				if(here.getBuilding()==0){
-					if(player.getResources("grain")==3 && player.getResources("sheep")==1 && player.getResources("wood")==1 && player.getResources("clay")==1 && player.getResources("ore")==3){
+					if(player.getResources("grain")>=3 && player.getResources("sheep")>=1 && player.getResources("wood")>=1 && player.getResources("clay")>=1 && player.getResources("ore")>=3){
 						here.setBuilding(2);
 						here.setPlayerNumber(player.getId());
 						player.changeResources("grain", -3);

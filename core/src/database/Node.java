@@ -11,24 +11,25 @@ public class Node extends Element {
 	private int building; //0-nic 1-osada 2-miasto
 	private int playerNumber;//ID gracza
 	private int nodeNumber;//numer ID noda
-	private Vector <Node> neighbours = new Vector<Node>();//referencja do s¹siednich Node
-	private Vector <Tile> nearResources = new Vector<Tile>(); //referencja do  kafli, potrzebne do surowców
-	public Vector <Road> roads = new Vector<Road>();
+	private ArrayList <Node> neighbours=new ArrayList<Node>();//referencja do s1siednich Node
+	private ArrayList <Tile> nearResources=new ArrayList<Tile>(); //referencja do  kafli, potrzebne do surowców
+	private ArrayList <Node> roads=new ArrayList <Node>();//przedtem by3o <Road>
+	private ArrayList <Node> noRoads=new ArrayList <Node>(); 
 	
 	public Node(int id){
 		nodeNumber = id;
 	}
 	
 	
-	public Vector <Tile> getNearResources(){
+	public ArrayList <Tile> getNearResources(){
 		return nearResources;
-	}	
+	}		
 	//dodaj tile do wektora  nearResources
 	public void addNearResources(Tile tile) {
 		this.nearResources.addElement(tile);
 	}
 	
-	public Vector <Node> getNeighbours(){
+	public ArrayList <Node> getNeighbours(){
 		return neighbours;
 	}
 	
@@ -67,6 +68,20 @@ public class Node extends Element {
 	public void setPlayerNumber(int playerNumber) {
 		this.playerNumber = playerNumber;
 	}
+	public void addRoad(Node to) {
+		// TODO Auto-generated method stub
+		this.roads.add(to);
+		this.noRoads.remove(to);
+	}
+	public Node getRoad(int i){
+		return roads.get(i);
+	}
+	public boolean hasRoadTo(Node to){
+		return roads.contains(to);
+	}
+	public boolean roadsIsEmpty(){
+		return roads.isEmpty();
+	}
 	/*
 	public void buildRoad(Node to) {
 		// TODO Auto-generated method stub
@@ -93,6 +108,37 @@ public class Node extends Element {
 	public void setNodeNumber(int nodeNumber) {
 		this.nodeNumber = nodeNumber;
 	}
+	
+
+
+	public ArrayList <Node> getNoRoads() {
+		return noRoads;
+	}
+	public void addNoRoads(Node to){
+		this.noRoads.add(to);
+	}
+
+//pocz1tkowo nie ma dróg do s1siadów, wiec moge je skopiowaa z tamt1d?/
+	public void setNoRoads(ArrayList <Node> noRoads) {
+		this.noRoads=this.roads;
+	}
+	
+	
+/*
+	public HashMap <Integer,Integer> getNeighbourRoad() {
+		return neighbourRoad;
+	}
+
+	public void changeNeighbourRoad(Integer neighbour,int change) {
+		this.neighbourRoad.put(neighbour, change);
+	}
+	public ArrayList <Integer> getRoadsToImprove(){
+		ArrayList <Integer> returnList=new ArrayList <Integer>();
+		for(int i=0;i<this.neighbourRoad.size();)
+		    if(this.neighbourRoad.)
+		return returnList;
+	}
+	*/
 	
 	
 }
