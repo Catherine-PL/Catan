@@ -44,7 +44,7 @@ public class Player {
 	public int getAvatar(){
 		return avatar;
 	}
-	public void setAvatar(avatar){
+	public void setAvatar(int avatar){
 		this.avatar=avatar;
 	}
 	
