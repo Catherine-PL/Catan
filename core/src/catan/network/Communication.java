@@ -25,9 +25,12 @@ import catan.network.SystemMessage.SystemType;
  * @author Sebastian
  *
  */
-public class Communication implements Runnable{			// jako singleton?
+public class Communication implements Runnable{
 	
-	
+	private static class CommunicationHolder
+	{
+		private static final Communication instance = new Communication();
+	}
 	public enum InvStatus
 	{
 		WAIT, ACCEPTED, REJECTED;
@@ -191,15 +194,16 @@ public class Communication implements Runnable{			// jako singleton?
 		
 	}						
 	
-	
+		
 	
 	private Collection<PlayerIP>	playersIP;					// wszyscy gracze online i offline
-	private final String			nickname;
+	private String					nickname;
 	private Map<String,Peer>		peers;						// wszyscy online, w sieci
 	private Map<String,String>		ipToNick;
 	private ServerSocket			serv;
-	final int						servport = 8080;	
 	private boolean					inGame;
+	final int						servport = 8080;	
+	
 	MessageHandler					msgHandler;
 	Map<String, InvStatus>			invPlayers;		
 	AbstractMessageFactory			update;
@@ -209,55 +213,18 @@ public class Communication implements Runnable{			// jako singleton?
 	
 	
 	
-	//private ExecutorService 		exec = Executors.newCachedThreadPool();
-	 	
-	
-	void disconnected(String nick)					// nadanie atrybutu na false, usuniecie z peersow
+	/*Tworzenie instancji*/	 	
+	protected Communication(){}
+	public static Communication getInstance()
 	{
-		Iterator<PlayerIP> it = playersIP.iterator();
-		while(it.hasNext())
-		{
-			PlayerIP p = it.next();
-			if(p.nickname == nick)
-			{
-				p.online = false;		
-				peers.remove(nick);
-			}
-		}
+		return CommunicationHolder.instance;
 	}
-	private void initServPort() throws IOException							// a co gdy jednak nam wywali blad? obs³uzyæ czy nie?
-	{		
-		serv = new ServerSocket(servport);
-	}
-	private synchronized void initPeers() throws IOException, ClassNotFoundException
-	{			
-		System.out.println("inicjalizacja Peers ... (synchronized)");
-		int i = 0;
-		for(PlayerIP p : playersIP)
-		{	
-			try
-			{
-				p.nickname = Integer.toString(i);	// przypisane tymczasowej nazwy
-				Peer newPeer = new Peer(nickname, p.getIp(), servport);
-				peers.put(p.nickname , newPeer);		// proba polaczenia i wyslania wiadomosci z nickiem												
-			}
-			catch(SocketTimeoutException e)
-			{
-				System.out.println("Problem z utworzeniem po³aczenia (timeout) z: " + p.getIp());					
-			}
-			catch(IOException e)
-			{
-				System.out.println("Problem z utworzeniem po³aczenia z: " + p.getIp());					
-				//playersIP.remove(p);
-				//continue;
-			}
-			
-			i++;
-		}			
-	}
-	private void initCommunication() throws IOException
+	public void initCommunication(String myName, Collection<PlayerIP> players) throws IOException 
 	{
+		System.out.println("Inicjalizacja Communication");
 		System.out.println("Tworzenie po³¹czenia z graczami ...");
+		playersIP = players;		
+		nickname = myName;			
 		peers = new HashMap<String,Peer>();
 		ipToNick = new HashMap<String,String>();
 		msgHandler = new MessageHandler();
@@ -289,6 +256,38 @@ public class Communication implements Runnable{			// jako singleton?
 		deamon.start();
 		
 	}
+	
+	/*Private*/
+	private void initServPort() throws IOException							// a co gdy jednak nam wywali blad? obs³uzyæ czy nie?
+	{		
+		serv = new ServerSocket(servport);
+	}
+	private synchronized void initPeers() throws IOException, ClassNotFoundException
+	{			
+		System.out.println("inicjalizacja Peers ... (synchronized)");
+		int i = 0;
+		for(PlayerIP p : playersIP)
+		{	
+			try
+			{
+				p.nickname = Integer.toString(i);	// przypisane tymczasowej nazwy
+				Peer newPeer = new Peer(nickname, p.getIp(), servport);
+				peers.put(p.nickname , newPeer);		// proba polaczenia i wyslania wiadomosci z nickiem												
+			}
+			catch(SocketTimeoutException e)
+			{
+				System.out.println("Problem z utworzeniem po³aczenia (timeout) z: " + p.getIp());					
+			}
+			catch(IOException e)
+			{
+				System.out.println("Problem z utworzeniem po³aczenia z: " + p.getIp());					
+				//playersIP.remove(p);
+				//continue;
+			}
+			
+			i++;
+		}			
+	}	
 	private void listenPort()
 	{
 		// nasluchiwanie
@@ -350,26 +349,54 @@ public class Communication implements Runnable{			// jako singleton?
 		}	// while
 		
 	}	
+	private void sendTo(String nick, Message msg) throws IOException		// send to peer not only in my game
+	{
+		peers.get(nick).send(msg);		
+	}
+	private synchronized void close() throws IOException
+	{	
+		System.out.println("closing...");
+		serv.close();
+		for(String p : peers.keySet())
+		{
+			peers.get(p).close();
+		}
 		
-	/**
-	 * Constructor which tries to connect with Players and send them a message with a nickname. 
-	 * It updates PlayerIP's boolean attribute online and creates a demon thread, which accept new connections.  
-	 * @param myName My nickname which is propagated to every node in P2P network. 
-	 * @param p Array of PlayerIP class which contains only IP. However, nicknames are added to this collection. 
-	 */
-	public Communication(String myName, Collection<PlayerIP> p)
-	{			
-		// dostaje moj nick jak i graczy (nick, ip, online)
-		playersIP = p;		
-		nickname = myName;		
+	}
+	
+	/*Package*/	
+ 	void disconnected(String nick)					// nadanie atrybutu na false, usuniecie z peersow
+	{
+		Iterator<PlayerIP> it = playersIP.iterator();
+		while(it.hasNext())
+		{
+			PlayerIP p = it.next();
+			if(p.nickname == nick)
+			{
+				p.online = false;		
+				peers.remove(nick);
+			}
+		}
+	}
+ 	void sleep(long time)
+	{
 		try 
 		{
-			initCommunication();
-		} catch (IOException e) 
-		{
+			System.out.println("");
+			System.out.println("---" + Thread.currentThread().getName() + " sleep for " + time + " milisec.");
+			System.out.println("");
+			Thread.sleep(time);
+		} catch (InterruptedException e) 
+		{		
 			e.printStackTrace();
-		}				
-	}	
+		}
+		
+		System.out.println("");
+		System.out.println("---" + Thread.currentThread().getName() + " is awake.");
+		System.out.println("");
+	}
+	
+	/*public*/		
 	/**
 	 * Adding new PlayerIP to PlayerIP collection with adding nickname, creating new peer
 	 * @param players Collection for PlayerIP
@@ -410,30 +437,7 @@ public class Communication implements Runnable{			// jako singleton?
 		}
 		
 	}
-	/**
-	 * Close is a function to close every connection between nodes, and to close servSocket.
-	 * @throws IOException happens during closing streams and servSocket
-	 */
-	public synchronized void close() throws IOException
-	{	
-		System.out.println("closing...");
-		serv.close();
-		for(String p : peers.keySet())
-		{
-			peers.get(p).close();
-		}
-		
-	}
-	/**
-	 * Method which sends a massage to another node.
-	 * @param nick Nickname of a node 
-	 * @param msg Message to send
-	 * @throws IOException Whenever writing to an OutputStream fails
-	 */
-	public void sendTo(String nick, Message msg) throws IOException
-	{
-		peers.get(nick).send(msg);		
-	}
+	/*
 	public void sendToAll(Message msg) throws IOException
 	{
 		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
@@ -444,15 +448,7 @@ public class Communication implements Runnable{			// jako singleton?
 			if(e.getValue() == InvStatus.ACCEPTED)
 				sendTo(e.getKey(), msg);
 		}
-	}
-	/**
-	 * Method for reading messages from network, blocks if there is nothing
-	 * @param nick Defines a node from which we want receive a message  
-	 * @return Return a message
-	 * @throws ClassNotFoundException 
-	 * @throws IOException Whenever reading from an InputStream fails
-	 */
-	
+	}*/
 	public void sendInvitations(Collection<String> names)
 	{				
 		if(inGame == true)					// jezeli juz przyjalem jedno zaproszenie
@@ -573,29 +569,9 @@ public class Communication implements Runnable{			// jako singleton?
 		inGame = false;
 		invPlayers.clear();
 		System.out.println("Gra porzucona ...");
-	}
-	
-	void sleep(long time)
-	{
-		try 
-		{
-			System.out.println("");
-			System.out.println("---" + Thread.currentThread().getName() + " sleep for " + time + " milisec.");
-			System.out.println("");
-			Thread.sleep(time);
-		} catch (InterruptedException e) 
-		{		
-			e.printStackTrace();
-		}
-		
-		System.out.println("");
-		System.out.println("---" + Thread.currentThread().getName() + " is awake.");
-		System.out.println("");
-	}
-	
-	
+	}	
 	/**
-	 * Method which is necessary to run a thread and it is done in constructor, so don't run it!
+	 * Method which is necessary to run a thread and it is done in initCommunication, so don't run it!
 	 */
 	public void run() 
 	{
@@ -643,7 +619,11 @@ public class Communication implements Runnable{			// jako singleton?
 		
 		
 		// inicjalizacja portu, wyslanie wiadomosci
-		Communication com = new Communication("Sebastian",players);		
+		Communication com = Communication.getInstance();		
+		com.initCommunication("Sebastian", players);
+		
+		
+		
 		
 		// od razu odpalenie watka demona
 		System.out.println("dodawanie nowego gracza ... (synchronized)");

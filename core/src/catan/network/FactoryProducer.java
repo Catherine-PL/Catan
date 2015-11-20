@@ -31,7 +31,7 @@ public class FactoryProducer {
 	}
 
 	public static void main(String[] args)
-	{
+	{		
 		AbstractMessageFactory mf = FactoryProducer.getFactory(FactoryType.SYSTEM);
 		MsgPeer msg = null;
 		try {
@@ -39,8 +39,7 @@ public class FactoryProducer {
 		} catch (ContentException e) {
 
 			e.printStackTrace();
-		}
-		
+		}		
 		System.out.println(msg.getContent());
 	}
 
