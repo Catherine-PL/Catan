@@ -396,7 +396,7 @@ public class Communication implements Runnable{
 		System.out.println("");
 	}
 	
-	/*public*/		
+	/*Public*/		
 	/**
 	 * Adding new PlayerIP to PlayerIP collection with adding nickname, creating new peer
 	 * @param players Collection for PlayerIP
