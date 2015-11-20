@@ -70,7 +70,23 @@ class Receiver implements Runnable {
 			case DICE:
 				com.msgHandler.handleMsgDice(peer,(MsgDice)msg);
 				break;
-						
+				
+			case BOARD:
+				com.msgHandler.handleMsgBoard((MsgBoard)msg);
+				break;
+				
+			case TILE:
+				com.msgHandler.handleMsgTile((MsgTile)msg);
+				break;
+				
+			case NODE:
+				com.msgHandler.handleMsgNode((MsgNode)msg);
+				break;
+				
+			case RESOURCES:
+				com.msgHandler.handleMsgResources(peer, (MsgResources)msg);
+				break;
+										
 			default:
 				System.err.println("Otrzymana wiadomosc jest bledna");
 				break;					

@@ -63,5 +63,12 @@ class SystemMessageFactory extends AbstractMessageFactory {
 	}
 	UpdateMessage getUpdateMessage(UpdateType type, Object content) throws ContentException {
 		return null;
+	}
+
+
+	@Override
+	UpdateMessage getUpdateMessage(UpdateType type, Object content, int index) throws ContentException {
+		// TODO Auto-generated method stub
+		return null;
 	}		
 }

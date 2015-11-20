@@ -162,12 +162,23 @@ public class Board {
 		return nodes[i];
 	}
 	
+	
+	public void setNode(Node node, int index)
+	{
+		nodes[index] = node;
+	}
+	public void setTile(Tile tile, int index)
+	{
+		tiles[index] = tile;
+	}
+	
 	public static void main(String [ ] args) throws FileNotFoundException{
 		Board board = Board.getInstance();
 		board.loadMatrix();
 		board.setNeighbours();
 	
 		//test, wypisanie s¹siadów
+		/*
 		for(int i=0;i<54;i++){
 			System.out.print(i + " - ");
 			if(!board.nodes[i].getNeighbours().isEmpty()){
@@ -176,8 +187,8 @@ public class Board {
 				} 
 			}
 	        System.out.println();
-		}
-		
+		}*/
+	
 	}
 	
 	

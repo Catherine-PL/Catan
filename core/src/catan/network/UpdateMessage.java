@@ -6,7 +6,7 @@ public class UpdateMessage extends Message {
 
 	public enum UpdateType		
 	{
-		DICE;
+		DICE, BOARD, TILE, NODE, RESOURCES;
 	}
 	
 	protected UpdateType subType;

@@ -19,13 +19,17 @@ import catan.network.Communication.InvStatus;
 import catan.network.FactoryProducer.FactoryType;
 import catan.network.Message.Type;
 import catan.network.SystemMessage.SystemType;
+import catan.network.UpdateMessage.UpdateType;
+import database.Board;
+import database.Node;
+import database.Tile;
 
 /**
  * Class which provide us P2P architecture and basic communication in an internal network.
  * @author Sebastian
  *
  */
-public class Communication implements Runnable{
+public class Communication implements Runnable, Messenger{
 	
 	private static class CommunicationHolder
 	{
@@ -36,8 +40,16 @@ public class Communication implements Runnable{
 		WAIT, ACCEPTED, REJECTED;
 	}
 	class MessageHandler 
-	{				
-		// Communication.this
+	{		
+		private Board board;
+		
+		
+		MessageHandler(Board board)
+		{
+			this.board = board;
+		}
+		
+		/* SystemMessage */
 		Peer handleMsgPeer(Socket client, ObjectInputStream input, MsgPeer msg)
 		{
 			Peer peer = null;
@@ -186,11 +198,43 @@ public class Communication implements Runnable{
 			inGame = false;
 		}
 		
+		/* UpdateMessage */
 		void handleMsgDice(Peer peer, MsgDice msg)
 		{
 			System.out.print("From: " + ipToNick.get(peer.socketIn.getInetAddress().getHostAddress()));
 			System.out.println(" -- Wynik kosci:" + msg.getContent());
 		}
+		void handleMsgBoard(MsgBoard msg)			// podmienic board tam gdzie jest ona przechowywana
+		{
+			System.out.println("Aktualizacja Board ...");
+		}	
+		void handleMsgNode(MsgNode msg)
+		{
+			System.out.println("Aktualizacja Node ...");
+			
+			Node n = msg.getContent();
+			int i = msg.getIndex();
+			board.setNode(n, i);
+			
+		}
+		void handleMsgTile(MsgTile msg)
+		{
+			System.out.println("Aktualizacja Tail ...");
+			
+			Tile t = msg.getContent();
+			int i = msg.getIndex();
+			board.setTile(t, i);
+			
+		}
+		void handleMsgResources(Peer peer, MsgResources msg)
+		{
+			System.out.println("Aktualizacja Resources ...");
+			
+			int n = msg.getContent();			
+			System.out.println("Gracz: " + ipToNick.get(peer.socketIn.getInetAddress().getHostAddress()) + "Ilosc surowcow: " + n);
+			
+		}
+		
 		
 	}						
 	
@@ -219,7 +263,7 @@ public class Communication implements Runnable{
 	{
 		return CommunicationHolder.instance;
 	}
-	public void initCommunication(String myName, Collection<PlayerIP> players) throws IOException 
+	public void initCommunication(String myName, Collection<PlayerIP> players, Board board) throws IOException 
 	{
 		System.out.println("Inicjalizacja Communication");
 		System.out.println("Tworzenie po³¹czenia z graczami ...");
@@ -227,7 +271,7 @@ public class Communication implements Runnable{
 		nickname = myName;			
 		peers = new HashMap<String,Peer>();
 		ipToNick = new HashMap<String,String>();
-		msgHandler = new MessageHandler();
+		msgHandler = new MessageHandler(board);
 		invPlayers = new HashMap<String,InvStatus>();
 		inGame = false;
 		
@@ -353,6 +397,26 @@ public class Communication implements Runnable{
 	{
 		peers.get(nick).send(msg);		
 	}
+	private void sendToAll(Message msg)										// send to everyone in invPlayers
+	{
+		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
+		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
+		while(it.hasNext())
+		{
+			Entry<String, InvStatus> e = it.next();		
+			try
+			{
+				sendTo(e.getKey(), msg);
+			}
+			catch (IOException ex) 
+			{
+				System.err.println("Utracono polaczenie z: " + e.getKey());
+				disconnected(e.getKey());
+				invPlayers.remove(e.getKey());
+			}
+			
+		}
+	}
 	private synchronized void close() throws IOException
 	{	
 		System.out.println("closing...");
@@ -437,18 +501,7 @@ public class Communication implements Runnable{
 		}
 		
 	}
-	/*
-	public void sendToAll(Message msg) throws IOException
-	{
-		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
-		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
-		while(it.hasNext())
-		{
-			Entry<String, InvStatus> e = it.next();
-			if(e.getValue() == InvStatus.ACCEPTED)
-				sendTo(e.getKey(), msg);
-		}
-	}*/
+		
 	public void sendInvitations(Collection<String> names)
 	{				
 		if(inGame == true)					// jezeli juz przyjalem jedno zaproszenie
@@ -469,7 +522,7 @@ public class Communication implements Runnable{
 			try {
 				sendTo(name, inv);
 			} catch (IOException e) {
-				System.out.println("Utracono polaczenie z: " + name);
+				System.err.println("Utracono polaczenie z: " + name);
 				disconnected(name);
 				invPlayers.remove(name);
 			}
@@ -515,7 +568,7 @@ public class Communication implements Runnable{
 				} catch (ContentException e1) {					
 					e1.printStackTrace();
 				} catch (IOException e1) {
-					System.out.println("Utracono polaczenie z: " + e.getKey());
+					System.err.println("Utracono polaczenie z: " + e.getKey());
 					disconnected(e.getKey());
 					invPlayers.remove(e.getKey());
 				}
@@ -528,7 +581,7 @@ public class Communication implements Runnable{
 				} catch (ContentException e1) {
 					e1.printStackTrace();
 				}catch (IOException e1) {
-					System.out.println("Utracono polaczenie z: " + e.getKey());
+					System.err.println("Utracono polaczenie z: " + e.getKey());
 					disconnected(e.getKey());
 					invPlayers.remove(e.getKey());
 				}
@@ -556,7 +609,7 @@ public class Communication implements Runnable{
 				try {
 					sendTo(e.getKey(), system.getSystemMessage(SystemType.ABANDON, null));
 				} catch (IOException e1) {
-					System.out.println("Utracono polaczenie z: " + e.getKey());
+					System.err.println("Utracono polaczenie z: " + e.getKey());
 					disconnected(e.getKey());					
 					
 				} catch (ContentException e1) {
@@ -570,6 +623,53 @@ public class Communication implements Runnable{
 		invPlayers.clear();
 		System.out.println("Gra porzucona ...");
 	}	
+	
+	public void sendUpdate(Board board)
+	{	
+		Message msg = null;
+		try {
+			msg = this.update.getUpdateMessage(UpdateType.BOARD, board);
+		} catch (ContentException e) {
+			e.printStackTrace();
+		}		
+		sendToAll(msg);				
+	}	
+	public void sendUpdate(Tile tile, int index) 
+	{
+		Message msg = null;
+		try {			
+			msg = this.update.getUpdateMessage(UpdateType.TILE, tile, index);
+		} catch (ContentException e) {
+			e.printStackTrace();
+		}		
+		sendToAll(msg);		
+	}	
+	public void sendUpdate(Node node, int index) 
+	{
+		Message msg = null;
+		try {			
+			msg = this.update.getUpdateMessage(UpdateType.NODE, node, index);
+		} catch (ContentException e) {
+			e.printStackTrace();
+		}		
+		sendToAll(msg);	
+	}
+	public void sendUpdate(NumberOf what, int quantity)			// DICE, RESOURCE 
+	{
+		Message msg = null;
+		try {			
+			if(what.toString().equals(UpdateType.DICE.toString()))
+				msg = this.update.getUpdateMessage(UpdateType.DICE, quantity);
+			else
+				msg = this.update.getUpdateMessage(UpdateType.RESOURCES, quantity);
+		} catch (ContentException e) {
+			e.printStackTrace();
+		}		
+		sendToAll(msg);	
+	}
+	
+	
+	
 	/**
 	 * Method which is necessary to run a thread and it is done in initCommunication, so don't run it!
 	 */
@@ -617,10 +717,13 @@ public class Communication implements Runnable{
 		players.add(new PlayerIP("127.0.0.1"));
 		//players.add(new PlayerIP("25.155.87.12"));			
 		
+		Board board = Board.getInstance();
+		board.loadMatrix();
+		board.setNeighbours();
 		
 		// inicjalizacja portu, wyslanie wiadomosci
 		Communication com = Communication.getInstance();		
-		com.initCommunication("Sebastian", players);
+		com.initCommunication("Sebastian", players, board);
 		
 		
 		
