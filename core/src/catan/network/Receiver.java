@@ -93,10 +93,11 @@ class Receiver implements Runnable {
 		 * 
 		 * */
 		
-		
-		while(true)
+		try
 		{
-			try {
+					
+			while(true)
+			{
 				System.out.println(Thread.currentThread().getName() + " - oczekiwanie na wiadomosc...");
 				Message msg = (Message)peer.receive();
 			
@@ -119,14 +120,15 @@ class Receiver implements Runnable {
 						System.err.println("Otrzymana wiadomosc jest bledna");
 						break;					
 				}		
-			
-			
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
 		}
+		catch (ClassNotFoundException e) {		
+			e.printStackTrace();
+		}
+		catch(IOException e)
+		{
+			System.out.println("Utracono polaczenie: " + Thread.currentThread().getName());
+		} 
 		
 	}
 

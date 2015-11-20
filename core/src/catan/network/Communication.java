@@ -35,7 +35,7 @@ public class Communication implements Runnable{			// jako singleton?
 	class MessageHandler 
 	{				
 		// Communication.this
-		Peer handleMsgPeer(Socket client, ObjectInputStream input, MsgPeer msg) throws IOException
+		Peer handleMsgPeer(Socket client, ObjectInputStream input, MsgPeer msg)
 		{
 			Peer peer = null;
 			synchronized(Communication.this)
@@ -84,7 +84,12 @@ public class Communication implements Runnable{			// jako singleton?
 					String ip = client.getInetAddress().getHostAddress();
 					PlayerIP pip = new PlayerIP(ip);
 					
-					peer = new Peer(nickname, ip, servport);
+					try {
+						peer = new Peer(nickname, ip, servport);
+					} catch (IOException e) {
+						System.out.println("Niemoznosc utworzenia polaczenia dla obcego ip");
+						return null;
+					}
 					peer.input = input;
 					peer.socketIn = client;
 					
@@ -100,7 +105,7 @@ public class Communication implements Runnable{			// jako singleton?
 			}
 			return peer;
 		}
-		void handleMsgInvitation(Peer peer)								// trzeba to jakos zgrac, wybor:  accept, reject
+		void handleMsgInvitation(Peer peer)													// trzeba to jakos zgrac, wybor:  accept, reject
 		{
 			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
 			
@@ -109,7 +114,7 @@ public class Communication implements Runnable{			// jako singleton?
 			{
 				Message msg = null;
 				try {					
-					msg = system.getSystemMessage(SystemType.REJECT, null);
+					msg = system.getSystemMessage(SystemType.ACCEPT, null);
 				} catch (ContentException e) {
 					e.printStackTrace();
 				}
@@ -188,9 +193,9 @@ public class Communication implements Runnable{			// jako singleton?
 	
 	
 	
-	private Collection<PlayerIP>	playersIP;			
+	private Collection<PlayerIP>	playersIP;					// wszyscy gracze online i offline
 	private final String			nickname;
-	private Map<String,Peer>		peers;				// nie sa zsynchronizowane
+	private Map<String,Peer>		peers;						// wszyscy online, w sieci
 	private Map<String,String>		ipToNick;
 	private ServerSocket			serv;
 	final int						servport = 8080;	
@@ -207,7 +212,19 @@ public class Communication implements Runnable{			// jako singleton?
 	//private ExecutorService 		exec = Executors.newCachedThreadPool();
 	 	
 	
-			
+	void disconnected(String nick)					// nadanie atrybutu na false, usuniecie z peersow
+	{
+		Iterator<PlayerIP> it = playersIP.iterator();
+		while(it.hasNext())
+		{
+			PlayerIP p = it.next();
+			if(p.nickname == nick)
+			{
+				p.online = false;		
+				peers.remove(nick);
+			}
+		}
+	}
 	private void initServPort() throws IOException							// a co gdy jednak nam wywali blad? obs³uzyæ czy nie?
 	{		
 		serv = new ServerSocket(servport);
@@ -293,6 +310,8 @@ public class Communication implements Runnable{			// jako singleton?
 					if(((SystemMessage)msg).getSubType()==SystemMessage.SystemType.PEER)
 					{
 						Peer newPeer = this.msgHandler.handleMsgPeer(client, input, (MsgPeer) msg);
+						if(newPeer == null)
+							continue;
 												
 						System.out.println("Tworzenie nowego watka demona receiver dla: " + ((MsgPeer)msg).getContent());						
 						Thread deamon = new Thread(new Receiver(newPeer, this),"#" + ((MsgPeer)msg).getContent());
@@ -434,9 +453,9 @@ public class Communication implements Runnable{			// jako singleton?
 	 * @throws IOException Whenever reading from an InputStream fails
 	 */
 	
-	public void sendInvitations(Collection<String> names) throws IOException
-	{		
-		if(inGame == true)
+	public void sendInvitations(Collection<String> names)
+	{				
+		if(inGame == true)					// jezeli juz przyjalem jedno zaproszenie
 			return;
 		
 		AbstractMessageFactory sm = FactoryProducer.getFactory(FactoryType.SYSTEM);
@@ -449,8 +468,15 @@ public class Communication implements Runnable{			// jako singleton?
 		
 		for(String name : names)
 		{
+			
 			invPlayers.put(name, InvStatus.WAIT);
-			sendTo(name, inv);
+			try {
+				sendTo(name, inv);
+			} catch (IOException e) {
+				System.out.println("Utracono polaczenie z: " + name);
+				disconnected(name);
+				invPlayers.remove(name);
+			}
 		}
 		inGame = true;							// jak sam tworze gre to w niej jestem :P
 		System.out.println(inGame);
@@ -462,19 +488,40 @@ public class Communication implements Runnable{			// jako singleton?
 		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
 		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
 		LinkedList<String> toRemove = new LinkedList<String>();
+		Entry<String, InvStatus> e = null;
+		int i = 0 ;
+		
 		while(it.hasNext())
 		{
-			Entry<String, InvStatus> e = it.next();
+			e = it.next();
+			if(e.getValue()==InvStatus.ACCEPTED)
+				i++;
+		}
+		
+		// sprawdzenie ilosci graczy
+		if(i<3 || i>5)
+		{
+			System.out.println("Bledna ilosc graczy: " + invPlayers);
+			return ;
+		}
+						
+		
+		
+		
+		it = entrySet.iterator();
+		while(it.hasNext())
+		{
+			e = it.next();
 			if(e.getValue() == InvStatus.ACCEPTED)
 			{
 				try {
 					sendTo(e.getKey(), system.getSystemMessage(SystemType.START_GAME, null));
+				} catch (ContentException e1) {					
+					e1.printStackTrace();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ContentException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					System.out.println("Utracono polaczenie z: " + e.getKey());
+					disconnected(e.getKey());
+					invPlayers.remove(e.getKey());
 				}
 			}
 			else if(e.getValue() == InvStatus.WAIT)
@@ -482,12 +529,12 @@ public class Communication implements Runnable{			// jako singleton?
 				try {
 					sendTo(e.getKey(), system.getSystemMessage(SystemType.ABANDON, null));
 					toRemove.add(e.getKey());
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
 				} catch (ContentException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
+				}catch (IOException e1) {
+					System.out.println("Utracono polaczenie z: " + e.getKey());
+					disconnected(e.getKey());
+					invPlayers.remove(e.getKey());
 				}
 			}else	toRemove.add(e.getKey());
 				
@@ -496,7 +543,8 @@ public class Communication implements Runnable{			// jako singleton?
 		for(String nick : toRemove)
 			invPlayers.remove(nick);
 		
-		System.out.println("Gra rozpoczela sie wraz z: " + invPlayers);
+		
+		
 		
 	}
 	public void abandonGame()
@@ -512,8 +560,9 @@ public class Communication implements Runnable{			// jako singleton?
 				try {
 					sendTo(e.getKey(), system.getSystemMessage(SystemType.ABANDON, null));
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					System.out.println("Utracono polaczenie z: " + e.getKey());
+					disconnected(e.getKey());					
+					
 				} catch (ContentException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -660,12 +709,13 @@ public class Communication implements Runnable{			// jako singleton?
 		com.sendInvitations(invited);
 	
 		com.sleep(5000);													// sleep
-			
-		//com.startGame();
-		com.abandonGame();
+
+		com.startGame();
+	
+		//com.abandonGame();
 		
 		com.sleep(5000);													// sleep
-		
+				
 		System.out.println("all threads:");
 		
 		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
