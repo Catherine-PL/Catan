@@ -11,6 +11,8 @@ import database.Players;
 
 public class Player {
 	private	int id;							//metody set,get
+	private String name=null;
+	private int avatar;
 	private	ArrayList<Card> cards=new ArrayList <Card>();			//metody add,rm,get
 	private	int points;						//metody get,set,check
 	private HashMap <String,Integer> resources=new HashMap <String,Integer>();	//get,change
@@ -31,6 +33,19 @@ public class Player {
 		resources.put("wood", 0) ;
 		soldierCount=0;
 		points=0;
+	}
+	
+	public String getName(){
+		return name;
+	}
+	public void setName(String name){
+		this.name=name;
+	}
+	public int getAvatar(){
+		return avatar;
+	}
+	public void setAvatar(avatar){
+		this.avatar=avatar;
 	}
 	
 	public int getId() {
