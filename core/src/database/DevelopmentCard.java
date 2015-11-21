@@ -1,5 +1,7 @@
 package database;
-import java.util.Vector;
+
+
+import java.util.ArrayList;
 
 import database.*;
 import database.Road;
@@ -46,7 +48,7 @@ public abstract class DevelopmentCard extends Card {
 
 	private void chooseMonopol(Player player) {
 		// TODO Auto-generated method stub
-		Vector <ResourceCard> monopol = null;
+		ArrayList <ResourceCard> monopol = null;
 		String type;
 		Player thatPlayer;
 		//wybranie monopolu
@@ -97,7 +99,7 @@ public abstract class DevelopmentCard extends Card {
 	private void steal(Player player,Player player2) {
 		//
 		ResourceCard card = null;
-		Vector <Card> cardsToSteal=player2.getCards();//pobieramy jego karty, spokojnie do rysowania bêdzie zawsze max 7
+		ArrayList <Card> cardsToSteal=player2.getCards();//pobieramy jego karty, spokojnie do rysowania bêdzie zawsze max 7
 		int i=0;
 		
 		//tu po drodze trzeba wybraæ i
@@ -112,7 +114,7 @@ public abstract class DevelopmentCard extends Card {
 		String cant="Nie mo¿esz przenieœæ z³odzieja w to samo miejsce";
 		//czy to dobry sposób na pobieranie Tila który ma thief'a
 		Board board = Board.getInstance();
-		Tile from=board.getTile(board.getThiefPosition());
+		Tile from=board.getTile(board.thiefPosition);
 		
 		if(from.equals(to)){
 			System.out.println(cant);

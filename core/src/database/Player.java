@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import network.MsgText;
-import network.*;
+//import network.MsgText;
+//import network.*;
 import database.Players;
 
 public class Player {
@@ -69,7 +69,7 @@ public class Player {
 	public int getPoints() {
 		return points;
 	}
-	//set zmieni³em na add
+
 	public void addPoints(int points) {
 		this.points =this.points + points;
 	}	

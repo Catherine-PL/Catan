@@ -1,6 +1,7 @@
 package database;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.function.Consumer;
 
 
@@ -13,7 +14,12 @@ public class Node extends Element {
 	private int nodeNumber;//numer ID noda
 	private ArrayList <Node> neighbours=new ArrayList<Node>();//referencja do s1siednich Node
 	private ArrayList <Tile> nearResources=new ArrayList<Tile>(); //referencja do  kafli, potrzebne do surowców
-	private ArrayList <Node> roads=new ArrayList <Node>();//przedtem by3o <Road>
+	
+	
+	private HashMap <Node,HashMap<Integer,Integer>> nodeRoadOwner=new HashMap <Node,HashMap<Integer,Integer> >();
+	
+	private HashMap <Integer,Tile> intResources=new HashMap<Integer,Tile>();
+	ArrayList <Node> roads=new ArrayList <Node>();//przedtem by3o <Road>
 	private ArrayList <Node> noRoads=new ArrayList <Node>(); 
 	
 	public Node(int id){
@@ -26,7 +32,7 @@ public class Node extends Element {
 	}		
 	//dodaj tile do wektora  nearResources
 	public void addNearResources(Tile tile) {
-		this.nearResources.addElement(tile);
+		this.nearResources.add(tile);
 	}
 	
 	public ArrayList <Node> getNeighbours(){
@@ -34,7 +40,7 @@ public class Node extends Element {
 	}
 	
 	public void addNeighbour(Node node){
-		neighbours.addElement(node);
+		neighbours.add(node);
 	}
 	
 	//sprawdza czy s¹siednie nody s¹ zabudowane
@@ -69,7 +75,7 @@ public class Node extends Element {
 		this.playerNumber = playerNumber;
 	}
 	public void addRoad(Node to) {
-		// TODO Auto-generated method stub
+	
 		this.roads.add(to);
 		this.noRoads.remove(to);
 	}
@@ -122,7 +128,72 @@ public class Node extends Element {
 	public void setNoRoads(ArrayList <Node> noRoads) {
 		this.noRoads=this.roads;
 	}
+
+/*
+	//zwraca nam, Tile z którego bêdziemy chcieli pobraæ surowiec
+	public Tile getIntResource(int number) {
+		return intResources.get(number);
+	}
 	
+	public void setIntResources() {
+		Board board=Board.getInstance();
+		for(Tile temp: this.nearResources){
+			
+		}
+			
+		this.intResources.put(temp, );
+	}
+	*/
+	
+	//Kasi whisList
+	
+	public HashMap <Node,HashMap<Integer,Integer>> getNodeRoadOwner(){
+		return nodeRoadOwner;
+	}
+	public void changeNodeRoadOwner(Node node,int roadd, int owner){
+		HashMap<Integer,Integer> temp=new HashMap<Integer,Integer>();
+		temp.put(roadd, owner);
+		this.nodeRoadOwner.put(node,temp);
+	}
+	
+	
+	public Integer [] getRoadsToImprove(Node node){
+		Integer[] withoutRoad={0,0,0};
+		
+		if(node.getNoRoads().isEmpty())
+			return null;
+		else{
+			ArrayList <Node> noRoads=new ArrayList<Node>();
+			noRoads=node.getNoRoads();
+			int i=0;
+			//for(int i=0; i<node.getNoRoads().size();i++){
+			//	withoutRoad[i]= noRoads.get(i);				
+			for(Node temp: noRoads){				
+				withoutRoad[i]=temp.getNodeNumber();
+				i++;
+				}
+			}
+			return withoutRoad;
+		}
+	public ArrayList<Integer> getRoadsToImprove2(Node node){
+		ArrayList<Integer> withoutRoad=new ArrayList<Integer>();
+		
+		if(node.getNoRoads().isEmpty())
+			return null;
+		else{
+			ArrayList <Node> noRoads=new ArrayList<Node>();
+			noRoads=node.getNoRoads();
+						
+			for(Node temp: noRoads){				
+				withoutRoad.add(temp.getNodeNumber());
+				}
+			}
+			return withoutRoad;
+		}	
+	
+	
+	
+
 	
 /*
 	public HashMap <Integer,Integer> getNeighbourRoad() {

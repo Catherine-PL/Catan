@@ -11,10 +11,12 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Board {
-	private Map<Character ,Integer> letterToNumber = new HashMap<Character, Integer>();
+	//private Map<Character ,Integer> letterToNumber = new HashMap<Character, Integer>();
 	public int thiefPosition=0;
 	private Node[] nodes = new Node[54];
 	private int[][] adjencyMatrix=new int[54][54];
+	private int[] letterToNumber=new int [] {5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11};
+	private int [][] tileToDice=new int [19][2];
 /*	private int[][] adjencyMatrix=new int[][] {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -82,7 +84,7 @@ public class Board {
 	//instantiated
 	protected Board(){
 		//tabelka na cyferkê przy tile, nie wiem jak j¹ zrobiæ szyciej, na razie
-		letterToNumber.put('A', 5);
+		/*letterToNumber.put('A', 5);
 		letterToNumber.put('B', 2);
 		letterToNumber.put('C', 6);
 		letterToNumber.put('D', 3);
@@ -99,12 +101,12 @@ public class Board {
 		letterToNumber.put('O', 5);
 		letterToNumber.put('P', 6);
 		letterToNumber.put('Q', 3);
-		letterToNumber.put('R', 11);
-
+		letterToNumber.put('R', 11);*/
+		
 		//generowanie planszy
 		//przemieszanie kafli l¹du
 		Collections.shuffle(Arrays.asList(tiles));
-		
+				
 		//indeksowanie wierzcho³ków
 		for(int i=0;i<54;i++){
 			nodes[i] = new Node(i);		
@@ -128,6 +130,11 @@ public class Board {
     				nodes[i].addNeighbour(nodes[j]);
     				nodes[j].addNeighbour(nodes[i]);
     		}
+    			nodes[i].setNoRoads(nodes[i].getNeighbours());
+    			
+    			for(Node node: nodes[i].getNeighbours()){
+    				nodes[i].changeNodeRoadOwner(node,0,0);
+    			}
 		}
 	}
 	}
@@ -160,6 +167,10 @@ public class Board {
 	
 	public Node getNode(int i){
 		return nodes[i];
+	}
+	
+	public int getLetterToNumber(int i){
+		return this.letterToNumber[i];
 	}
 	
 	public static void main(String [ ] args) throws FileNotFoundException{
