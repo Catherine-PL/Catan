@@ -5,7 +5,7 @@ import database.Tile;
 public class MsgTile extends UpdateMessage 
 {
 	
-	private Tile content;
+	private Tile content = null;
 	private int index;
 	
 	MsgTile(Tile tile, int index) {

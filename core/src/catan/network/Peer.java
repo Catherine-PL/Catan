@@ -13,18 +13,18 @@ class Peer{
 	Socket socketIn = null;
 	ObjectOutputStream output = null;
 	ObjectInputStream input = null;	
-	//boolean inGame = false;
 	
 	Peer(String nick, String ip, int port) throws IOException {		
 		SocketAddress sockaddr = new InetSocketAddress(ip, port);
 		socketOut = new Socket();
-		socketOut.connect(sockaddr, 5*1000);		// 5 sekund na pol¹czenie
+		socketOut.connect(sockaddr, 5*1000);													// 5 sekund na pol¹czenie
 		
-		//socketOut = new Socket(ip,port);	// chêæ nawiazania polaczenia  -- w jednej lini to co wyzej, bez timeout
-		System.out.println("Stworzono PeerSocket na porcie: " + socketOut.getLocalPort());
+		System.out.println("New peer on port: " + socketOut.getLocalPort());
+		System.out.println("Sending him hello message ...");
+		System.out.println();
 		
 		output = new ObjectOutputStream(socketOut.getOutputStream());
-		output.writeObject(new MsgPeer(nick));	// wys³anie od razu wiadomosci z moim nickiem
+		output.writeObject(new MsgPeer(nick));													// wys³anie od razu wiadomosci z moim nickiem
 		output.flush();		
 		 
 	}

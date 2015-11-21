@@ -58,36 +58,35 @@ public class Communication implements Runnable, Messenger{
 			synchronized(Communication.this)
 			{
 				// 	Accepting connection and adding to peer socketIn and InputStream		
-				int i = 0;
-				System.out.println("MessageHandler... MsgPeer");
-			
+				int i = 0;			
 				Iterator<PlayerIP> it = playersIP.iterator();
 					
 				while(it.hasNext())
 				{
 					PlayerIP p = it.next();
-					// 	dopasowanie do moich peersow
+																											// 	dopasowanie do moich peersow
 					if(p.address.equals(client.getInetAddress().getHostAddress()))
 					{
-						peer = peers.get(p.nickname);		// tutaj jeszcze ma tymczasowa nazwe
+						peer = peers.get(p.nickname);														// tutaj jeszcze ma tymczasowa nazwe
 						peer.socketIn = client;
 						peer.input = input;
-						String nick = msg.getContent();
-						System.out.println("Otrzymana wiadomosc: " + nick);
+						String nick = msg.getContent();						
 						int j = 0;
 						while(peers.containsKey(nick))					
 							j++;						
 					
-						if(j>0)											// zabezpieczenie jak juz istenieje taki nick
+						if(j>0)																				// zabezpieczenie jak juz istenieje taki nick
 							nick = nick + j;
 						
+						System.out.println("Player's nickname: " + nick);
+						System.out.println("Adding ip to ipToNick ...");
+						System.out.println("Adding to peers HashMap ...");						
 						ipToNick.put(client.getInetAddress().getHostAddress(), nick);
 						peers.remove(p.nickname);
 						peers.put(nick, peer);
-						System.out.println("Do peers dodano peer o kluczu: " + nick);
-						
-						//	send(nick, new MsgPeer(nickname));			// IOException
+												
 					
+						System.out.println("Updating playersIP collection ...");
 						p.nickname = nick;
 						p.online = true;
 						it.remove();
@@ -95,7 +94,7 @@ public class Communication implements Runnable, Messenger{
 						break;
 					}	
 					i++;						
-				}// Jezeli obcy dla mnie gosc
+				}																							// Jezeli obcy dla mnie gosc
 				if(i == playersIP.size())
 				{			
 					String ip = client.getInetAddress().getHostAddress();
@@ -111,12 +110,25 @@ public class Communication implements Runnable, Messenger{
 					peer.socketIn = client;
 					
 					String nick = msg.getContent();
-					System.out.println("Otrzymana wiadomosc: " + nick);
+					int j = 0;
+					while(peers.containsKey(nick))					
+						j++;						
+				
+					if(j>0)																				// zabezpieczenie jak juz istenieje taki nick
+						nick = nick + j;
 					
+					System.out.println("Player's nickname: " + nick);
+					System.out.println("Adding ip to ipToNick ...");
+					ipToNick.put(client.getInetAddress().getHostAddress(), nick);
+					
+					System.out.println("Adding to peers HashMap ...");						
 					peers.put(nick, peer);
+					
+					System.out.println("Updating playersIP collection ...");
 					pip.nickname = nick;
 					pip.online = true;
-					playersIP.add(pip);					
+					playersIP.add(pip);										
+										
 				}
 				
 			}
@@ -126,12 +138,12 @@ public class Communication implements Runnable, Messenger{
 		{
 			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
 			
-			// Jak juz gram to od razu odmawiam
-			if(inGame == true)
+									// ten fragment tylko wystepuje w testowaniu lokalnym
+			if(inGame == true && !peer.socketIn.getInetAddress().getHostAddress().equals("127.0.0.1"))		// jezeli dostalem obce zaproszenie 
 			{
 				Message msg = null;
 				try {					
-					msg = system.getSystemMessage(SystemType.ACCEPT, null);
+					msg = system.getSystemMessage(SystemType.REJECT, null);
 				} catch (ContentException e) {
 					e.printStackTrace();
 				}
@@ -147,7 +159,7 @@ public class Communication implements Runnable, Messenger{
 			
 			
 			
-			System.out.println("Dostales zaproszenie do gry od:" +  nick);
+			System.out.println("Invitation to a game from: " +  nick);
 			
 			// Tutaj musi nastapic wybor accepet albo reject wyslanie widomosci				<-----			
 			
@@ -170,7 +182,7 @@ public class Communication implements Runnable, Messenger{
 		void handleMsgAccept(Peer peer)					// dodac zmienna, ze j
 		{
 			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
-			System.out.println("Gracz: " +  nick + " - zaakceptowal");
+			System.out.println("Player: " +  nick + " - Accepted");
 			
 			invPlayers.remove(nick);
 			invPlayers.put(nick, InvStatus.ACCEPTED);
@@ -181,7 +193,7 @@ public class Communication implements Runnable, Messenger{
 		void handleMsgReject(Peer peer)
 		{
 			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
-			System.out.println("Gracz: " +  nick + " - odrzucil");
+			System.out.println("Player: " +  nick + " - Rejected");
 			
 			invPlayers.remove(nick);
 			invPlayers.put(nick, InvStatus.REJECTED);
@@ -190,13 +202,13 @@ public class Communication implements Runnable, Messenger{
 		}
 		void handleMsgStartGame(Peer peer)				// dodac metode startu gry jako takiej, ustawiæ zmienna inGame czy cos
 		{
-			System.out.println("Start gry ...");
+			System.out.println("The game starting ...");
 			// zmiana jakiegoœ swojego statusu na w grze
 			// jak ktos wtedy wysle mi zaproszenie to automat na reject
 		}
 		void handleMsgAbandon(Peer peer)				// 
 		{
-			System.out.println("Gra zostala porzucona ...");
+			System.out.println("The game has been abandoned ...");
 			inGame = false;
 		}
 		
@@ -204,16 +216,16 @@ public class Communication implements Runnable, Messenger{
 		void handleMsgDice(Peer peer, MsgDice msg)
 		{
 			System.out.print("From: " + ipToNick.get(peer.socketIn.getInetAddress().getHostAddress()));
-			System.out.println(" -- Wynik kosci:" + msg.getContent());
+			System.out.println(" -- Dice result:" + msg.getContent());
 		}
 		void handleMsgBoard(MsgBoard msg)			// podmienic board tam gdzie jest ona przechowywana
 		{
-			System.out.println("Aktualizacja Board ...");
+			System.out.println("Board actualization ...");
 			//this.board = msg.getContent();
 		}	
 		void handleMsgNode(MsgNode msg)			// problem z aktualizacja
 		{
-			System.out.println("Aktualizacja Node ...");
+			System.out.println("Node actualization ...");
 			/*
 			Node n = msg.getContent();			
 			int i = msg.getIndex();
@@ -224,7 +236,7 @@ public class Communication implements Runnable, Messenger{
 		}
 		void handleMsgTile(MsgTile msg)
 		{
-			System.out.println("Aktualizacja Tail ...");
+			System.out.println("Tail actualization ...");
 			/*
 			Tile t = msg.getContent();
 			int i = msg.getIndex();
@@ -234,10 +246,10 @@ public class Communication implements Runnable, Messenger{
 		}
 		void handleMsgResources(Peer peer, MsgResources msg)
 		{
-			System.out.println("Aktualizacja Resources ...");
+			System.out.println("Resources number actualization...");
 			
 			int n = msg.getContent();			
-			System.out.println("Gracz: " + ipToNick.get(peer.socketIn.getInetAddress().getHostAddress()) + "Ilosc surowcow: " + n);
+			System.out.println("Player: " + ipToNick.get(peer.socketIn.getInetAddress().getHostAddress()) + ", number of resources : " + n);
 			
 		}
 		
@@ -245,16 +257,18 @@ public class Communication implements Runnable, Messenger{
 		void handleMsgOffert(Peer peer, MsgOffert msg)								/* podobnie jak z zaproszeniami */
 		{			
 			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
-			System.out.println("Otrzymano oferte od: " + nick);
+			System.out.println();
+			System.out.println("--Offert from: " + nick);
 			
 			HashMap<String, Integer> icanget = msg.getGive();
 			HashMap<String, Integer> ihavetogive = msg.getGet();						
 			
-			System.out.println("Chce on dostac: " + ihavetogive);
-			System.out.println("Wzamian otrzymam: " + icanget);
+			System.out.println("What he wants: " + ihavetogive);
+			System.out.println("What i'ld get: " + icanget);
+			System.out.println();
 			
-			Message ms = trade.getTradeMessage(TradeType.NO);
-			//Message ms = trade.getTradeMessage(TradeType.YES);
+			//Message ms = trade.getTradeMessage(TradeType.NO);
+			Message ms = trade.getTradeMessage(TradeType.YES);
 			
 			try {
 				sendTo(nick, ms);
@@ -267,17 +281,17 @@ public class Communication implements Runnable, Messenger{
 		void handleMsgYes(Peer peer, MsgYes msg)
 		{
 			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
-			System.out.println("Gracz " + nick + " przyjal twoja oferte");
+			System.out.println("Player: " + nick + " has accepted your offert");
 					
 			invPlayers.remove(nick);
 			invPlayers.put(nick, InvStatus.ACCEPTED);
 			
-			System.out.println(invPlayers);			
+			System.out.println("Players" + invPlayers);			
 		}
 		void handleMsgNo(Peer peer, MsgNo msg)
 		{
 			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
-			System.out.println("Gracz " + nick + " odrzucil twoja oferte");			
+			System.out.println("Player " + nick + " has rejected your offert");			
 					
 			invPlayers.remove(nick);
 			invPlayers.put(nick, InvStatus.REJECTED);
@@ -287,7 +301,7 @@ public class Communication implements Runnable, Messenger{
 		void handleMsgDeal(Peer peer, MsgDeal msg)
 		{
 			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
-			System.out.println("Gracz " + nick + " dogadal sie z toba !");			
+			System.out.println("Deal with: " + nick);			
 		}
 		void handleMsgEndTrade(MsgEndTrade msg)
 		{
@@ -328,8 +342,9 @@ public class Communication implements Runnable, Messenger{
 	}
 	public void initCommunication(String myName, Collection<PlayerIP> players, Board board) throws IOException 
 	{
-		System.out.println("Inicjalizacja Communication");
-		System.out.println("Tworzenie po³¹czenia z graczami ...");
+		System.out.println("----Communication initialization----");
+		System.out.println("");
+				
 		playersIP = players;		
 		nickname = myName;			
 		peers = new HashMap<String,Peer>();
@@ -342,25 +357,27 @@ public class Communication implements Runnable, Messenger{
 		system = FactoryProducer.getFactory(FactoryType.SYSTEM);
 		trade = FactoryProducer.getFactory(FactoryType.TRADE);
 		
-		// inicjalizacja portu servera		
 		
-		try			// moze wystapic problem z utworzeniem, wtedy trzeba zmienic port i wyslac o tym wiadomosc
+		try			
 		{  
 			initServPort();		
-			System.out.println("Utworzono ServSocket, port: " + serv.getLocalPort());
+			System.out.println("ServSocket on port: " + serv.getLocalPort());
 		}
 		catch(IOException port)
 		{
 			System.err.println("B³¹d przy tworzeniu server socket.");			
 			throw new IOException();
 		}
-	
 		
-		// stworzenie peers, nawiazanie polaczen, nasluchiwanie na nowe polaczenia 	
-		System.out.println("Tworzenie nowego watka demona");
+		System.out.println("nickname: " + nickname);
+		System.out.println("players: " + nickname);
+		System.out.println("inGame: " + inGame);
+	
+																				 	
+		System.out.println("@Deamon thread - #Communication");
 		Thread deamon = new Thread(this,"#Communication");
 		deamon.setDaemon(true);
-		deamon.start();
+		deamon.start();														// stworzenie peers, nawiazanie polaczen, nasluchiwanie na nowe polaczenia
 		
 	}
 	
@@ -371,7 +388,9 @@ public class Communication implements Runnable, Messenger{
 	}
 	private synchronized void initPeers() throws IOException, ClassNotFoundException
 	{			
-		System.out.println("inicjalizacja Peers ... (synchronized)");
+		System.out.println();
+		System.out.println("--Peers initialization ..."); 
+		System.out.println();
 		int i = 0;
 		for(PlayerIP p : playersIP)
 		{	
@@ -388,30 +407,29 @@ public class Communication implements Runnable, Messenger{
 			catch(IOException e)
 			{
 				System.out.println("Problem z utworzeniem po³aczenia z: " + p.getIp());					
-				//playersIP.remove(p);
-				//continue;
 			}
 			
 			i++;
-		}			
+		}		
+		System.out.println("--Peers initialization finished");
 	}	
 	private void listenPort()
 	{
+		System.out.println("--Listening servport ...");
+		System.out.println();
+		
 		// nasluchiwanie
 		while(true)
 		{
 			try 
 			{
 				Socket client = serv.accept();
-				System.out.println("zakaceptowano nowe polaczenie, które przysz³o z: " + client.getInetAddress() + " : " + client.getPort());
-				System.out.println("Aktualnie przypisany mu port: " + client.getLocalPort());		
+				System.out.println("New connection from: " + client.getInetAddress() + " : " + client.getPort());					
 								
-				ObjectInputStream input = new ObjectInputStream(client.getInputStream());								
+				ObjectInputStream input	= new ObjectInputStream(client.getInputStream());								
 				Message msg	= (Message)input.readObject();								
 				
-				
-				
-				// W sumie zawsze bêdzie tylko MsgPeer albo b³¹d				
+							
 				if(msg.getType() == Type.SYSTEM)
 					if(((SystemMessage)msg).getSubType()==SystemMessage.SystemType.PEER)
 					{
@@ -419,8 +437,12 @@ public class Communication implements Runnable, Messenger{
 						if(newPeer == null)
 							continue;
 												
-						System.out.println("Tworzenie nowego watka demona receiver dla: " + ((MsgPeer)msg).getContent());						
-						Thread deamon = new Thread(new Receiver(newPeer, this),"#" + ((MsgPeer)msg).getContent());
+						String thread = ipToNick.get(client.getInetAddress().getHostAddress());
+						
+						System.out.println("@Deamon thread - " + "#" + thread);	
+						System.out.println();
+						
+						Thread deamon = new Thread(new Receiver(newPeer, this),"#" + thread);
 						deamon.setDaemon(true);
 						deamon.start();
 					}						
@@ -456,7 +478,7 @@ public class Communication implements Runnable, Messenger{
 		}	// while
 		
 	}	
-	private void sendTo(String nick, Message msg) throws IOException		// send to peer not only in my game
+	synchronized private void sendTo(String nick, Message msg) throws IOException		// send to peer not only in my game
 	{
 		peers.get(nick).send(msg);		
 	}
@@ -510,18 +532,18 @@ public class Communication implements Runnable, Messenger{
 	{
 		try 
 		{
-			System.out.println("");
-			System.out.println("---" + Thread.currentThread().getName() + " sleep for " + time + " milisec.");
-			System.out.println("");
+			//System.out.println("");
+			//System.out.println("//" + Thread.currentThread().getName() + " sleep for " + time + " milisec.");
+			//System.out.println("");
 			Thread.sleep(time);
 		} catch (InterruptedException e) 
 		{		
 			e.printStackTrace();
 		}
 		
-		System.out.println("");
-		System.out.println("---" + Thread.currentThread().getName() + " is awake.");
-		System.out.println("");
+		//System.out.println("");
+		//System.out.println("---" + Thread.currentThread().getName() + " is awake.");
+		//System.out.println("");
 	}
 	
 	/*Public*/		
@@ -540,7 +562,7 @@ public class Communication implements Runnable, Messenger{
 		{
 			if(it.next().address.equals(p.address))
 			{
-				System.out.println("Istenieje juz taki PlayerIP");
+				System.out.println("PlayerIP exisists");
 				return;
 			}
 		}
@@ -555,7 +577,7 @@ public class Communication implements Runnable, Messenger{
 			// jesli tak to dodaj tylko do playersIP a initPeers zrobi reszte
 			if((peers.size()!=0 && playersIP.size()>1) || (playersIP.size()==1))
 				peers.put(p.nickname , new Peer(nickname, p.getIp(), servport));		// proba polaczenia i wyslania wiadomosci z nickiem			
-			System.out.println("dodano nowego gracza");
+			System.out.println("Adding new player finished");
 			
 		}
 		catch(IOException e)
@@ -568,20 +590,18 @@ public class Communication implements Runnable, Messenger{
 		
 	public void sendInvitations(Collection<String> names)
 	{				
-		if(inGame == true)					// jezeli juz przyjalem jedno zaproszenie
+		if(inGame == true)																	// jezeli juz przyjalem jedno zaproszenie
 			return;
-		
-		AbstractMessageFactory sm = FactoryProducer.getFactory(FactoryType.SYSTEM);
+				
 		Message inv = null;
 		try {
-			inv = sm.getSystemMessage(SystemType.INVITATION, null);
+			inv = system.getSystemMessage(SystemType.INVITATION, null);
 		} catch (ContentException e) {
 			e.printStackTrace();
 		}
 		
 		for(String name : names)
-		{
-			
+		{			
 			invPlayers.put(name, InvStatus.WAIT);
 			try {
 				sendTo(name, inv);
@@ -591,13 +611,12 @@ public class Communication implements Runnable, Messenger{
 				invPlayers.remove(name);
 			}
 		}
-		inGame = true;							// jak sam tworze gre to w niej jestem :P
-		System.out.println(inGame);
+		inGame = true;																		// jak sam tworze gre to w niej jestem :P
+		System.out.println("Invitations sended, Players status:");
 		System.out.println(invPlayers);
 	}
-	public boolean startGame()
+	synchronized public boolean startGame()												// synchronizowane, by nikt w tej chwili nie przyjal zaproszenia...
 	{
-			
 		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
 		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
 		LinkedList<String> toRemove = new LinkedList<String>();
@@ -614,7 +633,7 @@ public class Communication implements Runnable, Messenger{
 		// sprawdzenie ilosci graczy
 		if(i<3 || i>4)
 		{
-			System.out.println("Bledna ilosc graczy: " + invPlayers);
+			System.out.println("Wrong number of players");
 			return false;
 		}
 						
@@ -738,12 +757,13 @@ public class Communication implements Runnable, Messenger{
 		{
 			invPlayers.remove(name);
 			invPlayers.put(name, InvStatus.WAIT);
-		}
+		}		
+		System.out.println("Players: " + invPlayers);													
+		
 		
 		Message msg = null;
 		msg = this.trade.getTradeMessage(TradeType.OFFERT, give, get);			
-		
-		
+			
 		
 		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
 		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
@@ -801,7 +821,7 @@ public class Communication implements Runnable, Messenger{
 	}
 	public void sendTrade()
 	{
-		System.out.println("Konczenie handlu");
+		System.out.println("--Closing trade--");
 		Set<String> s = invPlayers.keySet();
 				
 		Message ms = trade.getTradeMessage(TradeType.END_TRADE);
@@ -825,83 +845,64 @@ public class Communication implements Runnable, Messenger{
 	 */
 	public void run() 
 	{
-		System.out.println(Thread.currentThread().getName() + ", playersIP.size: " + playersIP.size());		
+				
 		// inicjalizacji wszystkich peer. Wysy³anie od razu wiadomoœci o nicku
 		try 
 		{
 			initPeers();								
 		} 
 		catch (Exception e1) {
-			System.err.println("Problem z nas³uchiwaniem, odebraniem po³¹czenia");
+			System.err.println("Problem z nas³uchiwaniem, odebraniem po³¹czenia  -  initPeers");
 			e1.printStackTrace();
 		}											
 		
-		
-		
-		// Wypisanie diagnostyczne na standardowe wyjscie
-		System.out.println("Wys³anie wiadomoœci online(PEER) do wszystkich graczy.");		
-		System.out.println("");
-		System.out.println("Collection PlayerIP");
+			
+		System.out.println();
+		System.out.println("Collection PlayerIP at the moment");
 		for(PlayerIP p : playersIP)
-			System.out.print(p.nickname + ": " + p.address + "; ");							
+			System.out.println(p.nickname + ": " + p.address + "; ");							
 		System.out.println("");
 		
-		
-		// Nasluchiwanie portu, nowe polaczenia		
-		listenPort();
-		
-		
+						
+		listenPort();																		// Nasluchiwanie portu, nowe polaczenia				
 	}
 	
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 			
-		/*
-		ExecutorService exec = Executors.newSingleThreadExecutor();
-	
-		exec.execute(com);		
-		exec.shutdown();
-		*/
-		
-		LinkedList<PlayerIP> players = new LinkedList();	// nick i ip z hamachi
+			
+		LinkedList<PlayerIP> players = new LinkedList();									// nick i ip z hamachi
 		players.add(new PlayerIP("127.0.0.1"));
-		//players.add(new PlayerIP("25.155.87.12"));			
-		
-		Board board = Board.getInstance();
+			
+		Board board = Board.getInstance();													// na potrzeby handlu
 		board.loadMatrix();
 		board.setNeighbours();
 	
-		
-		System.out.println(board);
-				
-		// inicjalizacja portu, wyslanie wiadomosci
-		Communication com = Communication.getInstance();		
+		Communication com = Communication.getInstance();									// tworzenie komunikacji					
 		com.initCommunication("Sebastian", players, board);
 		
+		com.sleep(5000);
 		
+		System.out.println("----Communication initialization finished----");
+		System.out.println();		
 		
-		
-		
-		
-		// od razu odpalenie watka demona
-		System.out.println("dodawanie nowego gracza ... (synchronized)");
+		/*System.out.println("Adding new player ... (synchronized)");							// dodawanie nowego gracza
 		com.addPlayerIP(new PlayerIP("127.0.0.1"));	
+		*/
 		
-						
-		Thread.yield();								
-		// Tutaj musi coœ siê dziaæ by tamten w¹tek mia³ mo¿liwoœc zaktualizowania danych					
-		com.sleep(5000);														// sleep
+		com.sleep(5000);																	// sleep
 		
-		System.out.println("");
-		
-		System.out.println("Collection PlayerIP:");
+					
+		System.out.println("Collection PlayerIP:");											// wyswietl playersIP
 		for(PlayerIP p : players)
 		{
 			System.out.println(p);
 		}
 		
+		
+		
 		System.out.println("");
-		System.out.println("ipToNick");		
+		System.out.println("ipToNick");														// wyswietl ipToNick
 		Set<Entry<String, String>> entrySet = com.ipToNick.entrySet();
 		Iterator<Entry<String, String>> it = entrySet.iterator();
 		while(it.hasNext())
@@ -911,77 +912,81 @@ public class Communication implements Runnable, Messenger{
 		}				
 		System.out.println("");
 		
-		
+					
 				
 		System.out.println("");
-		System.out.println("peers size: " + com.peers.size());
-		
-						
-		// Sending msg
-		AbstractMessageFactory mf = FactoryProducer.getFactory(FactoryType.UPDATE);
-		Message msg = null;
-		try {
-			msg = mf.getUpdateMessage(UpdateMessage.UpdateType.DICE, 6);
-			System.out.println("Wysylanie wiadomosci DICE=6");
-			com.sendTo("Sebastian", msg);			
-			
-			/*
-			mf = FactoryProducer.getFactory(FactoryType.SYSTEM);			
-			msg = mf.getSystemMessage(SystemType.INVITATION, null);
-			com.sendTo("Sebastian", msg);
-			*/
-			
-		} catch (ContentException e) {
-			e.printStackTrace();
-		}		
-		
-		
+		System.out.println(com.peers);
+		System.out.println("peers size: " + com.peers.size());								// wyswietl ilosc peers'ow
+								
+
 		// tworzenie gry
-		LinkedList<String> invited = new LinkedList<String>();
-		invited.add("Sebastian");
-		
-		System.out.println(com.inGame);
+		LinkedList<String> invited = new LinkedList<String>();								// lista graczy zaproszonych
+		invited.add("Sebastian");															// docelowo wybor myszka
 	
-		
-		System.out.println("Sending invitations to: " + invited);
+		System.out.println("");
+		System.out.println("--Sending invitations to: " + invited);							// wyswalenie zaproszen
+		System.out.println("");
 		com.sendInvitations(invited);
 	
-		com.sleep(5000);													// sleep
+		com.sleep(5000);																	// sleep
 
-		boolean game = com.startGame();
-		System.out.println(game);
+
+		System.out.println();
+		System.out.println("--Starting the game ...");
+		System.out.println();
+		System.out.println(com.invPlayers);	
 		
-		Messenger msger = com;
-		msger.sendUpdate(board);
-		
-		System.out.println(board.getNode(5) + ", " + board.getNode(6));
-		msger.sendUpdate(board.getNode(5), 6);
-		msger.sendUpdate(board.getTile(5), 5);
-		msger.sendUpdate(NumberOf.DICE, 5);
-		msger.sendUpdate(NumberOf.RESOURCES, 5);
+		boolean game = com.startGame();														// start gry
+		if(game == true)																	// jak sie nie uda to nie usuwa liste zaproszonych
+			System.out.println("Welcome in Catan world!");
+		else
+			System.out.println("Starting game failed!");				
 		
 		
+		/* Testing Update Messages */
+		
+		System.out.println();
+		System.out.println("----Testing Update Messages----");
+		System.out.println();
+		
+		Messenger msger = com;																// wysylanie wiadomosci
+		msger.sendUpdate(board);															// Board Update
+				
+		msger.sendUpdate(board.getNode(5), 6);												// Node Update
+		msger.sendUpdate(board.getTile(5), 5);												// Tile Update
+		msger.sendUpdate(NumberOf.DICE, 5);													// Dice Update
+		msger.sendUpdate(NumberOf.RESOURCES, 5);											// Resources Update
+		
+		com.sleep(5000);
+		
+		
+		/* Testing Trade Messages */
+		
+		System.out.println();
+		System.out.println("----Testing Trade Messages----");
+		System.out.println();
+ 
 		HashMap<String, Integer> give = new HashMap<String, Integer>();
 		give.put("ore", 2);		
 		HashMap<String, Integer> get = new HashMap<String, Integer>();
 		get.put("wood", 2);
 		
 		
-		System.out.println("Wysylanie oferty ...");
-		System.out.println(com.invPlayers);
-		msger.sendTrade(give, get);
+		System.out.println("Sending offert ...");
+		System.out.println();
 		
-		//com.abandonGame();
+		msger.sendTrade(give, get);															// wyslanie oferty handlowej
 		
-		com.sleep(3000);													// sleep
+		
+		com.sleep(3000);																	// sleep
 				
-		msger.sendTrade();
+		msger.sendTrade();																	// zakoncz handel
 				
-		com.sleep(3000);													// sleep
+		com.sleep(3000);																	// sleep
 		
-		System.out.println(com.invPlayers);
-		System.out.println(board);
-		System.out.println(board.getNode(5) + ", " + board.getNode(6));
+		System.out.println();
+		System.out.println("Players: " + com.invPlayers);									// wyswietlenie statusu graczy w grze									
+		System.out.println();
 		
 		System.out.println("all threads:");
 		
@@ -990,7 +995,7 @@ public class Communication implements Runnable, Messenger{
 		{
 			System.out.println(t.getName());
 		}
-		
+	
 	}
 	
 	

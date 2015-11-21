@@ -5,7 +5,7 @@ import database.Board;
 public class MsgBoard extends UpdateMessage 
 {
 
-	private Board content;
+	private Board content = null;
 	
 	MsgBoard(Board board) {
 		super(UpdateMessage.UpdateType.BOARD);

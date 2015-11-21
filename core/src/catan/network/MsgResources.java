@@ -3,7 +3,7 @@ package catan.network;
 public class MsgResources extends UpdateMessage 
 {
 	
-	private Integer content;
+	private Integer content = null;
 	
 	MsgResources(Integer result) {
 		super(UpdateMessage.UpdateType.RESOURCES);

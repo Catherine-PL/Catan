@@ -137,8 +137,7 @@ public class Board implements Serializable {
 		 //wczytanie macierzy sasiedztwa
 			Scanner scanner;
 			try {
-				File f = new File("adjencymatrix.txt");
-				System.out.println(f.getAbsolutePath());
+				File f = new File("adjencymatrix.txt");				
 				scanner = new Scanner(new File("adjencymatrix.txt"));
 				for(int i=0;i<54;i++){
 		    		for(int j=0;j<54;j++){

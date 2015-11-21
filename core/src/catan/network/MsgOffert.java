@@ -6,8 +6,8 @@ import database.Tile;
 
 public class MsgOffert extends TradeMessage {
 
-	private HashMap<String, Integer> give;
-	private HashMap<String, Integer> get;
+	private HashMap<String, Integer> give = null;
+	private HashMap<String, Integer> get = null;
 	
 	MsgOffert(HashMap<String, Integer> give, HashMap<String, Integer> get) 
 	{

@@ -4,7 +4,7 @@ import database.Node;
 
 public class MsgNode extends UpdateMessage
 {
-	private Node content;
+	private Node content = null;
 	private int index;
 	
 	MsgNode(Node node, int index) {

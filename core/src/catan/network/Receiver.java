@@ -2,6 +2,7 @@ package catan.network;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.OptionalDataException;
 import java.net.Socket;
 
 class Receiver implements Runnable {								//	ObjectStreamException <-- UWAGA
@@ -139,10 +140,9 @@ class Receiver implements Runnable {								//	ObjectStreamException <-- UWAGA
 					
 			while(true)
 			{
-				System.out.println(Thread.currentThread().getName() + " - oczekiwanie na wiadomosc...");
-				Message msg = (Message)peer.receive();
-			
-			
+				//System.out.println(Thread.currentThread().getName() + " - oczekiwanie na wiadomosc...");
+				Message msg = (Message)peer.receive();				// Problem z czytaniem czesci objektow
+																	// OptionalDataException albo CastExcepotion
 				switch (msg.getType())
 				{
 					case SYSTEM:
