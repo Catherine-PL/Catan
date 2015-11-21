@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
-class Receiver implements Runnable {
+class Receiver implements Runnable {								//	ObjectStreamException <-- UWAGA
 
 	//String nickname;
 	Peer peer;
@@ -21,14 +21,11 @@ class Receiver implements Runnable {
 	
 	
 	
-	private void handleMessage(SystemMessage msg) throws IOException 		// OBSLUGA WYJATKU !!!!
+	private void handleMessage(SystemMessage msg)		
 	{
 		//PEER, INVITATION, ACCEPT, REJECT, PLAY, ABANDON, END_TURN, END_GAME;
 		switch (msg.getSubType())
 		{
-			case PEER:
-				com.msgHandler.handleMsgPeer(peer.socketIn, peer.input, (MsgPeer)msg);
-				break;
 			
 			case INVITATION:
 				com.msgHandler.handleMsgInvitation(peer);
@@ -62,7 +59,7 @@ class Receiver implements Runnable {
 		}
 		
 	}
-	private void handleMessage(UpdateMessage msg) throws IOException 		// OBSLUGA WYJATKU !!!!
+	private void handleMessage(UpdateMessage msg)		
 	{
 		//DICE;
 		switch (msg.getSubType())
@@ -93,7 +90,35 @@ class Receiver implements Runnable {
 		}
 		
 	}
-	
+	private void handleMessage(TradeMessage msg)
+	{
+		switch (msg.getSubType())
+		{
+			case OFFERT:
+				com.msgHandler.handleMsgOffert(peer,(MsgOffert)msg);
+				break;
+				
+			case YES:
+				com.msgHandler.handleMsgYes(peer, (MsgYes)msg);
+				break;
+				
+			case NO:
+				com.msgHandler.handleMsgNo(peer, (MsgNo)msg);
+				break;
+				
+			case DEAL:
+				com.msgHandler.handleMsgDeal(peer, (MsgDeal)msg);
+				break;
+				
+			case END_TRADE:
+				com.msgHandler.handleMsgEndTrade((MsgEndTrade)msg);
+				break;
+
+			default:
+				System.err.println("Otrzymana wiadomosc jest bledna");
+				break;					
+		}
+	}
 	
 	@Override
 	public void run() {
@@ -129,6 +154,7 @@ class Receiver implements Runnable {
 						break;
 					
 					case TRADE:
+						handleMessage((TradeMessage)msg);
 						break;
 				
 							
@@ -142,8 +168,9 @@ class Receiver implements Runnable {
 			e.printStackTrace();
 		}
 		catch(IOException e)
-		{
-			System.out.println("Utracono polaczenie: " + Thread.currentThread().getName());
+		{			
+			System.err.println("Utracono polaczenie: " + Thread.currentThread().getName());
+			e.printStackTrace();
 		} 
 		
 	}

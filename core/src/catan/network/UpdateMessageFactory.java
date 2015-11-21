@@ -1,5 +1,7 @@
 package catan.network;
 
+import java.util.HashMap;
+
 import catan.network.SystemMessage.SystemType;
 import catan.network.TradeMessage.TradeType;
 import catan.network.UpdateMessage.UpdateType;
@@ -33,7 +35,7 @@ public class UpdateMessageFactory extends AbstractMessageFactory {
 				return new MsgResources((Integer) content);
 			
 		default:
-			System.out.println("Podany zosta³ niepoprawny typ wiadomosci");
+			System.err.println("Podany zosta³ niepoprawny typ wiadomosci");
 			return null;
 		
 		}
@@ -57,7 +59,7 @@ public class UpdateMessageFactory extends AbstractMessageFactory {
 				return new MsgNode((Node) content, index);
 		
 		default:
-			System.out.println("Podany zosta³ niepoprawny typ wiadomosci");
+			System.err.println("Podany zosta³ niepoprawny typ wiadomosci");
 			return null;
 		}
 		
@@ -66,7 +68,14 @@ public class UpdateMessageFactory extends AbstractMessageFactory {
 	SystemMessage getSystemMessage(SystemType type, Object content) throws ContentException {
 		return null;
 	}
-	TradeMessage getTradeMessage(TradeType type, Object content) throws ContentException {
+	@Override
+	TradeMessage getTradeMessage(TradeType type) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	TradeMessage getTradeMessage(TradeType type, HashMap<String, Integer> content, HashMap<String, Integer> content2) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

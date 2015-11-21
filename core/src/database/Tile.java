@@ -1,6 +1,8 @@
 package database;
 
-public class Tile {
+import java.io.Serializable;
+
+public class Tile implements Serializable{
 	private String type;
 	private Boolean thiefState;
 	

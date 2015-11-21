@@ -1,10 +1,12 @@
 package database;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Vector;
 import java.util.function.Consumer;
 
 
-public class Node extends Element {
+public class Node extends Element implements Serializable {
 	//private Boolean city;//czy jest miasto true-tak false-nie
 	//private Boolean settlement;//czy jest osada true-tak false-nie
 	//lepsza chyba logika 3-wartoœciowa
@@ -16,6 +18,12 @@ public class Node extends Element {
 	private ArrayList <Node> roads=new ArrayList <Node>();//przedtem by3o <Road>
 	private ArrayList <Node> noRoads=new ArrayList <Node>(); 
 	
+	
+	public String toString()
+	{
+		return new String(Integer.toString(nodeNumber));
+	}
+	
 	public Node(int id){
 		nodeNumber = id;
 	}
@@ -26,7 +34,7 @@ public class Node extends Element {
 	}		
 	//dodaj tile do wektora  nearResources
 	public void addNearResources(Tile tile) {
-		this.nearResources.addElement(tile);
+		this.nearResources.add(tile);
 	}
 	
 	public ArrayList <Node> getNeighbours(){
@@ -34,7 +42,7 @@ public class Node extends Element {
 	}
 	
 	public void addNeighbour(Node node){
-		neighbours.addElement(node);
+		neighbours.add(node);
 	}
 	
 	//sprawdza czy s¹siednie nody s¹ zabudowane

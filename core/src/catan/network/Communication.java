@@ -19,6 +19,7 @@ import catan.network.Communication.InvStatus;
 import catan.network.FactoryProducer.FactoryType;
 import catan.network.Message.Type;
 import catan.network.SystemMessage.SystemType;
+import catan.network.TradeMessage.TradeType;
 import catan.network.UpdateMessage.UpdateType;
 import database.Board;
 import database.Node;
@@ -39,7 +40,8 @@ public class Communication implements Runnable, Messenger{
 	{
 		WAIT, ACCEPTED, REJECTED;
 	}
-	class MessageHandler 
+	
+	class MessageHandler 									/* Dodac metody ktore beda wywolywac podmiane informacji na nowe */
 	{		
 		private Board board;
 		
@@ -120,7 +122,7 @@ public class Communication implements Runnable, Messenger{
 			}
 			return peer;
 		}
-		void handleMsgInvitation(Peer peer)													// trzeba to jakos zgrac, wybor:  accept, reject
+		void handleMsgInvitation(Peer peer)													/* trzeba to jakos zgrac, wybor:  accept, reject */
 		{
 			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
 			
@@ -207,23 +209,27 @@ public class Communication implements Runnable, Messenger{
 		void handleMsgBoard(MsgBoard msg)			// podmienic board tam gdzie jest ona przechowywana
 		{
 			System.out.println("Aktualizacja Board ...");
+			//this.board = msg.getContent();
 		}	
-		void handleMsgNode(MsgNode msg)
+		void handleMsgNode(MsgNode msg)			// problem z aktualizacja
 		{
 			System.out.println("Aktualizacja Node ...");
-			
-			Node n = msg.getContent();
+			/*
+			Node n = msg.getContent();			
 			int i = msg.getIndex();
+			System.out.println("Node: " + n + " on index: " + i);
 			board.setNode(n, i);
-			
+			System.out.println(n.getNodeNumber() + ", " + board.getNode(i));
+			*/
 		}
 		void handleMsgTile(MsgTile msg)
 		{
 			System.out.println("Aktualizacja Tail ...");
-			
+			/*
 			Tile t = msg.getContent();
 			int i = msg.getIndex();
 			board.setTile(t, i);
+			*/
 			
 		}
 		void handleMsgResources(Peer peer, MsgResources msg)
@@ -235,6 +241,63 @@ public class Communication implements Runnable, Messenger{
 			
 		}
 		
+		/* TradeMessage */
+		void handleMsgOffert(Peer peer, MsgOffert msg)								/* podobnie jak z zaproszeniami */
+		{			
+			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
+			System.out.println("Otrzymano oferte od: " + nick);
+			
+			HashMap<String, Integer> icanget = msg.getGive();
+			HashMap<String, Integer> ihavetogive = msg.getGet();						
+			
+			System.out.println("Chce on dostac: " + ihavetogive);
+			System.out.println("Wzamian otrzymam: " + icanget);
+			
+			Message ms = trade.getTradeMessage(TradeType.NO);
+			//Message ms = trade.getTradeMessage(TradeType.YES);
+			
+			try {
+				sendTo(nick, ms);
+			} catch (IOException e) {
+				System.err.println("Utracono polaczenie z: " + nick);
+				disconnected(nick);				
+			}
+			
+		}
+		void handleMsgYes(Peer peer, MsgYes msg)
+		{
+			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
+			System.out.println("Gracz " + nick + " przyjal twoja oferte");
+					
+			invPlayers.remove(nick);
+			invPlayers.put(nick, InvStatus.ACCEPTED);
+			
+			System.out.println(invPlayers);			
+		}
+		void handleMsgNo(Peer peer, MsgNo msg)
+		{
+			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
+			System.out.println("Gracz " + nick + " odrzucil twoja oferte");			
+					
+			invPlayers.remove(nick);
+			invPlayers.put(nick, InvStatus.REJECTED);
+			System.out.println(invPlayers);
+			
+		}
+		void handleMsgDeal(Peer peer, MsgDeal msg)
+		{
+			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
+			System.out.println("Gracz " + nick + " dogadal sie z toba !");			
+		}
+		void handleMsgEndTrade(MsgEndTrade msg)
+		{
+			Set<String> s = invPlayers.keySet();
+			for(String nick : s)
+			{
+				invPlayers.remove(nick);
+				invPlayers.put(nick, InvStatus.WAIT);
+			}
+		}
 		
 	}						
 	
@@ -249,8 +312,8 @@ public class Communication implements Runnable, Messenger{
 	final int						servport = 8080;	
 	
 	MessageHandler					msgHandler;
-	Map<String, InvStatus>			invPlayers;		
-	AbstractMessageFactory			update;
+	Map<String, InvStatus>			invPlayers;				// <-- W grze: przechowuje nicki graczy bedacych ze mna w grze, ich TradeStatus
+	AbstractMessageFactory			update;					//  Przed gra: przechowuje niki peerow i ich odpowiedzi na moje zaproszenie
 	AbstractMessageFactory			trade;
 	AbstractMessageFactory			system;
 	
@@ -397,7 +460,7 @@ public class Communication implements Runnable, Messenger{
 	{
 		peers.get(nick).send(msg);		
 	}
-	private void sendToAll(Message msg)										// send to everyone in invPlayers
+	private void sendToAll(Message msg)										// send to everyone in invPlayers, ---> Mozna dodac wzorzec w zaleznosci od warunku <---
 	{
 		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
 		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
@@ -411,6 +474,7 @@ public class Communication implements Runnable, Messenger{
 			catch (IOException ex) 
 			{
 				System.err.println("Utracono polaczenie z: " + e.getKey());
+				ex.printStackTrace();
 				disconnected(e.getKey());
 				invPlayers.remove(e.getKey());
 			}
@@ -531,7 +595,7 @@ public class Communication implements Runnable, Messenger{
 		System.out.println(inGame);
 		System.out.println(invPlayers);
 	}
-	public void startGame()
+	public boolean startGame()
 	{
 			
 		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
@@ -548,10 +612,10 @@ public class Communication implements Runnable, Messenger{
 		}
 		
 		// sprawdzenie ilosci graczy
-		if(i<3 || i>5)
+		if(i<3 || i>4)
 		{
 			System.out.println("Bledna ilosc graczy: " + invPlayers);
-			return ;
+			return false;
 		}
 						
 		
@@ -592,7 +656,7 @@ public class Communication implements Runnable, Messenger{
 		for(String nick : toRemove)
 			invPlayers.remove(nick);
 		
-		
+		return true;
 		
 		
 	}
@@ -668,7 +732,93 @@ public class Communication implements Runnable, Messenger{
 		sendToAll(msg);	
 	}
 	
-	
+	public void sendTrade(HashMap<String, Integer> give, HashMap<String, Integer> get) 
+	{
+		for(String name : invPlayers.keySet())
+		{
+			invPlayers.remove(name);
+			invPlayers.put(name, InvStatus.WAIT);
+		}
+		
+		Message msg = null;
+		msg = this.trade.getTradeMessage(TradeType.OFFERT, give, get);			
+		
+		
+		
+		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
+		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
+		while(it.hasNext())
+		{
+			Entry<String, InvStatus> e = it.next();		
+			try
+			{
+				if(e.getValue() != InvStatus.REJECTED)
+					sendTo(e.getKey(), msg);
+			}
+			catch (IOException ex) 
+			{
+				System.err.println("Utracono polaczenie z: " + e.getKey());
+				ex.printStackTrace();
+				disconnected(e.getKey());
+				invPlayers.remove(e.getKey());
+			}
+			
+		}
+		
+		
+	}		
+	public void sendTrade(String nick) 
+	{
+		Message ms = trade.getTradeMessage(TradeType.DEAL);
+		
+		try {
+			sendTo(nick, ms);
+		} catch (IOException e) {
+			System.err.println("Utracono polaczenie z: " + nick);			
+			disconnected(nick);
+			invPlayers.remove(nick);
+			e.printStackTrace();
+		}
+		
+		Set<String> s = invPlayers.keySet();
+		s.remove(nick);
+		
+		ms = trade.getTradeMessage(TradeType.END_TRADE);
+		for(String name : s)
+		{
+			try {
+				sendTo(name, ms);
+				invPlayers.remove(name);
+				invPlayers.put(name, InvStatus.WAIT);
+			} catch (IOException e) {
+				System.err.println("Utracono polaczenie z: " + name);			
+				disconnected(name);
+				invPlayers.remove(name);
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	public void sendTrade()
+	{
+		System.out.println("Konczenie handlu");
+		Set<String> s = invPlayers.keySet();
+				
+		Message ms = trade.getTradeMessage(TradeType.END_TRADE);
+		for(String name : s)
+		{
+			try {
+				sendTo(name, ms);
+				invPlayers.remove(name);
+				invPlayers.put(name, InvStatus.WAIT);
+			} catch (IOException e) {
+				System.err.println("Utracono polaczenie z: " + name);			
+				disconnected(name);
+				invPlayers.remove(name);
+				e.printStackTrace();
+			}
+		}		
+	}
 	
 	/**
 	 * Method which is necessary to run a thread and it is done in initCommunication, so don't run it!
@@ -720,10 +870,15 @@ public class Communication implements Runnable, Messenger{
 		Board board = Board.getInstance();
 		board.loadMatrix();
 		board.setNeighbours();
+	
 		
+		System.out.println(board);
+				
 		// inicjalizacja portu, wyslanie wiadomosci
 		Communication com = Communication.getInstance();		
 		com.initCommunication("Sebastian", players, board);
+		
+		
 		
 		
 		
@@ -793,12 +948,41 @@ public class Communication implements Runnable, Messenger{
 	
 		com.sleep(5000);													// sleep
 
-		com.startGame();
-	
+		boolean game = com.startGame();
+		System.out.println(game);
+		
+		Messenger msger = com;
+		msger.sendUpdate(board);
+		
+		System.out.println(board.getNode(5) + ", " + board.getNode(6));
+		msger.sendUpdate(board.getNode(5), 6);
+		msger.sendUpdate(board.getTile(5), 5);
+		msger.sendUpdate(NumberOf.DICE, 5);
+		msger.sendUpdate(NumberOf.RESOURCES, 5);
+		
+		
+		HashMap<String, Integer> give = new HashMap<String, Integer>();
+		give.put("ore", 2);		
+		HashMap<String, Integer> get = new HashMap<String, Integer>();
+		get.put("wood", 2);
+		
+		
+		System.out.println("Wysylanie oferty ...");
+		System.out.println(com.invPlayers);
+		msger.sendTrade(give, get);
+		
 		//com.abandonGame();
 		
-		com.sleep(5000);													// sleep
+		com.sleep(3000);													// sleep
 				
+		msger.sendTrade();
+				
+		com.sleep(3000);													// sleep
+		
+		System.out.println(com.invPlayers);
+		System.out.println(board);
+		System.out.println(board.getNode(5) + ", " + board.getNode(6));
+		
 		System.out.println("all threads:");
 		
 		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();

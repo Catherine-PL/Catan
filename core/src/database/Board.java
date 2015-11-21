@@ -4,13 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Board {
+public class Board implements Serializable {
 	private Map<Character ,Integer> letterToNumber = new HashMap<Character, Integer>();
 	public int thiefPosition=0;
 	private Node[] nodes = new Node[54];
@@ -136,6 +137,8 @@ public class Board {
 		 //wczytanie macierzy sasiedztwa
 			Scanner scanner;
 			try {
+				File f = new File("adjencymatrix.txt");
+				System.out.println(f.getAbsolutePath());
 				scanner = new Scanner(new File("adjencymatrix.txt"));
 				for(int i=0;i<54;i++){
 		    		for(int j=0;j<54;j++){
@@ -178,7 +181,7 @@ public class Board {
 		board.setNeighbours();
 	
 		//test, wypisanie s¹siadów
-		/*
+		
 		for(int i=0;i<54;i++){
 			System.out.print(i + " - ");
 			if(!board.nodes[i].getNeighbours().isEmpty()){
@@ -187,7 +190,7 @@ public class Board {
 				} 
 			}
 	        System.out.println();
-		}*/
+		}
 	
 	}
 	

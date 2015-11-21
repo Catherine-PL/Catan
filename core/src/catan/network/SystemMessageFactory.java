@@ -1,5 +1,7 @@
 package catan.network;
 
+import java.util.HashMap;
+
 import catan.network.TradeMessage.TradeType;
 import catan.network.UpdateMessage.UpdateType;
 
@@ -58,9 +60,6 @@ class SystemMessageFactory extends AbstractMessageFactory {
 	}
 
 
-	TradeMessage getTradeMessage(TradeType type, Object content) throws ContentException {
-		return null;
-	}
 	UpdateMessage getUpdateMessage(UpdateType type, Object content) throws ContentException {
 		return null;
 	}
@@ -68,6 +67,20 @@ class SystemMessageFactory extends AbstractMessageFactory {
 
 	@Override
 	UpdateMessage getUpdateMessage(UpdateType type, Object content, int index) throws ContentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	TradeMessage getTradeMessage(TradeType type) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	TradeMessage getTradeMessage(TradeType type, HashMap<String, Integer> content, HashMap<String, Integer> content2) {
 		// TODO Auto-generated method stub
 		return null;
 	}		
