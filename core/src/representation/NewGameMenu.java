@@ -64,11 +64,11 @@ public class NewGameMenu  extends View implements InputProcessor
 		batch.draw(name, 95, 220);
 		//TODO
 		batch.draw(name, 95, 160);	
-		batch.draw(arrowr, 390, 350);	
-		batch.draw(arrowl, 60, 350);
+		batch.draw(arrowr, 390, 450);	
+		batch.draw(arrowl, 60, 450);
 		batch.draw(allusers, 650, 650);
 		batch.draw(guestlist, 1010, 650);
-		batch.draw(invite, 980, 220);	
+		batch.draw(invite, 1080, 220);	
 		font.draw(batch, "your name", 110, 260);
 		batch.end();
 	}	
