@@ -2,7 +2,7 @@ package catan.network;
 
 class MsgPeer extends SystemMessage{	
 	
-	private String content;
+	private String content = null;
 	
 	MsgPeer(String nickname) {
 		super(SystemMessage.SystemType.PEER);

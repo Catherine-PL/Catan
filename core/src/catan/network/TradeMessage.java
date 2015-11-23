@@ -8,7 +8,7 @@ public class TradeMessage extends Message
 
 	public enum TradeType		
 	{
-		PROPOSITION, YES, NO, CONTR;
+		OFFERT, YES, NO, CONTR, DEAL, END_TRADE;
 	}
 	
 	protected TradeType subType;

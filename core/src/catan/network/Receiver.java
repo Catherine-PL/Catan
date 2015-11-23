@@ -2,9 +2,10 @@ package catan.network;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.OptionalDataException;
 import java.net.Socket;
 
-class Receiver implements Runnable {
+class Receiver implements Runnable {								//	ObjectStreamException <-- UWAGA
 
 	//String nickname;
 	Peer peer;
@@ -21,14 +22,11 @@ class Receiver implements Runnable {
 	
 	
 	
-	private void handleMessage(SystemMessage msg) throws IOException 		// OBSLUGA WYJATKU !!!!
+	private void handleMessage(SystemMessage msg)		
 	{
 		//PEER, INVITATION, ACCEPT, REJECT, PLAY, ABANDON, END_TURN, END_GAME;
 		switch (msg.getSubType())
 		{
-			case PEER:
-				com.msgHandler.handleMsgPeer(peer.socketIn, peer.input, (MsgPeer)msg);
-				break;
 			
 			case INVITATION:
 				com.msgHandler.handleMsgInvitation(peer);
@@ -51,9 +49,11 @@ class Receiver implements Runnable {
 				break;
 				
 			case END_TURN:
+				com.msgHandler.handleMsgEndTurn(peer);
 				break;
 				
 			case END_GAME:
+				com.msgHandler.handleMsgEndGame(peer);
 				break;
 				
 			default:
@@ -62,7 +62,7 @@ class Receiver implements Runnable {
 		}
 		
 	}
-	private void handleMessage(UpdateMessage msg) throws IOException 		// OBSLUGA WYJATKU !!!!
+	private void handleMessage(UpdateMessage msg)		
 	{
 		//DICE;
 		switch (msg.getSubType())
@@ -70,14 +70,58 @@ class Receiver implements Runnable {
 			case DICE:
 				com.msgHandler.handleMsgDice(peer,(MsgDice)msg);
 				break;
-						
+				
+			case BOARD:
+				com.msgHandler.handleMsgBoard((MsgBoard)msg);
+				break;
+				
+			case TILE:
+				com.msgHandler.handleMsgTile((MsgTile)msg);
+				break;
+				
+			case NODE:
+				com.msgHandler.handleMsgNode((MsgNode)msg);
+				break;
+				
+			case RESOURCES:
+				com.msgHandler.handleMsgResources(peer, (MsgResources)msg);
+				break;
+										
 			default:
 				System.err.println("Otrzymana wiadomosc jest bledna");
 				break;					
 		}
 		
 	}
-	
+	private void handleMessage(TradeMessage msg)
+	{
+		switch (msg.getSubType())
+		{
+			case OFFERT:
+				com.msgHandler.handleMsgOffert(peer,(MsgOffert)msg);
+				break;
+				
+			case YES:
+				com.msgHandler.handleMsgYes(peer, (MsgYes)msg);
+				break;
+				
+			case NO:
+				com.msgHandler.handleMsgNo(peer, (MsgNo)msg);
+				break;
+				
+			case DEAL:
+				com.msgHandler.handleMsgDeal(peer, (MsgDeal)msg);
+				break;
+				
+			case END_TRADE:
+				com.msgHandler.handleMsgEndTrade((MsgEndTrade)msg);
+				break;
+
+			default:
+				System.err.println("Otrzymana wiadomosc jest bledna");
+				break;					
+		}
+	}
 	
 	@Override
 	public void run() {
@@ -93,14 +137,14 @@ class Receiver implements Runnable {
 		 * 
 		 * */
 		
-		
-		while(true)
+		try
 		{
-			try {
-				System.out.println(Thread.currentThread().getName() + " - oczekiwanie na wiadomosc...");
-				Message msg = (Message)peer.receive();
-			
-			
+					
+			while(true)
+			{
+				//System.out.println(Thread.currentThread().getName() + " - oczekiwanie na wiadomosc...");
+				Message msg = (Message)peer.receive();				// Problem z czytaniem czesci objektow
+																	// OptionalDataException albo CastExcepotion
 				switch (msg.getType())
 				{
 					case SYSTEM:
@@ -112,6 +156,7 @@ class Receiver implements Runnable {
 						break;
 					
 					case TRADE:
+						handleMessage((TradeMessage)msg);
 						break;
 				
 							
@@ -119,14 +164,16 @@ class Receiver implements Runnable {
 						System.err.println("Otrzymana wiadomosc jest bledna");
 						break;					
 				}		
-			
-			
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
 		}
+		catch (ClassNotFoundException e) {		
+			e.printStackTrace();
+		}
+		catch(IOException e)
+		{			
+			System.err.println("Utracono polaczenie: " + Thread.currentThread().getName());
+			e.printStackTrace();
+		} 
 		
 	}
 

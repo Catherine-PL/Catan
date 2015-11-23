@@ -1,12 +1,12 @@
 package catan.network;
 
-public class MsgDice extends UpdateMessage 
+public class MsgResources extends UpdateMessage 
 {
 	
 	private Integer content = null;
 	
-	MsgDice(Integer result) {
-		super(UpdateMessage.UpdateType.DICE);
+	MsgResources(Integer result) {
+		super(UpdateMessage.UpdateType.RESOURCES);
 		this.content = result;
 	}
 	
@@ -14,5 +14,5 @@ public class MsgDice extends UpdateMessage
 	{
 		return content;
 	}
-	
+
 }
