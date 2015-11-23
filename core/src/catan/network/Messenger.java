@@ -20,8 +20,9 @@ public interface Messenger
 	public void sendUpdate(NumberOf what, int quantity);	// kazdy musi wiedziec jaka mam liczbe surowcow razem, wynik kosci	
 	
 	public void sendTrade(HashMap<String, Integer> give, HashMap<String, Integer> get);
-	public void sendTrade(String nick);
+	public void sendTrade(String nick);	// to deal
 	public void sendTrade();	// to abbandon
-	//public void sendTrade(HashMap<String, Integer> give, HashMap<String, Integer> get, String nickname);
+
+	public void sendEnd(SystemMessage.SystemType type);
 
 }

@@ -49,7 +49,10 @@ class SystemMessageFactory extends AbstractMessageFactory {
 		
 		
 		case END_GAME:
-			return new MsgReject();
+			return new MsgEndGame();
+
+		case END_TURN:
+			return new MsgEndTurn();
 		
 			
 		default:

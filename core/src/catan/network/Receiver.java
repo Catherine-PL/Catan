@@ -49,9 +49,11 @@ class Receiver implements Runnable {								//	ObjectStreamException <-- UWAGA
 				break;
 				
 			case END_TURN:
+				com.msgHandler.handleMsgEndTurn(peer);
 				break;
 				
 			case END_GAME:
+				com.msgHandler.handleMsgEndGame(peer);
 				break;
 				
 			default:
