@@ -2,7 +2,7 @@ package catan.network;
 
 import database.Node;
 
-public class MsgNode extends UpdateMessage
+class MsgNode extends UpdateMessage
 {
 	private Node content = null;
 	private int index;
@@ -13,11 +13,11 @@ public class MsgNode extends UpdateMessage
 		this.index = index;
 	}
 	
-	public Node getContent()
+	Node getContent()
 	{
 		return content;
 	}
-	public int getIndex()
+	int getIndex()
 	{
 		return index;
 	}

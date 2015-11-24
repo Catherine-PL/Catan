@@ -1,12 +1,10 @@
 package catan.network;
 
-import catan.network.UpdateMessage.UpdateType;
-
-public class TradeMessage extends Message 
+class TradeMessage extends Message 
 {
 
 
-	public enum TradeType		
+	enum TradeType		
 	{
 		OFFERT, YES, NO, CONTR, DEAL, END_TRADE;
 	}

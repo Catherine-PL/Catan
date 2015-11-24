@@ -2,7 +2,7 @@ package catan.network;
 
 import database.Tile;
 
-public class MsgTile extends UpdateMessage 
+class MsgTile extends UpdateMessage 
 {
 	
 	private Tile content = null;
@@ -14,11 +14,11 @@ public class MsgTile extends UpdateMessage
 		this.index = index;
 	}
 	
-	public Tile getContent()
+	Tile getContent()
 	{
 		return content;
 	}
-	public int getIndex()
+	int getIndex()
 	{
 		return index;
 	}

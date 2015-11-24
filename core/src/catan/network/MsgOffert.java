@@ -2,9 +2,7 @@ package catan.network;
 
 import java.util.HashMap;
 
-import database.Tile;
-
-public class MsgOffert extends TradeMessage {
+class MsgOffert extends TradeMessage {
 
 	private HashMap<String, Integer> give = null;
 	private HashMap<String, Integer> get = null;
@@ -16,11 +14,11 @@ public class MsgOffert extends TradeMessage {
 		this.get = get;		
 	}
 	
-	public HashMap<String, Integer> getGive()
+	HashMap<String, Integer> getGive()
 	{
 		return give;
 	}
-	public HashMap<String, Integer> getGet()
+	HashMap<String, Integer> getGet()
 	{
 		return get;
 	}

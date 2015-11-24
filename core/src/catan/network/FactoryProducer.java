@@ -1,15 +1,13 @@
 package catan.network;
 
-import catan.network.SystemMessage.SystemType;
-
-public class FactoryProducer {
+class FactoryProducer {
 	
-	public enum FactoryType		
+	enum FactoryType		
 	{
 		SYSTEM, TRADE, UPDATE;
 	}
 	
-	public static AbstractMessageFactory getFactory(FactoryType type)
+	static AbstractMessageFactory getFactory(FactoryType type)
 	{
 		switch(type)
 		{
@@ -29,19 +27,5 @@ public class FactoryProducer {
 		
 		}
 	}
-
-	public static void main(String[] args)
-	{		
-		AbstractMessageFactory mf = FactoryProducer.getFactory(FactoryType.SYSTEM);
-		MsgPeer msg = null;
-		try {
-			msg = (MsgPeer) mf.getSystemMessage(SystemType.PEER, "Sebastian");
-		} catch (ContentException e) {
-
-			e.printStackTrace();
-		}		
-		System.out.println(msg.getContent());
-	}
-
 	
 }

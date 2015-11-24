@@ -1,10 +1,8 @@
 package catan.network;
 
-import catan.network.SystemMessage.SystemType;
+class UpdateMessage extends Message {
 
-public class UpdateMessage extends Message {
-
-	public enum UpdateType		
+	enum UpdateType		
 	{
 		DICE, BOARD, TILE, NODE, RESOURCES;
 	}
@@ -16,7 +14,7 @@ public class UpdateMessage extends Message {
 		super(Message.Type.UPDATE);
 		subType = ut;
 	}	
-	public UpdateType getSubType()
+	UpdateType getSubType()
 	{
 		return subType;
 	}

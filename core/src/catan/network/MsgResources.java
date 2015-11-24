@@ -1,6 +1,6 @@
 package catan.network;
 
-public class MsgResources extends UpdateMessage 
+class MsgResources extends UpdateMessage 
 {
 	
 	private Integer content = null;
@@ -10,7 +10,7 @@ public class MsgResources extends UpdateMessage
 		this.content = result;
 	}
 	
-	public Integer getContent()
+	Integer getContent()
 	{
 		return content;
 	}

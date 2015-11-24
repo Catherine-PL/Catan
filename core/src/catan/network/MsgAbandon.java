@@ -1,6 +1,6 @@
 package catan.network;
 
-public class MsgAbandon extends SystemMessage
+class MsgAbandon extends SystemMessage
 {
 
 	MsgAbandon() {

@@ -1,7 +1,7 @@
 package catan.network;
 
 /**
- * Class which aggregates informations required to connect with a node
+ * Class which aggregates informations required to connect with a node in a network
  * @author Sebastian
  *
  */
@@ -35,20 +35,17 @@ public class PlayerIP {
 	{
 		return nickname;
 	}
-	
+	/**
+	 * 
+	 * @return Online status of this player
+	 */
 	public boolean isOnline()
 	{
 		return online;
 	}
-
 	public String toString()
 	{
 		return (nickname + ": " + address + ", " + online);
-	}
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
+	}	
 
 }

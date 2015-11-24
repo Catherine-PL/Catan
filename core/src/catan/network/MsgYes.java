@@ -1,6 +1,6 @@
 package catan.network;
 
-public class MsgYes extends TradeMessage {
+class MsgYes extends TradeMessage {
 
 	MsgYes() 
 	{

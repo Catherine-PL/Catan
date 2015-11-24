@@ -3,8 +3,6 @@ package catan.network;
 import java.util.HashMap;
 
 import catan.network.UpdateMessage.UpdateType;
-import database.Node;
-import database.Tile;
 
 class ContentException extends Exception{}
 
@@ -14,7 +12,7 @@ class ContentException extends Exception{}
  * @author Sebastian
  *
  */
-public abstract class AbstractMessageFactory {
+abstract class AbstractMessageFactory {
 	
 	abstract SystemMessage getSystemMessage(SystemMessage.SystemType type, Object content) throws ContentException;
 

@@ -1,6 +1,6 @@
 package catan.network;
 
-public class MsgAccept extends SystemMessage 
+class MsgAccept extends SystemMessage 
 {
 
 	MsgAccept() 

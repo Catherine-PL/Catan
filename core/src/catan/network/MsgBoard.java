@@ -2,7 +2,7 @@ package catan.network;
 
 import database.Board;
 
-public class MsgBoard extends UpdateMessage 
+class MsgBoard extends UpdateMessage 
 {
 
 	private Board content = null;

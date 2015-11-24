@@ -1,6 +1,6 @@
 package catan.network;
 
-public class MsgEndTurn extends SystemMessage {
+class MsgEndTurn extends SystemMessage {
 
 	MsgEndTurn() {
 		super(SystemType.END_TURN);

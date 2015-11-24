@@ -9,7 +9,7 @@ class MsgPeer extends SystemMessage{
 		this.content = nickname;
 	}
 	
-	public String getContent()
+	String getContent()
 	{
 		return content;
 	}

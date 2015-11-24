@@ -1,6 +1,6 @@
 package catan.network;
 
-public class MsgReject extends SystemMessage 
+class MsgReject extends SystemMessage 
 {
 
 	MsgReject() 

@@ -6,7 +6,7 @@ import catan.network.SystemMessage.SystemType;
 import catan.network.TradeMessage.TradeType;
 import catan.network.UpdateMessage.UpdateType;
 
-public class TradeMessageFactory extends AbstractMessageFactory {
+class TradeMessageFactory extends AbstractMessageFactory {
 
 
 	TradeMessage getTradeMessage(TradeType type){

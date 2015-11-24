@@ -1,6 +1,6 @@
 package catan.network;
 
-public class MsgInvitation extends SystemMessage 
+class MsgInvitation extends SystemMessage 
 {
 
 	MsgInvitation() 

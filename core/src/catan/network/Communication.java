@@ -12,10 +12,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import catan.network.Communication.InvStatus;
 import catan.network.FactoryProducer.FactoryType;
 import catan.network.Message.Type;
 import catan.network.SystemMessage.SystemType;
@@ -27,6 +23,7 @@ import database.Tile;
 
 /**
  * Class which provide us P2P architecture and basic communication in an internal network.
+ * What is more, this class send messegas, create new threads for every peer and one for itself for listening servport.
  * @author Sebastian
  *
  */
@@ -36,7 +33,7 @@ public class Communication implements Runnable, Messenger{
 	{
 		private static final Communication instance = new Communication();
 	}
-	public enum InvStatus
+	enum InvStatus
 	{
 		WAIT, ACCEPTED, REJECTED;
 	}
@@ -383,10 +380,21 @@ public class Communication implements Runnable, Messenger{
 	
 	/*Tworzenie instancji*/	 	
 	protected Communication(){}
+	/**
+	 * This is a proper way to get an instance of this class.
+	 * @return Instance of this singleton.
+	 */
 	public static Communication getInstance()
 	{
 		return CommunicationHolder.instance;
 	}
+	/**
+	 * Method to initialize Communication.
+	 * @param myName Our nickname which is propagate into network.
+	 * @param players Collection which contain all players in our database.
+	 * @param board Board which will be modified during the game.
+	 * @throws IOException When creating ServSocket fails.
+	 */
 	public void initCommunication(String myName, Collection<PlayerIP> players, Board board) throws IOException 
 	{
 		System.out.println("----Communication initialization----");
@@ -596,11 +604,7 @@ public class Communication implements Runnable, Messenger{
 	/*Public*/		
 	/**
 	 * Adding new PlayerIP to PlayerIP collection with adding nickname, creating new peer
-	 * @param players Collection for PlayerIP
-	 * @param p New PlayerIP 
-	 * @param nickname Nickname to propagate
-	 * @throws IOException Sometimes heppens
-	 * @throws ClassNotFoundException Nothing to read, or it wasn't Object.
+	 * @param p New PlayerIP to add
 	 */
 	public synchronized void addPlayerIP(PlayerIP p)
 	{		
@@ -634,7 +638,10 @@ public class Communication implements Runnable, Messenger{
 		}
 		
 	}
-		
+	/**
+	 * Method needed to send invitations to players.	
+	 * @param names Chosen players nicknames 
+	 */
 	public void sendInvitations(Collection<String> names)
 	{				
 		if(inGame == true)																	// jezeli juz przyjalem jedno zaproszenie
@@ -662,6 +669,11 @@ public class Communication implements Runnable, Messenger{
 		System.out.println("Invitations sended, Players status:");
 		System.out.println(invPlayers);
 	}
+	/**
+	 * Creating a game. Whenever number of players is wrong it fails. 
+	 * In case of success this method sends Start_Game message to all who accepted, to the rest abandon.
+	 * @return boolean value, false - starting game failed, true - starting game succeed
+	 */
 	synchronized public boolean startGame()												// synchronizowane, by nikt w tej chwili nie przyjal zaproszenia...
 	{
 		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
@@ -678,12 +690,12 @@ public class Communication implements Runnable, Messenger{
 		}
 		
 		// sprawdzenie ilosci graczy
-/*		if(i<3 || i>4)
+		if(i<3 || i>4)
 		{
 			System.out.println("Wrong number of players");
 			return false;
 		}
-*/						
+						
 		
 		
 		
@@ -726,6 +738,10 @@ public class Communication implements Runnable, Messenger{
 		
 		
 	}
+	/**
+	 * Useful when you have sent invitations, but you don't want to create a game.
+	 * This method sends to all invited players abandon message.
+	 */
 	public void abandonGame()
 	{
 		
@@ -753,6 +769,14 @@ public class Communication implements Runnable, Messenger{
 		invPlayers.clear();
 		System.out.println("Gra porzucona ...");
 	}	
+	/**
+	 * After starting a game, all players send dice result.
+	 * If we have all results, we know  sequence of players. 
+	 * @return number is positive or equal 0.
+	 * Number says which is our place, but when number is equal 0 that means,
+	 * not everyone has sent me a result and it was impossible to create sequence. 
+	 */
+	
 	public int getPlace()																// zwraca 0 jezeli jeszcze nie ustalono kolejnosci
 	{
 		Set<String> s = invPlayers.keySet();
@@ -767,7 +791,11 @@ public class Communication implements Runnable, Messenger{
 		else
 			return 0;
 	}
-	
+	/**
+	 * It should be a first message for a host of this game.
+	 * This method propagate our board to all players.
+	 * @param board Board to propagate.
+	 */
 	public void sendUpdate(Board board)
 	{	
 		Message msg = null;
@@ -778,6 +806,11 @@ public class Communication implements Runnable, Messenger{
 		}		
 		sendToAll(msg);				
 	}	
+	/**
+	 * Method useful to update a tile. It will be necessary in case of thief moving.  
+	 * @param tile Tile object which has been modified. 
+	 * @param index Index of this tile in our board.
+	 */
 	public void sendUpdate(Tile tile, int index) 
 	{
 		Message msg = null;
@@ -788,6 +821,12 @@ public class Communication implements Runnable, Messenger{
 		}		
 		sendToAll(msg);		
 	}	
+	/**
+	 * Sends update message to all players. Needed whenever some node of our graph has been changed. 
+	 * Useful after building new city, road etc. 
+	 * @param node Node object which has been modified.
+	 * @param index Index of this node in our board.
+	 */
 	public void sendUpdate(Node node, int index) 
 	{
 		Message msg = null;
@@ -798,6 +837,11 @@ public class Communication implements Runnable, Messenger{
 		}		
 		sendToAll(msg);	
 	}
+	/**
+	 * Everyone has to know how many resource card i have. (Thief) 
+	 * @param what It might be DICE or RESOURCE
+	 * @param quantity Number of what parameter.
+	 */
 	public void sendUpdate(NumberOf what, int quantity)			// DICE, RESOURCE 
 	{
 		Message msg = null;
@@ -812,6 +856,11 @@ public class Communication implements Runnable, Messenger{
 		sendToAll(msg);	
 	}
 	
+	/**
+	 * Sends to all players my offert.
+	 * @param give HashMap which contains names of resources and their quantity. This resources we are giving to somebody.
+	 * @param give HashMap which contains names of resources and their quantity. This resources we are getting from somebody.
+	 */
 	public void sendTrade(HashMap<String, Integer> give, HashMap<String, Integer> get) 
 	{
 		for(String name : invPlayers.keySet())
@@ -848,6 +897,10 @@ public class Communication implements Runnable, Messenger{
 		
 		
 	}		
+	/**
+	 * Whenever a player accepts our offer, then we can make this transaction true by sending deal message.
+	 * @param nick Player's nickname who has accepted our offer. 
+	 */
 	public void sendTrade(String nick) 
 	{
 		if(invPlayers.get(nick) != InvStatus.ACCEPTED)
@@ -886,6 +939,9 @@ public class Communication implements Runnable, Messenger{
 		}
 		
 	}
+	/**
+	 * Closes trade.
+	 */
 	public void sendTrade()
 	{
 		System.out.println("--Closing trade--");
@@ -905,7 +961,10 @@ public class Communication implements Runnable, Messenger{
 			}
 		}		
 	}
-	
+	/**
+	 * Sends END_GAME or END_TURN message to all players.
+	 * @param type Type of our ending. 
+	 */
 	public void sendEnd(SystemType type) 
 	{
 		Message ms = null;
@@ -956,7 +1015,7 @@ public class Communication implements Runnable, Messenger{
 	}
 	
 	
-	public static void main(String[] args) throws IOException, ClassNotFoundException {
+	static void main(String[] args) throws IOException, ClassNotFoundException {
 			
 			
 		LinkedList<PlayerIP> players = new LinkedList();									// nick i ip z hamachi

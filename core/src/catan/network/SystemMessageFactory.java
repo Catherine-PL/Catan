@@ -21,7 +21,7 @@ class SystemMessageFactory extends AbstractMessageFactory {
 	 * @return Message of your type with content, ready to send	
 	 * @throws ContentException In case of mismatching content to message type
 	 */
-	public SystemMessage getSystemMessage(SystemMessage.SystemType type, Object content) throws ContentException
+	SystemMessage getSystemMessage(SystemMessage.SystemType type, Object content) throws ContentException
 	{
 		switch(type)
 		{

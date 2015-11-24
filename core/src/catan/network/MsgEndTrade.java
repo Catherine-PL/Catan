@@ -1,6 +1,6 @@
 package catan.network;
 
-public class MsgEndTrade extends TradeMessage {
+class MsgEndTrade extends TradeMessage {
 
 	MsgEndTrade() 
 	{

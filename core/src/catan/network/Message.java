@@ -7,7 +7,7 @@ import java.io.Serializable;
  * @author Sebastian
  *
  */
-public abstract class Message implements Serializable{
+abstract class Message implements Serializable{
 			
 	/**
 	 * Types of messages
@@ -25,7 +25,7 @@ public abstract class Message implements Serializable{
 	{
 		this.type = type;
 	}
-	public Type getType()
+	Type getType()
 	{
 		return type;
 	}

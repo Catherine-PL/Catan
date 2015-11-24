@@ -1,6 +1,6 @@
 package catan.network;
 
-public class MsgStartGame extends SystemMessage 
+class MsgStartGame extends SystemMessage 
 {
 
 	MsgStartGame() 

@@ -6,6 +6,11 @@ import database.Board;
 import database.Node;
 import database.Tile;
 
+/**
+ * Interface which provides all needed methods during a game.
+ * @author Sebastian
+ *
+ */
 public interface Messenger 
 {
 	public enum NumberOf

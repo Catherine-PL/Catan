@@ -9,7 +9,7 @@ import database.Board;
 import database.Node;
 import database.Tile;
 
-public class UpdateMessageFactory extends AbstractMessageFactory {
+class UpdateMessageFactory extends AbstractMessageFactory {
 
 	
 	UpdateMessage getUpdateMessage(UpdateType type, Object content) throws ContentException {

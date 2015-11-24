@@ -1,6 +1,6 @@
 package catan.network;
 
-public class MsgDice extends UpdateMessage 
+class MsgDice extends UpdateMessage 
 {
 	
 	private Integer content = null;
