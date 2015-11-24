@@ -14,17 +14,17 @@ public class Building extends Element {
 	 */
 	
 	
-	public int buildSettlement(Player player,Node here)// player kto buduje, here gdzie
+	public static int buildSettlement(Player player,Node here)// player kto buduje, here gdzie
 	{
 		int state = -1;
 		
 		if(!here.neighboursHasBuildins()){
 			if(here.getBuilding()==0){
 				//sprawdza czy pole jest puste(niczyje)
-				if(here.getPlayerNumber()==0){
 					if(player.getResources("grain")>=1 && player.getResources("sheep")>=1 && player.getResources("wood")>=1 && player.getResources("clay")>=1) {
 						here.setBuilding(1);
 						here.setPlayerNumber(player.getId());
+						
 						player.changeResources("grain", -1);
 						player.changeResources("sheep", -1);
 						player.changeResources("wood", -1);
@@ -33,9 +33,7 @@ public class Building extends Element {
 					}
 					else
 						state = 1;
-				}
-				else 
-					state = 2;
+				
 			}
 			else if(here.getBuilding()==1)
 				state = 5;
@@ -49,7 +47,7 @@ public class Building extends Element {
 		return state;						
 	}
 
-	public int buildCity(Player player, Node here)
+	public static int buildCity(Player player, Node here)
 	{
 		int state = -1;
 		if(!here.neighboursHasBuildins()){

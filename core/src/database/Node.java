@@ -17,7 +17,7 @@ public class Node extends Element {
 	
 	
 	private HashMap <Node,HashMap<Integer,Integer>> nodeRoadOwner=new HashMap <Node,HashMap<Integer,Integer> >();
-	
+	private int [][]nodeRoadOwner2=new int[][]{{-1,0,0},{-1,0,0},{-1,0,0}};
 	private HashMap <Integer,Tile> intResources=new HashMap<Integer,Tile>();
 	ArrayList <Node> roads=new ArrayList <Node>();//przedtem by3o <Road>
 	private ArrayList <Node> noRoads=new ArrayList <Node>(); 
@@ -82,6 +82,7 @@ public class Node extends Element {
 	public Node getRoad(int i){
 		return roads.get(i);
 	}
+	
 	public boolean hasRoadTo(Node to){
 		return roads.contains(to);
 	}
@@ -126,7 +127,7 @@ public class Node extends Element {
 
 //pocz1tkowo nie ma dróg do s1siadów, wiec moge je skopiowaa z tamt1d?/
 	public void setNoRoads(ArrayList <Node> noRoads) {
-		this.noRoads=this.roads;
+		this.noRoads=noRoads;
 	}
 
 /*
@@ -152,7 +153,9 @@ public class Node extends Element {
 	}
 	public void changeNodeRoadOwner(Node node,int roadd, int owner){
 		HashMap<Integer,Integer> temp=new HashMap<Integer,Integer>();
+		
 		temp.put(roadd, owner);
+		
 		this.nodeRoadOwner.put(node,temp);
 	}
 	
@@ -189,7 +192,60 @@ public class Node extends Element {
 				}
 			}
 			return withoutRoad;
-		}	
+		}
+
+
+	public HashMap <Integer,Tile> getIntResources() {
+		return intResources;
+	}
+
+
+	public void setIntResources(HashMap <Integer,Tile> intResources) {
+		this.intResources = intResources;
+	}
+
+
+	
+	
+	public int [][] getNodeRoadOwner2() {
+		return nodeRoadOwner2;
+	}
+	public void initializeNodeRoadOwner2(){
+		for(Node temp: this.neighbours){
+			int k=(temp.getNodeNumber()>=0) ? temp.getNodeNumber() : (-1);
+			//this.setNodeRoadOwner2(temp.getNodeNumber(), 0, 0);
+			this.setNodeRoadOwner2(k, 0, 0);
+			
+		}
+	}
+	public void changeNodeRoadOwner2(Player player,int node){
+		int newRoadOwner=player.getId();
+		int i=0;
+		for(Node temp:this.neighbours){
+			if(temp.nodeNumber==node)
+				break;
+			else
+				i++;
+		}
+		this.nodeRoadOwner2[i][2]=newRoadOwner;
+		this.nodeRoadOwner2[i][1]=1; 
+	
+	}
+		
+	
+	public void setNodeRoadOwner2(int node,int roadState,int roadOwner) {
+		int i=0;
+		for(Node temp:this.neighbours){
+			if(temp.nodeNumber!=node && i<3)
+				i++;
+			else
+				break;
+		}
+		this.nodeRoadOwner2[i][0]=node;
+		this.nodeRoadOwner2[i][1]=roadState;
+		this.nodeRoadOwner2[i][2]=roadOwner;
+
+	}	
 	
 	
 	

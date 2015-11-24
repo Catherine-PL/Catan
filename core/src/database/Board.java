@@ -1,5 +1,6 @@
 package database;
 
+import database.Building;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -111,6 +112,9 @@ public class Board {
 		for(int i=0;i<54;i++){
 			nodes[i] = new Node(i);		
 		}
+		
+		loadMatrix();
+		setNeighbours();
 
 	}
 	
@@ -129,21 +133,24 @@ public class Board {
     			if(adjencyMatrix[i][j] == 1){
     				nodes[i].addNeighbour(nodes[j]);
     				nodes[j].addNeighbour(nodes[i]);
-    		}
-    			nodes[i].setNoRoads(nodes[i].getNeighbours());
-    			
-    			for(Node node: nodes[i].getNeighbours()){
-    				nodes[i].changeNodeRoadOwner(node,0,0);
     			}
+    		}
 		}
-	}
+		for(int i=0;i<54;i++){
+			nodes[i].setNoRoads(nodes[i].getNeighbours());
+			
+			for(Node node: nodes[i].getNeighbours()){
+				nodes[i].changeNodeRoadOwner(node,0,0);
+			}
+			nodes[i].initializeNodeRoadOwner2();
+		}
 	}
 	
 	public void loadMatrix(){
 		 //wczytanie macierzy sasiedztwa
 			Scanner scanner;
 			try {
-				scanner = new Scanner(new File("adjencymatrix.txt"));
+				scanner = new Scanner(new File("src\\database\\adjencymatrix.txt"));
 				for(int i=0;i<54;i++){
 		    		for(int j=0;j<54;j++){
 		    			if(scanner.hasNextInt())
@@ -175,8 +182,6 @@ public class Board {
 	
 	public static void main(String [ ] args) throws FileNotFoundException{
 		Board board = Board.getInstance();
-		board.loadMatrix();
-		board.setNeighbours();
 	
 		//test, wypisanie s¹siadów
 		for(int i=0;i<54;i++){
@@ -187,6 +192,27 @@ public class Board {
 				} 
 			}
 	        System.out.println();
+  
+		}
+		//testowanie Marcin
+		Player p1=new Player(3), p2=new Player(2);
+		
+		p1.changeResources("grain", 5);
+		p1.changeResources("sheep",5);
+		p1.changeResources("wood", 5);
+		p1.changeResources("clay", 5);		
+		System.out.println(board.getNode(49).getPlayerNumber());
+		int i=Building.buildSettlement(p1,board.getNode(49));
+		System.out.println("\n"+board.getNode(49).getPlayerNumber());
+		Road r1=new Road(p1,board.getNode(49),board.getNode(53),1);
+		
+		
+		for(Node temp:board.nodes){
+			int [][]temp2=temp.getNodeRoadOwner2();
+			System.out.println("*****************\n"+temp.getNodeNumber());
+			for( i=0;i<3;i++){
+				System.out.print("\ndo Noda numer"+temp2[i][0]+"\t stan drogi "+temp2[i][1]+" wlasciciel tej drogi "+temp2[i][2]+"\n");
+			}
 		}
 		
 	}

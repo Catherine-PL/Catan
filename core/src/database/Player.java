@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import com.badlogic.gdx.graphics.Texture;
+
 //import network.MsgText;
 //import network.*;
 import database.Players;
@@ -12,7 +14,7 @@ import database.Players;
 public class Player {
 	private	int id;							//metody set,get
 	private String name=null;
-	private int avatar;
+	private Texture avatar=null;
 	private	ArrayList<Card> cards=new ArrayList <Card>();			//metody add,rm,get
 	private	int points;						//metody get,set,check
 	private HashMap <String,Integer> resources=new HashMap <String,Integer>();	//get,change
@@ -41,10 +43,10 @@ public class Player {
 	public void setName(String name){
 		this.name=name;
 	}
-	public int getAvatar(){
+	public Texture getAvatar(){
 		return avatar;
 	}
-	public void setAvatar(int avatar){
+	public void setAvatar(Texture avatar){
 		this.avatar=avatar;
 	}
 	

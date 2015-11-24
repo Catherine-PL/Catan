@@ -35,11 +35,17 @@ public class Road extends Element{
 						from2.addRoad(to2);
 						from2.changeNodeRoadOwner(to, 1,player.getId());
 						from2.getNoRoads().remove(to2);
+						//%%%%%%%%%%%%%%%%%%%%%%%%%
+						from2.changeNodeRoadOwner2(player, to2.getNodeNumber());
+						////////
 						this.to=to2;
 						
 						to2.getNoRoads().remove(from2);
 						to2.changeNodeRoadOwner(to, 1,player.getId());
-						to2.addRoad(from2); ;
+						to2.addRoad(from2); 
+						////////////////////////////////////////////
+						to2.changeNodeRoadOwner2(player, from2.getNodeNumber());
+						/////////////////////////////////////////////
 						this.from=from2;
 						
 						if(free==0){

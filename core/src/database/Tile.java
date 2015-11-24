@@ -4,10 +4,10 @@ public class Tile {
 	private String type;
 	private Boolean thiefState;
 	
-	
 	public static class Builder{
 		private String type;
 		private Boolean  thiefState;
+		private int number; 
 		
 		public Builder(String type){
 			this.type = type;
@@ -16,7 +16,8 @@ public class Tile {
 		public Tile build() {
 			return new Tile(this);
 	    }
-		
+
+	
 	}
 	
 	private Tile(Builder builder){
@@ -40,5 +41,6 @@ public class Tile {
 		
 		this.thiefState=!(this.thiefState);
 	}
+
 }
 
