@@ -67,6 +67,60 @@ public class Road extends Element{
 
 			
 	}
+	
+	public static int buildRoad(Player player, Node from2, Node to2, int free){
+					
+			if(from2.getPlayerNumber()==player.getId()){
+				
+				//droga jest kontunyacja innej lub zaczyna siê w miescie/osdadzie
+				if(!from2.roads.isEmpty() || from2.getBuilding()>0){
+					
+					//nie mozemy drugi raz postawiæ tej samej drogi
+					if(!from2.hasRoadTo(to2)){
+						
+						//musimy miec potrzebne surowce
+						if(player.getResources("clay")==1 && player.getResources("wood")==1 || free==1){
+							
+					
+							
+							
+							from2.addRoad(to2);
+							from2.changeNodeRoadOwner(to2, 1,player.getId());
+							from2.getNoRoads().remove(to2);
+							//%%%%%%%%%%%%%%%%%%%%%%%%%
+							from2.changeNodeRoadOwner2(player, to2.getNodeNumber());
+							////////
+							
+							
+							to2.getNoRoads().remove(from2);
+							to2.changeNodeRoadOwner(from2, 1,player.getId());
+							to2.addRoad(from2); 
+							////////////////////////////////////////////
+							to2.changeNodeRoadOwner2(player, from2.getNodeNumber());
+							/////////////////////////////////////////////
+						
+							
+							if(free==0){
+								player.changeResources("clay", -1);
+								player.changeResources("wood", -1);
+							}
+							return 0;
+						}
+						else
+							return 1;
+					}
+					else  
+						return 2;
+				}
+				else
+					return 3;
+			}
+			else
+				return 4;
+
+				
+		
+	}
 	public Node getTo(){
 		return to;
 	}
