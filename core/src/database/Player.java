@@ -88,15 +88,16 @@ public class Player {
 		//ka¿da karta specialna daje 2 pubkty, vector zwraca ich iloœæ
 		player.addPoints(specialCardCount*2);
 				
+		///z³o Ÿle nie dobrze i szajs
 		//iteracja po wszystkich nodach, jeœli mój node to : dodaj wartosc pola building do moich punktów, osada 1, settlement 2
-		for(int i=0; i<54;i++){
-			itNode= Board.getInstance().getNode(i);
-			if(itNode.getPlayerNumber()==player.getId()){
-				player.addPoints(itNode.getBuilding());
-			}
-		}
+		//for(int i=0; i<54;i++){
+		//	itNode= Board.getInstance().getNode(i);
+		//	if(itNode.getPlayerNumber()==player.getId()){
+		//		player.addPoints(itNode.getBuilding());
+		//	}
+		//}
 		
-	    if(getPoints() >= 10) 
+	    if(player.getPoints() >= 10) 
 	    {
 	    	System.out.println(text); //wygra³ gracz (i jego ID do wyœwietlenia)
 	    	

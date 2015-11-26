@@ -29,6 +29,7 @@ public class Building extends Element {
 						player.changeResources("sheep", -1);
 						player.changeResources("wood", -1);
 						player.changeResources("clay", -1);
+						player.addPoints(1);
 						state = 0;
 					}
 					else
@@ -59,6 +60,8 @@ public class Building extends Element {
 						here.setBuilding(2);
 						player.changeResources("grain", -2);
 						player.changeResources("ore", -3);
+						player.addPoints(1);
+
 						state = 0;
 					}
 					state = 1;

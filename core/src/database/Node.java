@@ -15,12 +15,21 @@ public class Node extends Element {
 	private ArrayList <Node> neighbours=new ArrayList<Node>();//referencja do s1siednich Node
 	private ArrayList <Tile> nearResources=new ArrayList<Tile>(); //referencja do  kafli, potrzebne do surowców
 	
+	private ArrayList <Road> roadRoad=new ArrayList<Road> ();
 	
-	private HashMap <Node,HashMap<Integer,Integer>> nodeRoadOwner=new HashMap <Node,HashMap<Integer,Integer> >();
-	private int [][]nodeRoadOwner2=new int[][]{{-1,0,0},{-1,0,0},{-1,0,0}};
+	//do wywalenia
+	//private HashMap <Node,HashMap<Integer,Integer>> nodeRoadOwner=new HashMap <Node,HashMap<Integer,Integer> >();
+	//do wywalenia
+	//private int [][]nodeRoadOwner2=new int[][]{{-1,0,0},{-1,0,0},{-1,0,0}};
+	
+	
 	private HashMap <Integer,Tile> intResources=new HashMap<Integer,Tile>();
 	ArrayList <Node> roads=new ArrayList <Node>();//przedtem by3o <Road>
 	private ArrayList <Node> noRoads=new ArrayList <Node>(); 
+	
+	
+
+	
 	
 	public Node(int id){
 		nodeNumber = id;
@@ -79,6 +88,9 @@ public class Node extends Element {
 		this.roads.add(to);
 		this.noRoads.remove(to);
 	}
+	
+	
+	
 	public Node getRoad(int i){
 		return roads.get(i);
 	}
@@ -148,16 +160,16 @@ public class Node extends Element {
 	
 	//Kasi whisList
 	
-	public HashMap <Node,HashMap<Integer,Integer>> getNodeRoadOwner(){
-		return nodeRoadOwner;
-	}
-	public void changeNodeRoadOwner(Node node,int roadd, int owner){
-		HashMap<Integer,Integer> temp=new HashMap<Integer,Integer>();
-		
-		temp.put(roadd, owner);
-		
-		this.nodeRoadOwner.put(node,temp);
-	}
+	//public HashMap <Node,HashMap<Integer,Integer>> getNodeRoadOwner(){
+	//	return nodeRoadOwner;
+	//}
+//	public void changeNodeRoadOwner(Node node,int roadd, int owner){
+//		HashMap<Integer,Integer> temp=new HashMap<Integer,Integer>();
+//		
+//		temp.put(roadd, owner);
+//		
+//		this.nodeRoadOwner.put(node,temp);
+//	}
 	
 	
 	public Integer [] getRoadsToImprove(Node node){
@@ -207,17 +219,17 @@ public class Node extends Element {
 
 	
 	
-	public int [][] getNodeRoadOwner2() {
-		return nodeRoadOwner2;
-	}
-	public void initializeNodeRoadOwner2(){
-		for(Node temp: this.neighbours){
-			int k=(temp.getNodeNumber()>=0) ? temp.getNodeNumber() : (-1);
-			//this.setNodeRoadOwner2(temp.getNodeNumber(), 0, 0);
-			this.setNodeRoadOwner2(k, 0, 0);
-			
-		}
-	}
+	//public int [][] getNodeRoadOwner2() {
+//		return nodeRoadOwner2;
+//	}
+//	public void initializeNodeRoadOwner2(){
+//		for(Node temp: this.neighbours){
+////			int k=(temp.getNodeNumber()>=0) ? temp.getNodeNumber() : (-1);
+//			//this.setNodeRoadOwner2(temp.getNodeNumber(), 0, 0);
+//			this.setNodeRoadOwner2(k, 0, 0);
+	//		
+//		}
+/*	}
 	public void changeNodeRoadOwner2(Player player,int node){
 		int newRoadOwner=player.getId();
 		int i=0;
@@ -232,7 +244,8 @@ public class Node extends Element {
 	
 	}
 		
-	
+*/
+	/*
 	public void setNodeRoadOwner2(int node,int roadState,int roadOwner) {
 		int i=0;
 		for(Node temp:this.neighbours){
@@ -245,9 +258,82 @@ public class Node extends Element {
 		this.nodeRoadOwner2[i][1]=roadState;
 		this.nodeRoadOwner2[i][2]=roadOwner;
 
+	}
+*/
+
+	public ArrayList <Road> getRoadRoad() {
+		return roadRoad;
+	}
+
+
+	public void setRoadRoad(ArrayList <Road> roadRoad) {
+		this.roadRoad = roadRoad;
 	}	
 	
+	//wywo³anie node.nodeHasOwnedRoad(gracz)
+	//i to sprawdzi czy do tego Noda wchodz¹ jakieœ drogi podanego gracza
+	public Boolean nodeHasOwnedRoad(Player player){
+		for(Road r:this.roadRoad){
+			if(r.getOwnerID()==player.getId()){
+				return true;
+			}
+		}
+		
+		return false;
+	}
 	
+	/* Wartoœci zwracane przy budowaniu:
+	 * 0 - uda³o siê 
+	 * 1 - Masz za ma³o surowców
+	 * 2 - Droga ju¿ istnieje
+	 * 3 - nie mo¿esz tu budowaæ
+	 * 4 - Node FROM nie nalezy do ciebie
+	 * 5 - Nie ma drogi z From2 do To2
+	 */
+	public void buildRoadRoad(Player player, Node from2, Node to2, int free){
+		//from2.roadRoad.
+		for(Road r: from2.roadRoad){
+			System.out.println("wlasciwosci drogi"+r.ID+" \nfrom"+r.getFrom().getNodeNumber()+"\n to"+r.getTo().getNodeNumber());
+			System.out.println("to2="+to2.getNodeNumber()+"owner "+to2.getPlayerNumber());
+			System.out.println("from2="+from2.getNodeNumber()+"owner"+from2.getPlayerNumber());
+			System.out.println("R To="+r.getTo().getNodeNumber());
+			System.out.println("R From="+r.getFrom().getNodeNumber());
+			
+			if(to2.getNodeNumber()==r.getTo().getNodeNumber())
+		//	if(r.getTo().getNodeNumber()==to2.getNodeNumber())
+			{
+			System.out.println("**");
+				int k;
+				k=r.buildRoad(player,  from2,to2, free);
+				//System.out.print(r.getState());
+		//		System.out.println("If"+k+"\n"+r.getOwnerID()+from2.getPlayerNumber()+" lol "+to2.getPlayerNumber());
+
+				System.out.println("IF*****"+k);
+
+				break;
+			}
+			else// if(r.getTo().getNodeNumber()==from2.getNodeNumber()){
+				if(to2.getNodeNumber()==r.getFrom().getNodeNumber()){
+
+				int k;
+				k=r.buildRoad(player,from2,to2, free);
+				//System.out.print(r.getState());
+				//System.out.println("If"+k+"\n"+r.getOwnerID()+from2.getPlayerNumber()+" lol "+to2.getPlayerNumber());
+				System.out.println("\n");
+				System.out.println(" IF ELSE*****"+k);
+
+				break;
+			}
+			else
+				System.out.println("**Nie wykona³ siê zaden if");
+
+			//	return 5;
+		}
+	//return 0;
+	}
+	public void addRoadRoad(Road r){
+		this.roadRoad.add(r);
+	}
 	
 
 	

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ public class Board {
 	private int[][] adjencyMatrix=new int[54][54];
 	private int[] letterToNumber=new int [] {5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11};
 	private int [][] tileToDice=new int [19][2];
+	public  ArrayList <Road> drogi=new ArrayList<Road> ();
 /*	private int[][] adjencyMatrix=new int[][] {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -139,10 +141,21 @@ public class Board {
 		for(int i=0;i<54;i++){
 			nodes[i].setNoRoads(nodes[i].getNeighbours());
 			
-			for(Node node: nodes[i].getNeighbours()){
-				nodes[i].changeNodeRoadOwner(node,0,0);
+		//	for(Node node: nodes[i].getNeighbours()){
+			//	nodes[i].changeNodeRoadOwner(node,0,0);
+			//}
+			//nodes[i].initializeNodeRoadOwner2();
+		}
+		//set RoadRoad
+		int k=0;
+		for(int i=0;i<54;i++){
+			for(Node nod:nodes[i].getNeighbours()){
+				Road r=new Road(nodes[i],nod);
+				r.ID=k;
+				k++;
+				nod.addRoadRoad(r);
+				
 			}
-			nodes[i].initializeNodeRoadOwner2();
 		}
 	}
 	
@@ -194,27 +207,91 @@ public class Board {
 	        System.out.println();
   
 		}
+
+	}
+	
+	//nie usuwajcie tego narazie dobra
+	//st¹d sobie kopiuje kod do testów, a nie chce wrzycaæ zasmieconego main'a
+	public void testMarcin(){
 		//testowanie Marcin
+		Board board = Board.getInstance();
 		Player p1=new Player(3), p2=new Player(2);
 		
-		p1.changeResources("grain", 5);
-		p1.changeResources("sheep",5);
-		p1.changeResources("wood", 5);
-		p1.changeResources("clay", 5);		
-		System.out.println(board.getNode(49).getPlayerNumber());
-		int i=Building.buildSettlement(p1,board.getNode(49));
-		System.out.println("\n"+board.getNode(49).getPlayerNumber());
-		Road r1=new Road(p1,board.getNode(49),board.getNode(53),1);
+		p1.changeResources("grain", 500);
+		p1.changeResources("sheep",500);
+		p1.changeResources("wood", 500);
+		p1.changeResources("clay", 500);		
+		
+		for(Node e: board.getNodes()){
+			System.out.print(e.getNodeNumber()+"przed"+e.getPlayerNumber());
+			Building.buildSettlement(p1, e);
+			System.out.println(e.getNodeNumber()+"po"+e.getPlayerNumber());
+		}
+		int i=0;
+		
+		/*for(Node n: board.nodes){
+			System.out.println(n.getNodeNumber()+" "+n.getRoadRoad().isEmpty());
+		}*/
+		//new Road(p1,board.nodes[0],board.nodes[3],0);
+		//new Road(p1,board.nodes[0],board.nodes[4],0);
+		//board.nodes[0].getRoadRoad().  buildRoad(p1,board.nodes[0],board.nodes[3],0);
+		
+		System.out.println("----------------------");
+		for(Road r:board.nodes[0].getRoadRoad()){
+			System.out.println(r.getFrom().getNodeNumber()+"----"+r.getTo().getNodeNumber()+" state"+r.getState()+"owner:"+r.getOwnerID());
+		}
+		System.out.println(board.nodes[0].getPlayerNumber()+"--------");
+		System.out.println("X "+board.nodes[0].getRoadRoad().size());
+
+		board.nodes[0].buildRoadRoad(p1,board.nodes[0],board.nodes[3],1);
+		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+
+		board.nodes[0].buildRoadRoad(p1,board.nodes[0],board.nodes[4],1);
+		
+		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		System.out.println("X "+board.nodes[0].getRoadRoad().size());
+
+		System.out.println("----------------------");
+		for(Road r:board.nodes[0].getRoadRoad()){
+			System.out.println("********\n"+r.getFrom().getNodeNumber()+"----"+r.getTo().getNodeNumber()+"\n state: "+r.getState()+"owner: "+r.getOwnerID()+"\n*********");
+		}
+		
+		System.out.println("droga z 53");
+		for(Road r:board.nodes[16].getRoadRoad()){
+			System.out.println("********\n"+r.getFrom().getNodeNumber()+"----"+r.getTo().getNodeNumber()+"\n state: "+r.getState()+"owner: "+r.getOwnerID()+"\n*********");
+		}
+		board.nodes[16].buildRoadRoad(p1,board.nodes[16],board.nodes[21],1);
+		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		System.out.println("----------------------");
+		for(Road r:board.nodes[16].getRoadRoad()){
+			System.out.println("********\n"+r.getFrom().getNodeNumber()+"----"+r.getTo().getNodeNumber()+"\n state: "+r.getState()+"owner: "+r.getOwnerID()+"\n*********");
+		}
 		
 		
+//		System.out.println("X "+board.nodes[0].getRoadRoad().size());
+		/*
+		System.out.println("----------------------");
+		
+		System.out.println(board.nodes[0].getRoadRoad().get(0).ID+" "+board.nodes[0].getRoadRoad().get(0).getFrom());
+		System.out.println(board.nodes[0].getRoadRoad().get(1).ID+" "+board.nodes[0].getRoadRoad().get(0).getFrom());
+		board.nodes[0].getRoadRoad().get(1).buildRoad(p1, board.nodes[4], board.nodes[0], 0);
+		board.nodes[0].getRoadRoad().get(1).buildRoad(p1, board.nodes[4], board.nodes[0], 0);
+		System.out.println("----------------------");
+		for(Road r:board.nodes[0].getRoadRoad()){
+			System.out.println(r.getFrom().getNodeNumber()+"----"+r.getTo().getNodeNumber()+" state"+r.getState()+"owner:"+r.getOwnerID());
+		}
+		System.out.println("----------------------");
+	
+		*/
+		/*
 		for(Node temp:board.nodes){
 			int [][]temp2=temp.getNodeRoadOwner2();
 			System.out.println("*****************\n"+temp.getNodeNumber());
-			for( i=0;i<3;i++){
+			for( int i=0;i<3;i++){
 				System.out.print("\ndo Noda numer"+temp2[i][0]+"\t stan drogi "+temp2[i][1]+" wlasciciel tej drogi "+temp2[i][2]+"\n");
 			}
 		}
-		
+		*/
 	}
 	
 	
