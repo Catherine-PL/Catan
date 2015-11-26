@@ -49,7 +49,7 @@ public class Road extends Element{
 						//inny patent
 						//from2.getRoadRoad().add(this);
 						//to2.getRoadRoad().add(this);
-						System.out.println(from.getNodeNumber()+" ---- "+to.getNodeNumber());
+					//	System.out.println(from.getNodeNumber()+" ---- "+to.getNodeNumber());
 						
 						//to ze starego patentu, wolê zostawiæ na razie nim dojdzie do kolejnej refaktoryzacji
 						from2.addRoad(to2);

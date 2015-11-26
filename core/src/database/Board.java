@@ -207,7 +207,10 @@ public class Board {
 	        System.out.println();
   
 		}
-
+		
+		
+		
+		
 	}
 	
 	//nie usuwajcie tego narazie dobra
@@ -235,6 +238,19 @@ public class Board {
 		//new Road(p1,board.nodes[0],board.nodes[3],0);
 		//new Road(p1,board.nodes[0],board.nodes[4],0);
 		//board.nodes[0].getRoadRoad().  buildRoad(p1,board.nodes[0],board.nodes[3],0);
+		
+		
+		board.nodes[0].buildRoadRoad(p1,board.nodes[0],board.nodes[3],1);
+		Integer[] wit=new Integer[3];
+		ArrayList <Integer> dr=new ArrayList <Integer>();
+		wit=board.nodes[0].getRoadsToImprove();
+		dr=board.nodes[0].getRoadsToImprove2();
+		for(Integer a:dr){
+			System.out.println(" * "+a+" * ");
+		}
+		
+			System.out.println(wit[0]+"  "+wit[1]+"  "+wit[2]);
+		
 		
 		System.out.println("----------------------");
 		for(Road r:board.nodes[0].getRoadRoad()){

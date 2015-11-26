@@ -172,14 +172,14 @@ public class Node extends Element {
 //	}
 	
 	
-	public Integer [] getRoadsToImprove(Node node){
-		Integer[] withoutRoad={0,0,0};
+	public Integer [] getRoadsToImprove(){
+		Integer[] withoutRoad={-1,-1,-1};
 		
-		if(node.getNoRoads().isEmpty())
+		if(this.getNoRoads().isEmpty())
 			return null;
 		else{
 			ArrayList <Node> noRoads=new ArrayList<Node>();
-			noRoads=node.getNoRoads();
+			noRoads=this.getNoRoads();
 			int i=0;
 			//for(int i=0; i<node.getNoRoads().size();i++){
 			//	withoutRoad[i]= noRoads.get(i);				
@@ -190,14 +190,14 @@ public class Node extends Element {
 			}
 			return withoutRoad;
 		}
-	public ArrayList<Integer> getRoadsToImprove2(Node node){
+	public ArrayList<Integer> getRoadsToImprove2(){
 		ArrayList<Integer> withoutRoad=new ArrayList<Integer>();
 		
-		if(node.getNoRoads().isEmpty())
+		if(this.getNoRoads().isEmpty())
 			return null;
 		else{
 			ArrayList <Node> noRoads=new ArrayList<Node>();
-			noRoads=node.getNoRoads();
+			noRoads=this.getNoRoads();
 						
 			for(Node temp: noRoads){				
 				withoutRoad.add(temp.getNodeNumber());
@@ -270,6 +270,21 @@ public class Node extends Element {
 		this.roadRoad = roadRoad;
 	}	
 	
+	//zwraca szukany Road albo null
+	public Road getRoadNode(Node to2){
+		for(Road r: this.roadRoad)
+		if(to2.nodeNumber==r.getTo().getNodeNumber() || to2.nodeNumber==r.getFrom().getNodeNumber())
+			return r;
+		
+		return null;
+	}
+	public Road getRoadInt(int toInt){
+		for(Road r: this.roadRoad)
+		if(toInt==r.getTo().getNodeNumber() || toInt==r.getFrom().getNodeNumber())
+			return r;
+		
+		return null;
+	}
 	//wywo³anie node.nodeHasOwnedRoad(gracz)
 	//i to sprawdzi czy do tego Noda wchodz¹ jakieœ drogi podanego gracza
 	public Boolean nodeHasOwnedRoad(Player player){
@@ -289,47 +304,50 @@ public class Node extends Element {
 	 * 3 - nie mo¿esz tu budowaæ
 	 * 4 - Node FROM nie nalezy do ciebie
 	 * 5 - Nie ma drogi z From2 do To2
+	 * 6	- Nie wykona³ siê zaden if 
 	 */
-	public void buildRoadRoad(Player player, Node from2, Node to2, int free){
+	public int buildRoadRoad(Player player, Node from2, Node to2, int free){
 		//from2.roadRoad.
+		int k=-1;
 		for(Road r: from2.roadRoad){
-			System.out.println("wlasciwosci drogi"+r.ID+" \nfrom"+r.getFrom().getNodeNumber()+"\n to"+r.getTo().getNodeNumber());
-			System.out.println("to2="+to2.getNodeNumber()+"owner "+to2.getPlayerNumber());
-			System.out.println("from2="+from2.getNodeNumber()+"owner"+from2.getPlayerNumber());
-			System.out.println("R To="+r.getTo().getNodeNumber());
-			System.out.println("R From="+r.getFrom().getNodeNumber());
+			//System.out.println("wlasciwosci drogi"+r.ID+" \nfrom"+r.getFrom().getNodeNumber()+"\n to"+r.getTo().getNodeNumber());
+			//System.out.println("to2="+to2.getNodeNumber()+"owner "+to2.getPlayerNumber());
+			//System.out.println("from2="+from2.getNodeNumber()+"owner"+from2.getPlayerNumber());
+			//System.out.println("R To="+r.getTo().getNodeNumber());
+			//System.out.println("R From="+r.getFrom().getNodeNumber());
 			
 			if(to2.getNodeNumber()==r.getTo().getNodeNumber())
 		//	if(r.getTo().getNodeNumber()==to2.getNodeNumber())
 			{
-			System.out.println("**");
-				int k;
+			//System.out.println("**");
+				
 				k=r.buildRoad(player,  from2,to2, free);
 				//System.out.print(r.getState());
 		//		System.out.println("If"+k+"\n"+r.getOwnerID()+from2.getPlayerNumber()+" lol "+to2.getPlayerNumber());
 
-				System.out.println("IF*****"+k);
-
+			//	System.out.println("IF*****"+k);
+				
 				break;
 			}
 			else// if(r.getTo().getNodeNumber()==from2.getNodeNumber()){
 				if(to2.getNodeNumber()==r.getFrom().getNodeNumber()){
 
-				int k;
+				
 				k=r.buildRoad(player,from2,to2, free);
 				//System.out.print(r.getState());
 				//System.out.println("If"+k+"\n"+r.getOwnerID()+from2.getPlayerNumber()+" lol "+to2.getPlayerNumber());
-				System.out.println("\n");
-				System.out.println(" IF ELSE*****"+k);
+			//	System.out.println("\n");
+				//System.out.println(" IF ELSE*****"+k);
 
 				break;
 			}
 			else
-				System.out.println("**Nie wykona³ siê zaden if");
-
-			//	return 5;
+				k=6;//Nie wykona³ siê zaden if
+				//System.out.println("**Nie wykona³ siê zaden if");
+		
 		}
-	//return 0;
+		return k;
+	
 	}
 	public void addRoadRoad(Road r){
 		this.roadRoad.add(r);
