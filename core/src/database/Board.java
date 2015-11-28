@@ -17,7 +17,7 @@ public class Board {
 	public int thiefPosition=0;
 	private Node[] nodes = new Node[54];
 	private int[][] adjencyMatrix=new int[54][54];
-	private int[] letterToNumber=new int [] {5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11};
+	private int[] letterToNumber=new int [] {5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11};//zamiast tego ca³ego ABCDEF
 	private int [][] tileToDice=new int [19][2];
 	public  ArrayList <Road> drogi=new ArrayList<Road> ();
 /*	private int[][] adjencyMatrix=new int[][] {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -227,7 +227,7 @@ public class Board {
 		
 		for(Node e: board.getNodes()){
 			System.out.print(e.getNodeNumber()+"przed"+e.getPlayerNumber());
-			Building.buildSettlement(p1, e);
+			Building.buildSettlement(p1, e,true);
 			System.out.println(e.getNodeNumber()+"po"+e.getPlayerNumber());
 		}
 		int i=0;
