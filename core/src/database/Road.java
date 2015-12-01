@@ -20,7 +20,7 @@ public class Road extends Element{
 	public Road(Node from2,Node to2){
 		this.from=from2;
 		this.to=to2;
-		this.state=0;
+		this.state=-1;
 		this.ownerID=0;
 	//	System.out.println("Inicjalizacja drogi \t"+from.getNodeNumber()+" ---- "+to.getNodeNumber());
 
