@@ -6,6 +6,7 @@ import representation.View.Screen;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.GL20;
@@ -20,8 +21,12 @@ import database.*;
 
 public class NewGameMenu  extends View implements InputProcessor
 {
+	//private Player realPlayer;
+	
 	private SpriteBatch batch;
 	
+	private StringBuilder nametext;
+	private String namestring;
 	private Texture background;
 	private Texture returnbutton;
 	private Texture avatar;
@@ -33,10 +38,14 @@ public class NewGameMenu  extends View implements InputProcessor
 	private Texture invite;	
 	private ArrayList<Texture> textures = new ArrayList<Texture>();
 	private int avatarTextureID;
-	BitmapFont font ;
+	BitmapFont font;
+	boolean accepted;
+	boolean inputname;
 	
 	public void init()
 	{
+		nametext=new StringBuilder(12);
+		nametext=nametext.append("YOUR NAME");
 		font = new BitmapFont();
 		batch= new SpriteBatch();
 		background = new Texture(Gdx.files.internal("newgameback.png"));
@@ -49,9 +58,6 @@ public class NewGameMenu  extends View implements InputProcessor
 		invite = new Texture(Gdx.files.internal("invite.png"));
 		initTextures();
 		avatar=textures.get(0);
-		
-		
-		font.getData().setScale(2.0f, 2.0f);
 	}
 	
 	public void batch()
@@ -60,16 +66,28 @@ public class NewGameMenu  extends View implements InputProcessor
 		batch.begin();
 		batch.draw(background, 0, 0);
 		batch.draw(returnbutton, 600, 100);	
-		batch.draw(avatar, 90, 300);	
-		batch.draw(name, 95, 220);
-		//TODO
-		batch.draw(name, 95, 160);	
-		batch.draw(arrowr, 390, 450);	
-		batch.draw(arrowl, 60, 450);
-		batch.draw(allusers, 650, 650);
-		batch.draw(guestlist, 1010, 650);
-		batch.draw(invite, 1080, 220);	
-		font.draw(batch, "your name", 110, 260);
+		batch.draw(avatar, 90, 310);	
+		//namestring=nametext.toString();
+		namestring=nametext.toString();
+		if(namestring.length()>12) namestring=nametext.substring(0,13);
+		font.draw(batch, namestring, 190, 260);	
+		
+		if(accepted==false)
+		{
+			font.draw(batch, "to start or stop writing your name click LPM on the field below", 60, 300);	
+			batch.draw(name, 95, 220);
+			batch.draw(name, 95, 150);	
+			batch.draw(arrowr, 390, 450);	
+			batch.draw(arrowl, 60, 450);
+		}
+		else
+		{
+			batch.draw(allusers, 650, 650);
+			batch.draw(guestlist, 1010, 650);
+			batch.draw(invite, 1080, 220);	
+			//TODO
+			//batch users lists
+		}
 		batch.end();
 	}	
 	
@@ -87,21 +105,33 @@ public class NewGameMenu  extends View implements InputProcessor
 	//overrides
     @Override
     public boolean keyDown(int keycode) {
-    	if(Gdx.input.isKeyPressed(Keys.E))
+    	if(accepted==false)
     	{
-    		avatarTextureID=(avatarTextureID+1)% textures.size();
-    		avatar = textures.get(avatarTextureID);
-    				
+    		if (inputname==true)
+        	{
+    			if ((keycode==Keys.BACKSPACE ) && (nametext.length()>0)) nametext.deleteCharAt(nametext.length()-1);
+    			else if ((keycode==Keys.SPACE ) && (nametext.length()>0)) nametext.append(" ");
+    			else if(keycode!=Keys.BACKSPACE) nametext.append(Input.Keys.toString(keycode));
+    			
+        	}
+    		else
+    		{
+        		if(Gdx.input.isKeyPressed(Keys.E))
+            	{
+            		avatarTextureID=(avatarTextureID+1)% textures.size();
+            		avatar = textures.get(avatarTextureID);
+            				
+            	}
+        		else if(Gdx.input.isKeyPressed(Keys.Q))
+            	{
+            		avatarTextureID=avatarTextureID-1;
+            		if(avatarTextureID==-1) avatarTextureID=textures.size()-1;
+            		avatar = textures.get(avatarTextureID);
+            	}
+    		}
     	}
-    	if(Gdx.input.isKeyPressed(Keys.Q))
-    	{
-    		avatarTextureID=avatarTextureID-1;
-    		if(avatarTextureID==-1) avatarTextureID=textures.size()-1;
-    		avatar = textures.get(avatarTextureID);
-    	}
-    	
-    	
-        return false;
+
+    	return false;
     }
 
     @Override
@@ -123,12 +153,35 @@ public class NewGameMenu  extends View implements InputProcessor
 			{
 				setView(Screen.MAINMENU);
 			}
-			if ((X>95) && (X<95+300) &&(Y>240) && (Y<240+60))
+			if(accepted==false)
 			{
-				avatar = textures.get(3);
-			}				
+				if ((X>95) && (X<95+300) &&(Y>240) && (Y<240+60))
+				{
+					if(inputname==true)
+					{
+						inputname=false;
+					}
+					else 
+						inputname=true;
+				}
 				
+				if ((X>95) && (X<95+300) &&(Y>170) && (Y<170+60))
+				{
+					accepted= true;
+				}		
+			}
+			else
+			{
+				//invite
+				if ((X>1060) && (X<1060+130) &&(Y>235) && (Y<235+45))
+				{
+					//TODO
+					accepted=false;
+				}
+				//all users
 				
+				//guest list
+			}
 				
     		
     	}
