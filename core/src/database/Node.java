@@ -2,40 +2,35 @@ package database;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.function.Consumer;
+import java.util.function.Consumer;//nawet nie wiem co to 
+
 
 
 public class Node extends Element {
-	//private Boolean city;//czy jest miasto true-tak false-nie
-	//private Boolean settlement;//czy jest osada true-tak false-nie
-	//lepsza chyba logika 3-wartoœciowa
+	
+	public enum portType{
+		NORMAL,THREE,GRAIN,SHEEP,WOOD,ORE,CLAY
+	}
 	private int building; //0-nic 1-osada 2-miasto
 	private int playerNumber;//ID gracza
 	private int nodeNumber;//numer ID noda
+	private portType port;
 	private ArrayList <Node> neighbours=new ArrayList<Node>();//referencja do s1siednich Node
 	private ArrayList <Tile> nearResources=new ArrayList<Tile>(); //referencja do  kafli, potrzebne do surowców
+	private ArrayList <Road> roads=new ArrayList<Road> ();
 	
-	private ArrayList <Road> roadRoad=new ArrayList<Road> ();
+	private HashMap <Integer,Tile> intResources=new HashMap<Integer,Tile>();//zastanowiæ siê czy to w ogóle potrzebne	
+	private ArrayList <Node> improvedRoads=new ArrayList <Node>();//zastanowiæ siê czy to w ogóle potrzebne
+	private ArrayList <Node> noRoads=new ArrayList <Node>(); //zastanowiæ siê czy to w ogóle potrzebne
 	
-	//do wywalenia
-	//private HashMap <Node,HashMap<Integer,Integer>> nodeRoadOwner=new HashMap <Node,HashMap<Integer,Integer> >();
-	//do wywalenia
-	//private int [][]nodeRoadOwner2=new int[][]{{-1,0,0},{-1,0,0},{-1,0,0}};
-	
-	
-	private HashMap <Integer,Tile> intResources=new HashMap<Integer,Tile>();
-	ArrayList <Node> roads=new ArrayList <Node>();//przedtem by3o <Road>
-	private ArrayList <Node> noRoads=new ArrayList <Node>(); 
-	
-	
-
-	
-	
+	//konstruktor
 	public Node(int id){
 		nodeNumber = id;
+		port=portType.NORMAL;
 	}
 	
 	
+	//#####Tile
 	public ArrayList <Tile> getNearResources(){
 		return nearResources;
 	}		
@@ -44,6 +39,7 @@ public class Node extends Element {
 		this.nearResources.add(tile);
 	}
 	
+	//#####neighbours
 	public ArrayList <Node> getNeighbours(){
 		return neighbours;
 	}
@@ -55,27 +51,29 @@ public class Node extends Element {
 	//sprawdza czy s¹siednie nody s¹ zabudowane
 	public Boolean neighboursHasBuildins(){
 		
-		Boolean has=false;
+		Boolean have=false;
 		
 		for(int i=0;i<neighbours.size();i++)
 		{
 			if(neighbours.get(i).getBuilding()>0){
-				has=true;
+				have=true;
 				break;
 			}
+			else
+				have=false;
 		}
-		return has;
+		return have;
 	
 	}
-	
+	//####buildings
 	public int getBuilding(){
 		return building;
 	}
 	public void setBuilding(int build){
-		building=build;
+		this.building=build;
 	}
 	
-	
+	///###player
 	public int getPlayerNumber() {
 		return playerNumber;
 	}
@@ -83,43 +81,7 @@ public class Node extends Element {
 	public void setPlayerNumber(int playerNumber) {
 		this.playerNumber = playerNumber;
 	}
-	public void addRoad(Node to) {
-	
-		this.roads.add(to);
-		this.noRoads.remove(to);
-	}
-	
-	
-	
-	public Node getRoad(int i){
-		return roads.get(i);
-	}
-	
-	public boolean hasRoadTo(Node to){
-		return roads.contains(to);
-	}
-	public boolean roadsIsEmpty(){
-		return roads.isEmpty();
-	}
-	/*
-	public void buildRoad(Node to) {
-		// TODO Auto-generated method stub
-		roads.addElement(to);
-	}
-	public boolean hasNoRoadTo(Node to) {
-	Boolean has=false;
-		
-		for(int i=0;i<roads.size();i++)
-		{
-			//pobieram z vectora ROAD'a, a z niego pobieram NODA to i sprawdzam czy zgadza siê z moim Nodem to
-			if(roads.get(i).getTo().equals(to)){
-				has=true;
-				break;
-			}
-		}
-		return has;
-	}
-	*/
+	///####NOde
 	public int getNodeNumber() {
 		return nodeNumber;
 	}
@@ -128,8 +90,37 @@ public class Node extends Element {
 		this.nodeNumber = nodeNumber;
 	}
 	
+	///####Roads
+	public void addImprovedRoads(Node to) {	
+		this.improvedRoads.add(to);
+		this.noRoads.remove(to);
+	}
+	
+	public Node getImprovedRoads(int i){
+		return improvedRoads.get(i);
+	}
+	//na hasImprovedRoadTo
+	public boolean hasRoadTo(Node to){
+		return improvedRoads.contains(to);
+	}
+	public boolean hasRoadRoadTo(Node to){
+		Boolean have=false;
+		
+		for(Road r: this.getRoads())
+		{
+			if(r.getFrom().getNodeNumber()==to.getNodeNumber() || r.getTo().getNodeNumber()==to.getNodeNumber())
+				have=true;
+		}
+		
+		return have;
+	}
+	
+	
 
 
+	public ArrayList <Node> getImprovedRoads() {
+		return improvedRoads;
+	}
 	public ArrayList <Node> getNoRoads() {
 		return noRoads;
 	}
@@ -160,37 +151,24 @@ public class Node extends Element {
 	
 	//Kasi whisList
 	
-	//public HashMap <Node,HashMap<Integer,Integer>> getNodeRoadOwner(){
-	//	return nodeRoadOwner;
-	//}
-//	public void changeNodeRoadOwner(Node node,int roadd, int owner){
-//		HashMap<Integer,Integer> temp=new HashMap<Integer,Integer>();
-//		
-//		temp.put(roadd, owner);
-//		
-//		this.nodeRoadOwner.put(node,temp);
-//	}
-	
-	
-	public Integer [] getRoadsToImprove(){
-		Integer[] withoutRoad={-1,-1,-1};
-		
-		if(this.getNoRoads().isEmpty())
-			return null;
-		else{
-			ArrayList <Node> noRoads=new ArrayList<Node>();
-			noRoads=this.getNoRoads();
-			int i=0;
-			//for(int i=0; i<node.getNoRoads().size();i++){
-			//	withoutRoad[i]= noRoads.get(i);				
-			for(Node temp: noRoads){				
-				withoutRoad[i]=temp.getNodeNumber();
-				i++;
-				}
-			}
-			return withoutRoad;
+	public ArrayList<Road> getRoads2Improve(){
+		ArrayList<Road> withoutRoad=new ArrayList<Road>();
+		for(Road r: this.getRoads()){
+			if(r.getState()<0)
+				withoutRoad.add(r);
 		}
-	public ArrayList<Integer> getRoadsToImprove2(){
+		return withoutRoad;
+	}
+	
+	public ArrayList<Integer> getRoadsIdImprove(){
+		ArrayList<Integer> withoutRoad=new ArrayList<Integer>();
+		for(Road r: this.getRoads()){
+			if(r.getState()<0)
+				withoutRoad.add(r.ID);
+		}
+		return withoutRoad;
+	}
+	public ArrayList<Integer> getNodesFromRoadsImprove(){
 		ArrayList<Integer> withoutRoad=new ArrayList<Integer>();
 		
 		if(this.getNoRoads().isEmpty())
@@ -206,80 +184,36 @@ public class Node extends Element {
 			return withoutRoad;
 		}
 
-
+//na razie zostaje, lepiej jak zrobie metode wywylywana przez player, ktory przeiteruje
 	public HashMap <Integer,Tile> getIntResources() {
 		return intResources;
 	}
-
-
 	public void setIntResources(HashMap <Integer,Tile> intResources) {
 		this.intResources = intResources;
 	}
 
 
-	
-	
-	//public int [][] getNodeRoadOwner2() {
-//		return nodeRoadOwner2;
-//	}
-//	public void initializeNodeRoadOwner2(){
-//		for(Node temp: this.neighbours){
-////			int k=(temp.getNodeNumber()>=0) ? temp.getNodeNumber() : (-1);
-//			//this.setNodeRoadOwner2(temp.getNodeNumber(), 0, 0);
-//			this.setNodeRoadOwner2(k, 0, 0);
-	//		
-//		}
-/*	}
-	public void changeNodeRoadOwner2(Player player,int node){
-		int newRoadOwner=player.getId();
-		int i=0;
-		for(Node temp:this.neighbours){
-			if(temp.nodeNumber==node)
-				break;
-			else
-				i++;
-		}
-		this.nodeRoadOwner2[i][2]=newRoadOwner;
-		this.nodeRoadOwner2[i][1]=1; 
-	
-	}
-		
-*/
-	/*
-	public void setNodeRoadOwner2(int node,int roadState,int roadOwner) {
-		int i=0;
-		for(Node temp:this.neighbours){
-			if(temp.nodeNumber!=node && i<3)
-				i++;
-			else
-				break;
-		}
-		this.nodeRoadOwner2[i][0]=node;
-		this.nodeRoadOwner2[i][1]=roadState;
-		this.nodeRoadOwner2[i][2]=roadOwner;
-
-	}
-*/
-
-	public ArrayList <Road> getRoadRoad() {
-		return roadRoad;
+	public ArrayList <Road> getRoads() {
+		return roads;
 	}
 
 
-	public void setRoadRoad(ArrayList <Road> roadRoad) {
-		this.roadRoad = roadRoad;
+	public void setRoads(ArrayList <Road> roadRoad) {
+		this.roads = roadRoad;
 	}	
-	
+	public void addRoadRoad(Road r){
+		this.roads.add(r);
+	}
 	//zwraca szukany Road albo null
 	public Road getRoadNode(Node to2){
-		for(Road r: this.roadRoad)
+		for(Road r: this.roads)
 		if(to2.nodeNumber==r.getTo().getNodeNumber() || to2.nodeNumber==r.getFrom().getNodeNumber())
 			return r;
 		
 		return null;
 	}
 	public Road getRoadInt(int toInt){
-		for(Road r: this.roadRoad)
+		for(Road r: this.roads)
 		if(toInt==r.getTo().getNodeNumber() || toInt==r.getFrom().getNodeNumber())
 			return r;
 		
@@ -288,7 +222,7 @@ public class Node extends Element {
 	//wywo³anie node.nodeHasOwnedRoad(gracz)
 	//i to sprawdzi czy do tego Noda wchodz¹ jakieœ drogi podanego gracza
 	public Boolean nodeHasOwnedRoad(Player player){
-		for(Road r:this.roadRoad){
+		for(Road r:this.roads){
 			if(r.getOwnerID()==player.getId()){
 				return true;
 			}
@@ -305,71 +239,26 @@ public class Node extends Element {
 	 * 4 - Node FROM nie nalezy do ciebie
 	 * 5 - Nie ma drogi z From2 do To2
 	 * 6	- Nie wykona³ siê zaden if 
+	 * 10- nie ma takiej drogi przy tym node
 	 */
-	public int buildRoadRoad(Player player, Node from2, Node to2, int free){
-		//from2.roadRoad.
-		int k=-1;
-		for(Road r: from2.roadRoad){
-			//System.out.println("wlasciwosci drogi"+r.ID+" \nfrom"+r.getFrom().getNodeNumber()+"\n to"+r.getTo().getNodeNumber());
-			//System.out.println("to2="+to2.getNodeNumber()+"owner "+to2.getPlayerNumber());
-			//System.out.println("from2="+from2.getNodeNumber()+"owner"+from2.getPlayerNumber());
-			//System.out.println("R To="+r.getTo().getNodeNumber());
-			//System.out.println("R From="+r.getFrom().getNodeNumber());
-			
-			if(to2.getNodeNumber()==r.getTo().getNodeNumber())
-		//	if(r.getTo().getNodeNumber()==to2.getNodeNumber())
-			{
-			//System.out.println("**");
-				
-				k=r.buildRoad(player,  from2,to2, free);
-				//System.out.print(r.getState());
-		//		System.out.println("If"+k+"\n"+r.getOwnerID()+from2.getPlayerNumber()+" lol "+to2.getPlayerNumber());
-
-			//	System.out.println("IF*****"+k);
-				
-				break;
-			}
-			else// if(r.getTo().getNodeNumber()==from2.getNodeNumber()){
-				if(to2.getNodeNumber()==r.getFrom().getNodeNumber()){
-
-				
-				k=r.buildRoad(player,from2,to2, free);
-				//System.out.print(r.getState());
-				//System.out.println("If"+k+"\n"+r.getOwnerID()+from2.getPlayerNumber()+" lol "+to2.getPlayerNumber());
-			//	System.out.println("\n");
-				//System.out.println(" IF ELSE*****"+k);
-
-				break;
-			}
-			else
-				k=6;//Nie wykona³ siê zaden if
-				//System.out.println("**Nie wykona³ siê zaden if");
-		
-		}
-		return k;
 	
-	}
-	public void addRoadRoad(Road r){
-		this.roadRoad.add(r);
+	public int buildRoad(Player player, int id){
+		Road r=Board.getInstance().boardRoads.get(id);
+		if(this.getRoads().contains(r))
+		return r.buildRoad(player,r.getFrom(),r.getTo());
+		else
+			return 10;		
 	}
 	
-
 	
-/*
-	public HashMap <Integer,Integer> getNeighbourRoad() {
-		return neighbourRoad;
+	
+//###porty
+	public portType getPort() {
+		return port;
 	}
 
-	public void changeNeighbourRoad(Integer neighbour,int change) {
-		this.neighbourRoad.put(neighbour, change);
+	public void setPort(portType port) {
+		this.port=port;
 	}
-	public ArrayList <Integer> getRoadsToImprove(){
-		ArrayList <Integer> returnList=new ArrayList <Integer>();
-		for(int i=0;i<this.neighbourRoad.size();)
-		    if(this.neighbourRoad.)
-		return returnList;
-	}
-	*/
-	
 	
 }

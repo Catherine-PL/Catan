@@ -1,6 +1,10 @@
 package database;
 
+
+import database.Node.portType;
+
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -20,6 +24,10 @@ public class Player {
 	private HashMap <String,Integer> resources=new HashMap <String,Integer>();	//get,change
 	private	ArrayList <SpecialCard> specialCards=new ArrayList <SpecialCard>();//add,rm,get
 	private int soldierCount;
+	private int freeRoads;
+	private ArrayList<Node> playerNodes=new ArrayList<Node>();
+	// jakiœ set private ArrayList <portType> ports=new ArrayList<portType>;
+	private EnumSet<portType> ports=EnumSet.of(portType.NORMAL);//ka¿dy taki i tak ma, a jakoœ zainicjowaæ trzeba
 	
 	
 		//void restrictions; // to zrobiæ w tablicy?? 
@@ -27,6 +35,7 @@ public class Player {
 	
 	
 	public Player(int _id){
+		
 		id=_id;
 		resources.put("clay", 0) ; 
 		resources.put("grain", 0) ;
@@ -35,6 +44,8 @@ public class Player {
 		resources.put("wood", 0) ;
 		soldierCount=0;
 		points=0;
+		freeRoads=2;//ka¿dy ma dwie drogi za darmo na start
+		
 	}
 	
 	public String getName(){
@@ -153,6 +164,38 @@ public class Player {
 		System.out.println(p1.getId());
 		System.out.println(p1.getPoints());
 		
+	}
+	//HANDEL
+	public int dealBank(){
+		return 0;
+	}
+	
+	
+	//PORTY
+
+	public EnumSet<portType> getPorts() {
+		return ports;
+	}
+
+	public void addPort(portType ports) {
+		this.ports.add(ports);
+	}
+
+	public int getFreeRoads() {
+		return freeRoads;
+	}
+
+	public void setFreeRoads(int freeRoads) {
+		this.freeRoads = freeRoads;
+	}
+
+	public ArrayList<Node> getPlayerNodes() {
+		return playerNodes;
+	}
+
+	public void addPlayerNodes(Node node) {
+		if(!this.playerNodes.contains(node))
+		this.playerNodes.add(node);
 	}
 	
 }

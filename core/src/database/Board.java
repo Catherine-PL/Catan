@@ -1,6 +1,8 @@
 package database;
 
 import database.Building;
+import database.Node.portType;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,7 +21,7 @@ public class Board {
 	private int[][] adjencyMatrix=new int[54][54];
 	private int[] letterToNumber=new int [] {5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11};//zamiast tego ca³ego ABCDEF
 	private int [][] tileToDice=new int [19][2];
-	public  ArrayList <Road> drogi=new ArrayList<Road> ();
+	public  ArrayList <Road> boardRoads=new ArrayList<Road> ();
 /*	private int[][] adjencyMatrix=new int[][] {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -117,6 +119,8 @@ public class Board {
 		
 		loadMatrix();
 		setNeighbours();
+		setRoadsy();
+		setNoRoads();
 
 	}
 	
@@ -137,28 +141,34 @@ public class Board {
     				nodes[j].addNeighbour(nodes[i]);
     			}
     		}
-		}
+		}	
+	}
+	public void setNoRoads(){
 		for(int i=0;i<54;i++){
-			nodes[i].setNoRoads(nodes[i].getNeighbours());
-			
-		//	for(Node node: nodes[i].getNeighbours()){
-			//	nodes[i].changeNodeRoadOwner(node,0,0);
-			//}
-			//nodes[i].initializeNodeRoadOwner2();
+			nodes[i].setNoRoads(nodes[i].getNeighbours());		
 		}
+	}
+	public void setRoadsy(){	
 		//set RoadRoad
 		int k=0;
 		for(int i=0;i<54;i++){
 			for(Node nod:nodes[i].getNeighbours()){
+				
+				if(!nodes[i].hasRoadRoadTo(nod)){
+					
 				Road r=new Road(nodes[i],nod);
+				
+				boardRoads.add(r);
+				
 				r.ID=k;
 				k++;
 				nod.addRoadRoad(r);
+				nodes[i].addRoadRoad(r);
+				}
 				
 			}
 		}
 	}
-	
 	public void loadMatrix(){
 		 //wczytanie macierzy sasiedztwa
 			Scanner scanner;
@@ -195,7 +205,7 @@ public class Board {
 	
 	public static void main(String [ ] args) throws FileNotFoundException{
 		Board board = Board.getInstance();
-	
+	/*
 		//test, wypisanie s¹siadów
 		for(int i=0;i<54;i++){
 			System.out.print(i + " - ");
@@ -207,15 +217,40 @@ public class Board {
 	        System.out.println();
   
 		}
+*/
+	
+		//testowanie Marcin
 		
+		Player p1=new Player(3);
 		
-		
+		p1.changeResources("grain", 500);
+		p1.changeResources("sheep",500);
+		p1.changeResources("wood", 500);
+		p1.changeResources("clay", 500);		
+	
+	    for(Node e: board.getNodes()){
+			Building.buildSettlement(p1, e);
+			System.out.print("\nNode number "+e.getNodeNumber()+"Roads");
+			for(Road r:e.getRoads()){
+				System.out.print(r.ID+"  ");
+			}
+
+		}
+	    System.out.print("\n"+board.boardRoads.get(0).getOwnerID()+"  "+board.boardRoads.get(0).getState()+" to2imp"+board.nodes[0].getRoads2Improve()+" to2imp"+board.nodes[0].getRoadsIdImprove());
+		board.getNode(0).buildRoadID(p1, 0);
+		board.getNode(0).buildRoadID(p1, 1);
+	    System.out.print("\n"+board.boardRoads.get(0).getOwnerID()+"  "+board.boardRoads.get(0).getState()+" to2imp"+board.nodes[0].getRoads2Improve()+" to2imp"+board.nodes[0].getRoadsIdImprove());
+
 		
 	}
+	
 	
 	//nie usuwajcie tego narazie dobra
 	//st¹d sobie kopiuje kod do testów, a nie chce wrzycaæ zasmieconego main'a
 	public void testMarcin(){
+		
+		//System.out.println("\n jest "+board.boardRoads.size()+" drog \n ");//zwroci ile jest drog
+
 		//testowanie Marcin
 		Board board = Board.getInstance();
 		Player p1=new Player(3), p2=new Player(2);
@@ -224,12 +259,12 @@ public class Board {
 		p1.changeResources("sheep",500);
 		p1.changeResources("wood", 500);
 		p1.changeResources("clay", 500);		
-		
+		/*
 		for(Node e: board.getNodes()){
 			System.out.print(e.getNodeNumber()+"przed"+e.getPlayerNumber());
-			Building.buildSettlement(p1, e,true);
+			Building.buildSettlement(p1, e);
 			System.out.println(e.getNodeNumber()+"po"+e.getPlayerNumber());
-		}
+		}*/
 		int i=0;
 		
 		/*for(Node n: board.nodes){
@@ -241,15 +276,12 @@ public class Board {
 		
 		
 		board.nodes[0].buildRoadRoad(p1,board.nodes[0],board.nodes[3],1);
-		Integer[] wit=new Integer[3];
 		ArrayList <Integer> dr=new ArrayList <Integer>();
-		wit=board.nodes[0].getRoadsToImprove();
-		dr=board.nodes[0].getRoadsToImprove2();
+		dr=board.nodes[0].getRoadsToImprove();
 		for(Integer a:dr){
 			System.out.println(" * "+a+" * ");
 		}
 		
-			System.out.println(wit[0]+"  "+wit[1]+"  "+wit[2]);
 		
 		
 		System.out.println("----------------------");
@@ -304,7 +336,7 @@ public class Board {
 			int [][]temp2=temp.getNodeRoadOwner2();
 			System.out.println("*****************\n"+temp.getNodeNumber());
 			for( int i=0;i<3;i++){
-				System.out.print("\ndo Noda numer"+temp2[i][0]+"\t stan drogi "+temp2[i][1]+" wlasciciel tej drogi "+temp2[i][2]+"\n");
+				System.out.print("\ndo Noda numer"+temp2[i][0]+"\t stan boardRoads "+temp2[i][1]+" wlasciciel tej boardRoads "+temp2[i][2]+"\n");
 			}
 		}
 		*/
