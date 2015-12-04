@@ -160,7 +160,7 @@ public class Board {
 				
 				boardRoads.add(r);
 				
-				r.ID=k;
+				r.setID(k);
 				k++;
 				nod.addRoadRoad(r);
 				nodes[i].addRoadRoad(r);
@@ -232,13 +232,13 @@ public class Board {
 			Building.buildSettlement(p1, e);
 			System.out.print("\nNode number "+e.getNodeNumber()+"Roads");
 			for(Road r:e.getRoads()){
-				System.out.print(r.ID+"  ");
+				System.out.print(r.getID()+"  ");
 			}
 
 		}
 	    System.out.print("\n"+board.boardRoads.get(0).getOwnerID()+"  "+board.boardRoads.get(0).getState()+" to2imp"+board.nodes[0].getRoads2Improve()+" to2imp"+board.nodes[0].getRoadsIdImprove());
-		board.getNode(0).buildRoadID(p1, 0);
-		board.getNode(0).buildRoadID(p1, 1);
+		board.getNode(0).buildRoad(p1, 0);
+		board.getNode(0).buildRoad(p1, 1);
 	    System.out.print("\n"+board.boardRoads.get(0).getOwnerID()+"  "+board.boardRoads.get(0).getState()+" to2imp"+board.nodes[0].getRoads2Improve()+" to2imp"+board.nodes[0].getRoadsIdImprove());
 
 		

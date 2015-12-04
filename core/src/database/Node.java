@@ -164,10 +164,11 @@ public class Node extends Element {
 		ArrayList<Integer> withoutRoad=new ArrayList<Integer>();
 		for(Road r: this.getRoads()){
 			if(r.getState()<0)
-				withoutRoad.add(r.ID);
+				withoutRoad.add(r.getID());
 		}
 		return withoutRoad;
 	}
+	///przemyœleæ czy potrzebne
 	public ArrayList<Integer> getNodesFromRoadsImprove(){
 		ArrayList<Integer> withoutRoad=new ArrayList<Integer>();
 		

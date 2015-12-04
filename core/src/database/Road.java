@@ -7,7 +7,7 @@ public class Road extends Element{
 	private Node from, to;
 	private int state;//0-nie wybudowana, 1-wybudowana
 	private int ownerID;//owner to ID gracza
-	public int ID;
+	private int ID;
 	
 	/* Wartoœci zwracane przy budowaniu:
 	 * 0 - uda³o siê 
@@ -86,6 +86,15 @@ public class Road extends Element{
 	}
 	public int getState() {
 		return state;
+	}
+
+
+	public int getID() {
+		return ID;
+	}
+
+	public void setID(int iD) {
+		ID = iD;
 	}
 
 	
