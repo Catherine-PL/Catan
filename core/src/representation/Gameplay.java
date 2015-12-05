@@ -65,15 +65,10 @@ public class Gameplay extends View implements InputProcessor
 	private Texture nobuilding;
 	private Texture village;
 	
-	private Texture roadSWNE;
-	private Texture roadNWSE;
-	private Texture roadSN;
-	private Texture[] roads;
+	private Texture[] roads = new Texture[12];
 	
 	
-	
-	
-	private Board board;
+	private Game game;
 	
 	//tekstury na wszystkie tile
 	private ArrayList<Texture> textures = new ArrayList<Texture>();
@@ -94,6 +89,7 @@ public class Gameplay extends View implements InputProcessor
 	public void init()
 	{
 		initRoadsTextures();
+		game=new Game();
 		selected=SelectedKey.NOTHING;
 		thisPlayer= new Player(1);
 		touchedBuildingRoads=null;
@@ -110,7 +106,6 @@ public class Gameplay extends View implements InputProcessor
 		}
 		coordinateTiles();
 		batch = new SpriteBatch();
-		board = Board.getInstance();
 		initTiles();
 		initBuildings();
 		background = new Texture(Gdx.files.internal("ocean.png"));
@@ -125,11 +120,7 @@ public class Gameplay extends View implements InputProcessor
 		village = new Texture(Gdx.files.internal("gameplay/buildings/village.png"));
 		citymenu = new Texture(Gdx.files.internal("gameplay/buildings/citymenu.png"));
 		nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingmenu.png"));
-		villagemenu = new Texture(Gdx.files.internal("gameplay/buildings/villagemenu.png"));
-		
-		roadSWNE = new Texture(Gdx.files.internal("gameplay/roads/roadSWNE.png"));;
-		roadNWSE = new Texture(Gdx.files.internal("gameplay/roads/roadNWSE.png"));;
-		roadSN = new Texture(Gdx.files.internal("gameplay/roads/roadNS.png"));;
+		villagemenu = new Texture(Gdx.files.internal("gameplay/buildings/villagemenu.png"));		
 		
 		font = new BitmapFont();
 		font.getData().setScale(1.5f, 1.5f);
@@ -145,7 +136,7 @@ public class Gameplay extends View implements InputProcessor
 		batch.begin();
 		batchMenuGameplay();
 		batchTiles();
-		//batchRoads();
+		batchRoads();
 		batchBuildings();
 		batch.end();
 		batchTouchedBuildingRoads();
@@ -156,7 +147,8 @@ public class Gameplay extends View implements InputProcessor
 	{
 		for (int k =0; k<19; k++)
 		{
-			Tile t = board.getTile(k);
+			Tile t = game.getBoard().getTile(k);
+			//Tile t = board.getTile(k);
 			
 			if ("Hills".equals(t.getType() )) 
 			{
@@ -223,18 +215,18 @@ public class Gameplay extends View implements InputProcessor
 	
 	private void initRoadsTextures()
 	{
-		/*roads[0]=;
-		roads[1]=;
-		roads[2]=;
-		roads[3]=;
-		roads[4]=;
-		roads[5]=;
-		roads[6]=;
-		roads[7]=;
-		roads[8]=;
-		roads[9]=;
-		roads[10]=;
-		roads[11]=; */
+		roads[0]=new Texture(Gdx.files.internal("gameplay/roads/roadNS.png"));
+		roads[1]=new Texture(Gdx.files.internal("gameplay/roads/roadNS1.png"));
+		roads[2]=new Texture(Gdx.files.internal("gameplay/roads/roadNS2.png"));
+		roads[3]=new Texture(Gdx.files.internal("gameplay/roads/roadNS3.png"));
+		roads[4]=new Texture(Gdx.files.internal("gameplay/roads/roadNWSE.png"));
+		roads[5]=new Texture(Gdx.files.internal("gameplay/roads/roadNWSE1.png"));
+		roads[6]=new Texture(Gdx.files.internal("gameplay/roads/roadNWSE2.png"));
+		roads[7]=new Texture(Gdx.files.internal("gameplay/roads/roadNWSE3.png"));
+		roads[8]=new Texture(Gdx.files.internal("gameplay/roads/roadSWNE.png"));
+		roads[9]=new Texture(Gdx.files.internal("gameplay/roads/roadSWNE1.png"));
+		roads[10]=new Texture(Gdx.files.internal("gameplay/roads/roadSWNE2.png"));
+		roads[11]=new Texture(Gdx.files.internal("gameplay/roads/roadSWNE3.png")); 
 		
 	}
 	
@@ -250,7 +242,7 @@ public class Gameplay extends View implements InputProcessor
 		{
 			X=buildingsXY[j].getX();
 			Y=buildingsXY[j].getY();
-			buildingindex=board.getNode(j).getBuilding();
+			buildingindex=game.getBoard().getNode(j).getBuilding();
 			if(touchedBuildingID!=null)
 			{
 				if(touchedBuildingID==j) buildingindex=buildingindex+3;
@@ -290,9 +282,9 @@ public class Gameplay extends View implements InputProcessor
 		{
 			batch.begin();
 			Node neighbour;
-			for(int m=0; m<board.getNode(touchedBuildingID).getNoRoads().size();m++)
+			for(int m=0; m<game.getBoard().getNode(touchedBuildingID).getNoRoads().size();m++)
 			{
-				neighbour = board.getNode(touchedBuildingID).getNoRoads().get(m);				
+				neighbour = game.getBoard().getNode(touchedBuildingID).getNoRoads().get(m);				
 				font.draw(batch, " " + (m+1),  buildingsXY[neighbour.getNodeNumber()].getX()  , buildingsXY[neighbour.getNodeNumber()].getY()+20 );
 			}
 			batch.end();
@@ -301,60 +293,70 @@ public class Gameplay extends View implements InputProcessor
 	
 	//TODO 
 	
-	private void batchPlayersRoads()
-	{
-		
-		
-	}
-	
-	
-	
 	private void batchRoads()
 	{
 		int x=0;
 		int y=0;
 		int myX=0;
 		int myY=0;
+		int color=-1;
 		
 		for (int i =0;i<54;i++)
 		{				
 			myX=buildingsXY[i].getX();
 			myY=buildingsXY[i].getY();
-			for (Node n : board.getNode(i).getNeighbours())
+			for (Road n : game.getBoard().getNode(i).getRoadRoad())
 			{
-				x=buildingsXY[n.getNodeNumber()].getX();
-				y=buildingsXY[n.getNodeNumber()].getY();
-				
-				
-				if ((x ==myX) && (y>myY))
-				{
-					batch.draw(roadSN, myX+10, myY+10);
-				}
-				else if ((x ==myX) && (y<myY))
-				{
-					batch.draw(roadSN, myX+10, y+10);
-				}
-				else if ((x >myX) && (y<myY))
-				{
-					batch.draw(roadNWSE, myX+10, y+10);			
-				}
-				else if ((x <myX) && (y>myY))
-				{
-					batch.draw(roadNWSE, x+10, myY+10);					
-				}
-				else if ((x <myX) && (y<myY))
-				{
-					batch.draw(roadSWNE, x+10, y+10);					
-				}
-				else if ((x >myX) && (y>myY))
-				{
-					batch.draw(roadSWNE, myX+10, myY+10);					
+				if(n.getOwnerID()!=-1)
+				{	
+					color=game.getColors().get(n.getOwnerID());
+					if (n.getTo().getNodeNumber()!=i )
+					{
+						x=buildingsXY[n.getTo().getNodeNumber()].getX();
+						y=buildingsXY[n.getTo().getNodeNumber()].getY();
+					}
+					else
+					{
+						x=buildingsXY[n.getFrom().getNodeNumber()].getX();
+						y=buildingsXY[n.getFrom().getNodeNumber()].getY();
+					}	
+					
+					if ((x ==myX) && (y>myY))
+					{
+						batch.draw(roads[0+color], myX+10, myY+10);
+					}
+					else if ((x ==myX) && (y<myY))
+					{
+						batch.draw(roads[0+color], myX+10, y+10);
+					}
+					else if ((x >myX) && (y<myY))
+					{
+						batch.draw(roads[4+color], myX+10, y+10);			
+					}
+					else if ((x <myX) && (y>myY))
+					{
+						batch.draw(roads[4+color], x+10, myY+10);					
+					}
+					else if ((x <myX) && (y<myY))
+					{
+						batch.draw(roads[8+color], x+10, y+10);					
+					}
+					else if ((x >myX) && (y>myY))
+					{
+						batch.draw(roads[8+color], myX+10, myY+10);					
+					}
 				}
 			}
 			
 		}
 		
+		
+		
+		
+		
 	}
+	
+	
 	
 	private void coordinateTiles()
 	{
@@ -460,20 +462,23 @@ public boolean keyDown(int keycode) {
 		//to do wyboru drogi.
 		if(selected==SelectedKey.E)
 		{
-			int noRoadsSize =(board.getNode(touchedBuildingID)).getNoRoads().size();
+			int noRoadsSize =(game.getBoard().getNode(touchedBuildingID)).getNoRoads().size();
 			 if(Gdx.input.isKeyPressed(Keys.NUM_1 ))
 			 {
-				 if(noRoadsSize>=1 )  board.getNode(touchedBuildingID).addRoad(board.getNode(touchedBuildingID).getNoRoads().get(0));
+				 buildRoadRoad(,)
+				 //TODO
+				 
+				 if(noRoadsSize>=1 )  game.getBoard().getNode(touchedBuildingID).addRoad(game.getBoard().getNode(touchedBuildingID).getNoRoads().get(0));
 				 selected=SelectedKey.E;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_2 ))
 			 {
-				 if(noRoadsSize>=2 )  board.getNode(touchedBuildingID).addRoad(board.getNode(touchedBuildingID).getNoRoads().get(1));
+				 if(noRoadsSize>=2 )  game.getBoard().getNode(touchedBuildingID).addRoad(game.getBoard().getNode(touchedBuildingID).getNoRoads().get(1));
 				 selected=SelectedKey.E;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_3 ))
 			 {
-				 if(noRoadsSize>=3 )  board.getNode(touchedBuildingID).addRoad(board.getNode(touchedBuildingID).getNoRoads().get(2));
+				 if(noRoadsSize>=3 )  game.getBoard().getNode(touchedBuildingID).addRoad(game.getBoard().getNode(touchedBuildingID).getNoRoads().get(2));
 				 selected=SelectedKey.E;
 			 }
 		}
@@ -486,7 +491,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 int build=0;
 				 selected=SelectedKey.Q;
-				 build =Building.buildSettlement(thisPlayer, board.getNode(touchedBuildingID));
+				 build =Building.buildSettlement(thisPlayer, game.getBoard().getNode(touchedBuildingID),false);
 				 if(build==0) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
 				 if(build==1) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
 				 if(build==3) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
@@ -502,7 +507,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 int build=0;
 				 selected=SelectedKey.W;
-				 build =Building.buildCity(thisPlayer, board.getNode(touchedBuildingID));
+				 build =Building.buildCity(thisPlayer, game.getBoard().getNode(touchedBuildingID));
 				 if(build==0) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
 				 if(build==1) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
 				 if(build==2) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
