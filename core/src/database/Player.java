@@ -37,11 +37,11 @@ public class Player {
 	public Player(int _id){
 		
 		id=_id;
-		resources.put("clay", 0) ; 
-		resources.put("grain", 0) ;
-		resources.put("ore", 0) ;
-		resources.put("sheep", 0) ;
-		resources.put("wood", 0) ;
+		resources.put("clay", 10) ; 
+		resources.put("grain", 10) ;
+		resources.put("ore", 10) ;
+		resources.put("sheep", 10) ;
+		resources.put("wood", 10) ;
 		soldierCount=0;
 		points=0;
 		freeRoads=2;//ka¿dy ma dwie drogi za darmo na start

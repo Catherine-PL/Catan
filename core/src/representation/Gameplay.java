@@ -305,7 +305,7 @@ public class Gameplay extends View implements InputProcessor
 		{				
 			myX=buildingsXY[i].getX();
 			myY=buildingsXY[i].getY();
-			for (Road n : game.getBoard().getNode(i).getRoadRoad())
+			for (Road n : game.getBoard().getNode(i).getRoads())
 			{
 				if(n.getOwnerID()!=-1)
 				{	
@@ -462,23 +462,20 @@ public boolean keyDown(int keycode) {
 		//to do wyboru drogi.
 		if(selected==SelectedKey.E)
 		{
-			int noRoadsSize =(game.getBoard().getNode(touchedBuildingID)).getNoRoads().size();
+			int noRoadsSize =(game.getBoard().getNode(touchedBuildingID)).getRoadsIdImprove().size();
 			 if(Gdx.input.isKeyPressed(Keys.NUM_1 ))
 			 {
-				 buildRoadRoad(,)
-				 //TODO
-				 
-				 if(noRoadsSize>=1 )  game.getBoard().getNode(touchedBuildingID).addRoad(game.getBoard().getNode(touchedBuildingID).getNoRoads().get(0));
+				 if(noRoadsSize>=1 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
 				 selected=SelectedKey.E;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_2 ))
 			 {
-				 if(noRoadsSize>=2 )  game.getBoard().getNode(touchedBuildingID).addRoad(game.getBoard().getNode(touchedBuildingID).getNoRoads().get(1));
+				 if(noRoadsSize>=2 ) game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
 				 selected=SelectedKey.E;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_3 ))
 			 {
-				 if(noRoadsSize>=3 )  game.getBoard().getNode(touchedBuildingID).addRoad(game.getBoard().getNode(touchedBuildingID).getNoRoads().get(2));
+				 if(noRoadsSize>=3 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
 				 selected=SelectedKey.E;
 			 }
 		}
@@ -491,7 +488,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 int build=0;
 				 selected=SelectedKey.Q;
-				 build =Building.buildSettlement(thisPlayer, game.getBoard().getNode(touchedBuildingID),false);
+				 build =Building.buildSettlement(thisPlayer, game.getBoard().getNode(touchedBuildingID));
 				 if(build==0) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
 				 if(build==1) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
 				 if(build==3) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
