@@ -78,6 +78,8 @@ public class Building extends Element {
 					state = 1;
 				}
 				
+				if(here.getBuilding()==2)
+					state = 4;	
 				
 				if(here.getBuilding()==0){
 					if(player.getResources("grain")>=3 && player.getResources("sheep")>=1 && player.getResources("wood")>=1 && player.getResources("clay")>=1 && player.getResources("ore")>=3){
@@ -96,8 +98,6 @@ public class Building extends Element {
 							state = 1;
 				}
 				
-				if(here.getBuilding()==2)
-					state = 4;	
 			}
 			else
 				state = 2;

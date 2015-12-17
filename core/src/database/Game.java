@@ -2,11 +2,16 @@ package database;
 
 import java.util.*;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+
 public class Game {
-	private Player thisPlayer = new Player(1);
+	private Player thisPlayer = new Player(3);
 	private Player[] players = new Player[4];
 	private Board board;
 	private Dice dice;
+	//TODO aktualny gracz mo¿e byæ inaczej - to tylko teraz dla testów tekstur
+	private Player actualPlayer=thisPlayer;
 	private HashMap <Integer,Integer> colors=new HashMap<Integer,Integer>();
 	
 	public Game(){
@@ -21,10 +26,13 @@ public class Game {
 		for(int i=0;i<4;i++){
 			colors.put(players[i].getId(), i);
 		}
-		
-		
 	}
 	
+
+	public Player getActualPlayer()
+	{
+		return actualPlayer;
+	}
 	public Board getBoard()
 	{
 		return board;
