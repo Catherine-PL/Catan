@@ -3,6 +3,9 @@ package database;
 import java.util.Random;
 
 public class Dice {
+	private int firstValue;
+	private int secondValue;
+	
 	private static class InstanceHolder{
 		private static final Dice instance = new Dice();
 	}
@@ -14,12 +17,37 @@ public class Dice {
 
 	Random generator = new Random();
 	//int result=0;
-	int throDice(){
-		//rzut dwoma koœæmi
+	/*int throDice(){
+<<<<<<< HEAD
+		//rzut dwoma koï¿½ï¿½mi
+=======
+		//rzut dwoma koï¿½ï¿½mi
+>>>>>>> origin/developMarcin
 		return generator.nextInt(11)+1;
 		//result=generator.nextInt(5)+1+generator.nextInt(5)+1;
 		//return result;
 		//					0-11+1=1-12
-		//return generator.nextInt(11)+1; alternatywa krótsza
+<<<<<<< HEAD
+		//return generator.nextInt(11)+1; alternatywa krï¿½tsza
+	}*/
+	
+	public void throwDice(){
+		firstValue = generator.nextInt(5)+1;
+		secondValue = generator.nextInt(5)+1;
+		//return generator.nextInt(11)+1; alternatywa krï¿½tsza
+	}
+	
+	public void throDice(){
+		firstValue = generator.nextInt(5)+1;
+		secondValue = generator.nextInt(5)+1;
+	}
+
+	
+	public int getFirst(){
+		return firstValue;
+	}
+	
+	public int getSecond(){
+		return secondValue;
 	}
 }

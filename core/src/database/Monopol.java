@@ -9,7 +9,7 @@ public class Monopol {
 		//wybranie zasobu
 		String resource="clay";
 		int sum=0,count=0;
-		for(Player p: ){
+		for(Player p: Game.players){
 			count=p.getResources(resource);
 			p.changeResources(resource, -count);
 			sum=sum+count;

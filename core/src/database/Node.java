@@ -255,7 +255,13 @@ public class Node extends Element {
 	public int buildRoad(Player player, int id){
 		Road r=Board.getInstance().boardRoads.get(id);
 		if(this.getRoads().contains(r))
-		return r.buildRoad(player,r.getFrom(),r.getTo());
+		{
+			r.buildRoad(player,r.getTo(),r.getFrom());
+			r.buildRoad(player,r.getFrom(),r.getTo());
+			return 0;
+			//return r.buildRoad(player,r.getFrom(),r.getTo());
+		}
+		//return r.buildRoad(player,r.getFrom(),r.getTo());
 		else
 			return 10;		
 	}

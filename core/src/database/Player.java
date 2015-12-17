@@ -8,7 +8,9 @@ import java.util.EnumSet;
 import java.util.HashMap;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+
 
 //import network.MsgText;
 //import network.*;
@@ -36,11 +38,14 @@ public class Player {
 	public Player(int _id){
 		
 		id=_id;
-		resources.put("clay", 0) ; 
-		resources.put("grain", 0) ;
-		resources.put("ore", 0) ;
-		resources.put("sheep", 0) ;
-		resources.put("wood", 0) ;
+		//TODO na razie bo nie ma jeszcze przepisania avatarów i imion wybranych w menu
+		setName("Kasia");
+		setAvatar(new Texture(Gdx.files.internal("avatars/playeravatar3.png")));
+		resources.put("clay", 10) ; 
+		resources.put("grain", 10) ;
+		resources.put("ore", 10) ;
+		resources.put("sheep", 10) ;
+		resources.put("wood", 10) ;
 		soldierCount=0;
 		points=0;
 		freeRoads=0;//ka¿dy ma dwie drogi za darmo na start
