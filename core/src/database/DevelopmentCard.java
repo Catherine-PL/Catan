@@ -1,6 +1,8 @@
 package database;
 
-
+/*
+ * KLASA DO USUNIECIA
+ */
 import java.util.ArrayList;
 
 import database.*;
@@ -86,12 +88,12 @@ public abstract class DevelopmentCard extends Card {
 
 		
 		//wybranie dróg raz
-		r1=new Road(player,from,to,1);
+	//	r1.buildRoad(player, from, to, 1);
 		
 		
 		//wybranie dróg drugi raz
 		
-		r2=new Road(player,from,to,1);
+		//r2.buildRoad(player, from, to, 1);
 
 	}
 
@@ -110,20 +112,7 @@ public abstract class DevelopmentCard extends Card {
 	}
 
 	//przekazuje gdzie ma przemieœciæ siê z³odziej, przy okazji sprawdzam czy gracz nie chce go daæ w to samo miejsce
-	private void moveThief(Tile to) {
-		String cant="Nie mo¿esz przenieœæ z³odzieja w to samo miejsce";
-		//czy to dobry sposób na pobieranie Tila który ma thief'a
-		Board board = Board.getInstance();
-		Tile from=board.getTile(board.thiefPosition);
-		
-		if(from.equals(to)){
-			System.out.println(cant);
-		}
-		else
-		{
-		from.changeThiefState();
-		to.changeThiefState();
-		}
+	
 	}
 
 }

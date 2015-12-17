@@ -1,13 +1,22 @@
 package database;
 
+import java.util.ArrayList;
+
 public class Tile {
 	private String type;
 	private Boolean thiefState;
 	
+	///
+	private int diceNumber; 			
+	private ArrayList<Player> tileplayer=new ArrayList<Player>();
+	///
+	
+	
 	public static class Builder{
 		private String type;
 		private Boolean  thiefState;
-		private int number; 
+		
+		
 		
 		public Builder(String type){
 			this.type = type;
@@ -40,6 +49,22 @@ public class Tile {
 	public void changeThiefState() {
 		
 		this.thiefState=!(this.thiefState);
+	}
+
+	public int getDiceNumber() {
+		return diceNumber;
+	}
+
+	public void setDiceNumber(int diceNumber) {
+		this.diceNumber = diceNumber;
+	}
+
+	public ArrayList<Player> getTileplayer() {
+		return tileplayer;
+	}
+
+	public void addTileplayer(Player p) {
+		this.tileplayer.add(p);
 	}
 
 }

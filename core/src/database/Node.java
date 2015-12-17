@@ -23,6 +23,15 @@ public class Node extends Element {
 	private ArrayList <Node> improvedRoads=new ArrayList <Node>();//zastanowiæ siê czy to w ogóle potrzebne
 	private ArrayList <Node> noRoads=new ArrayList <Node>(); //zastanowiæ siê czy to w ogóle potrzebne
 	
+	
+	//do z³odzieja
+	public void addPlayerToTile(Player player){
+		for(Tile e: nearResources){
+			e.addTileplayer(player);
+		}
+	}
+	
+	
 	//konstruktor
 	public Node(int id){
 		nodeNumber = id;

@@ -6,14 +6,13 @@ import database.Node.portType;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
+
 
 import com.badlogic.gdx.graphics.Texture;
 
 //import network.MsgText;
 //import network.*;
-import database.Players;
+
 
 public class Player {
 	private	int id;							//metody set,get
@@ -44,7 +43,7 @@ public class Player {
 		resources.put("wood", 0) ;
 		soldierCount=0;
 		points=0;
-		freeRoads=2;//ka¿dy ma dwie drogi za darmo na start
+		freeRoads=0;//ka¿dy ma dwie drogi za darmo na start
 		
 	}
 	
@@ -73,9 +72,13 @@ public class Player {
 	}
 	public void addSpecialCard( SpecialCard card) {
 		this.specialCards.add(card);
+		this.addPoints(2);
+		//dodanie karty to dostanie 2 punktów zwyciêstwa
 	}
 	public void rmSpecialCard(SpecialCard card){
 		this.specialCards.remove(card);
+		this.addPoints(-2);
+		//stracenie karty to strata 2 punktów zwyciêstwa
 	}
 	
 	//PUNKTY
@@ -90,23 +93,6 @@ public class Player {
 	//Gracz sam sprawdza i liczy swoje punkty czy wygra³ i wysy³a o tym komunikat
 	public void checkPoints(Player player){
 		String text="WYGRA£ player "+ player.getId() ;//alternatywa "WYGRA£ player " + players.getPlayer(player.getId()) wyœwietla nick
-		//zmienne pomocnicze
-		int specialCardCount=specialCards.size();
-		Node itNode;
-		
-		
-		//liczenie punktów zwyciêstwa
-		//ka¿da karta specialna daje 2 pubkty, vector zwraca ich iloœæ
-		player.addPoints(specialCardCount*2);
-				
-		///z³o Ÿle nie dobrze i szajs
-		//iteracja po wszystkich nodach, jeœli mój node to : dodaj wartosc pola building do moich punktów, osada 1, settlement 2
-		//for(int i=0; i<54;i++){
-		//	itNode= Board.getInstance().getNode(i);
-		//	if(itNode.getPlayerNumber()==player.getId()){
-		//		player.addPoints(itNode.getBuilding());
-		//	}
-		//}
 		
 	    if(player.getPoints() >= 10) 
 	    {
@@ -149,9 +135,7 @@ public class Player {
 	}
 	//zmienia wartosc danego surowca o amount. 
 	public void changeResources(String name, int amount) {
-		int i=0;
-		resources.put(name, (resources.get(name).intValue()+amount));
-	
+			resources.put(name, (resources.get(name).intValue()+amount));
 	}
 	
 	
@@ -166,8 +150,127 @@ public class Player {
 		
 	}
 	//HANDEL
-	public int dealBank(){
-		return 0;
+
+	/*
+	 * 0- udalo sie
+	 * 1- nie ma takiego portu
+	 * 2- nie masz takiego portu
+	 * 3- nie masz tylu surowców
+	 * 4- nie ma takiego zasobu
+	 * 
+	 * 6- nie mozesz zamieniæ tego surowaca w tym porcie
+	 * port- port w którym chcesz dokonaæ wymiany
+	 * resource- nazwa zasobu który chcesz zameniæ
+	 */
+	public int dealBank(portType port, String resource,int quanity,String want){
+		int playerGet;
+		
+		//sprawdza czy poda³eœ dobr¹ nazwê zasobu
+		if(resource!="wood" || resource!="grain" || resource!="sheep" || resource!="ore" || resource!="clay")
+			return 4;
+		
+		//zwraca b³¹d jesli nie masz tylu surowców które chcesz wymieniæ
+		if(this.getResources(resource)<quanity)
+			return 3;						
+			
+		switch (port){ 
+			case NORMAL: {
+				if(this.getPorts().contains(portType.NORMAL)){
+					playerGet=quanity/4;
+					this.changeResources(resource, -quanity);
+					this.changeResources(want, playerGet);
+					return 0;
+				}
+				else
+					return 2;				
+			}
+			case THREE: {
+				if(this.getPorts().contains(portType.THREE)){
+					playerGet=quanity/3;
+					this.changeResources(resource, -quanity);
+					this.changeResources(want, playerGet);
+					return 0;
+				}
+				else
+					return 2;
+
+			}
+			case CLAY: {
+				if(resource=="clay")
+					if(this.getPorts().contains(portType.CLAY)){
+						playerGet=quanity/2;
+						this.changeResources(resource, -quanity);
+						this.changeResources(want, playerGet);
+						return 0;
+					}
+					else
+						return 2;
+				else
+					return 6;
+		
+			}
+			case GRAIN: {
+				if(resource=="grain")
+					if(this.getPorts().contains(portType.GRAIN)){
+						playerGet=quanity/2;
+						this.changeResources(resource, -quanity);
+						this.changeResources(want, playerGet);
+						return 0;
+					}
+					else
+						return 2;
+				else
+					return 6;
+			
+			}
+			case WOOD: {
+				if(resource=="wood")
+					if(this.getPorts().contains(portType.WOOD)){
+						playerGet=quanity/2;
+						this.changeResources(resource, -quanity);
+						this.changeResources(want, playerGet);
+						return 0;
+					}
+					else
+						return 2;
+				else
+					return 6;
+				
+			}
+			case ORE: {
+				if(resource=="ore")
+					if(this.getPorts().contains(portType.ORE)){
+						playerGet=quanity/2;
+						this.changeResources(resource, -quanity);
+						this.changeResources(want, playerGet);
+						return 0;
+					}
+					else
+						return 2;
+				else
+					return 6;
+			
+			}
+			case SHEEP: {
+				if(resource=="sheep")
+					if(this.getPorts().contains(portType.SHEEP)){
+						playerGet=quanity/2;
+						this.changeResources(resource, -quanity);
+						this.changeResources(want, playerGet);
+						return 0;
+					}
+					else
+						return 2;
+				else
+					return 6;
+				
+			}
+			default:{
+				return 1;
+			}
+			
+		  }//switch(port)
+
 	}
 	
 	

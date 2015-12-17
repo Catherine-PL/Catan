@@ -1,11 +1,15 @@
 package database;
 
 public abstract class Card {
-	String type;
-	void playCard(){
+	protected enum DevelopType{
+		YEAR,POINT,SOLDIER,ROAD,MONOPOL
+	}
+	
+	DevelopType type;
+	void playCard(Player p){
 		
 	};
-	String getType(){
+	DevelopType getType(){
 	return type;			
 	};
 }
