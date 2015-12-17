@@ -17,6 +17,7 @@ public class Game {
 	public Game(){
 		board = Board.getInstance();
 		dice = Dice.getInstance();
+		dice.throwDice();
 		
 		//TODO thisPlayer na tym miejscu tylko tymaczasowo do testów! Potem bêdzie ustawianie wed³ug kostki
 		players[0] = thisPlayer;
@@ -36,6 +37,11 @@ public class Game {
 	public Board getBoard()
 	{
 		return board;
+	}
+	
+	public Dice getDice()
+	{
+		return dice;
 	}
 	
 	public Player getThisPlayer()

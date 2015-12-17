@@ -66,6 +66,7 @@ public class Gameplay extends View implements InputProcessor
 	private Texture[] roads = new Texture[12];
 	private Texture[] buildingColor = new Texture[4];
 	private Texture[] acColor = new Texture[4];
+	private Texture[] dice = new Texture[6];
 	
 	
 	private Game game;
@@ -78,10 +79,7 @@ public class Gameplay extends View implements InputProcessor
 	private Integer touchedBuildingID;
 	private Integer [] touchedBuildingRoads; //drogi tego wybranego budynku
 
-	private int gameplayMenuY=48;;
-	//TODO niewiadomo czemu aplikacja czasem jest pod, a czasem nad paskiem startu. St¹d przesuniecie menu w gore - do testow.
-	
-	SelectedKey selected; //zapobiega kilkukrotnemu wcisnieciu Q lub W
+	SelectedKey selected; //zapobiega kilkukrotnemu wcisnieciu Q lub W lub E
 	BitmapFont font;
 	
 	
@@ -120,6 +118,7 @@ public class Gameplay extends View implements InputProcessor
 		
 		initBuildingColors();
 		initActualPlayerColors();
+		initDice();
 		font = new BitmapFont();
 		font.getData().setScale(1.5f, 1.5f);
 		//font.setColor(0, 0, 0, 1);
@@ -151,7 +150,6 @@ public class Gameplay extends View implements InputProcessor
 			if ("Hills".equals(t.getType() )) 
 			{
 				textures.add(new Texture(Gdx.files.internal("gameplay/tiles/tileHills.png")));
-			    //textures.add(new Texture(Gdx.files.absolute("/Zainstalowane/Eclipse/Catan-core/assets/tiles/tileHills.png")));
 			}
 			else if ("Forest".equals(t.getType() )) 
 			{
@@ -209,6 +207,18 @@ public class Gameplay extends View implements InputProcessor
 			}	
 		}
 	}
+	
+	private void initDice()
+	{
+		dice[0]=new Texture(Gdx.files.internal("gameplay/dice1.png"));
+		dice[1]=new Texture(Gdx.files.internal("gameplay/dice2.png"));
+		dice[2]=new Texture(Gdx.files.internal("gameplay/dice3.png"));
+		dice[3]=new Texture(Gdx.files.internal("gameplay/dice4.png"));
+		dice[4]=new Texture(Gdx.files.internal("gameplay/dice5.png"));
+		dice[5]=new Texture(Gdx.files.internal("gameplay/dice6.png"));
+	}
+	
+	
 	
 	private void initBuildingColors()
 	{
@@ -439,6 +449,7 @@ public class Gameplay extends View implements InputProcessor
 		batch.draw(textures.get(16), cX-tileX+1, cY-4*tileY+4*tileY/4+4);
 		batch.draw(textures.get(18), cX+tileX-1, cY-4*tileY+4*tileY/4+4);
 		
+		
 	}
 	
 	private void batchMenuGameplay()
@@ -452,12 +463,16 @@ public class Gameplay extends View implements InputProcessor
 		//wyswietlenie postaci gracza który aktualnie gra
 		batch.draw(game.getActualPlayer().getAvatar(),1100,500, 200, (float) 1.24*200);
 		batch.draw(acColor[game.getActualPlayer().getId()],1080,450);
+		batch.draw(dice[game.getDice().getFirst()-1],1120,510);
+		batch.draw(dice[game.getDice().getSecond()-1],1200,510);
+		
+		
 		//imie aktualnego gracza
 		font.draw(batch, " "+game.getActualPlayer().getName(), 1160,500);
 		//koniec kolejki
-		batch.draw(endofturn,screensizeX/2-180 ,gameplayMenuY+60);
+		batch.draw(endofturn,screensizeX/2-180 ,110);
 		//handluj
-		batch.draw(trade,screensizeX/2-30,gameplayMenuY+60);
+		batch.draw(trade,screensizeX/2-30,110);
 		//liczby od surowców
 		int X=170;
 		int Y=82;
