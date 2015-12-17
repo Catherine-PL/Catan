@@ -18,17 +18,38 @@ public class Dice {
 	Random generator = new Random();
 	//int result=0;
 	/*int throDice(){
+<<<<<<< HEAD
 		//rzut dwoma koï¿½ï¿½mi
+=======
+		//rzut dwoma koœæmi
+>>>>>>> origin/developMarcin
 		return generator.nextInt(11)+1;
 		//result=generator.nextInt(5)+1+generator.nextInt(5)+1;
 		//return result;
 		//					0-11+1=1-12
+<<<<<<< HEAD
 		//return generator.nextInt(11)+1; alternatywa krï¿½tsza
 	}*/
 	
 	public void throwDice(){
 		firstValue = generator.nextInt(5)+1;
 		secondValue = generator.nextInt(5)+1;
+=======
+		//return generator.nextInt(11)+1; alternatywa krótsza
+	}*/
+	
+	public void throDice(){
+		firstValue = generator.nextInt(5)+1;
+		secondValue = generator.nextInt(5)+1;
+	}
+	
+	public int getFirst(){
+		return firstValue;
+	}
+	
+	public int getSecond(){
+		return secondValue;
+>>>>>>> origin/developMarcin
 	}
 	
 	public int getFirst(){
