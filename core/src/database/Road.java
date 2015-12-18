@@ -47,7 +47,7 @@ public class Road extends Element{
 						from2.addImprovedRoads(to2);
 						to2.addImprovedRoads(from2); 													
 						
-						if(player.getFreeRoads()>=0){
+						if(player.getFreeRoads()>0){
 							player.setFreeRoads(player.getFreeRoads()-1);
 							
 						}

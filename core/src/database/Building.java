@@ -90,7 +90,7 @@ public class Building extends Element {
 						player.changeResources("wood", -1);
 						player.changeResources("clay", -1);
 						player.changeResources("ore", -3);
-						player.addPoints(1);
+						player.addPoints(2);
 
 						state = 0;
 					}
