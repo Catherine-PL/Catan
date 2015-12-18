@@ -33,6 +33,9 @@ public class Building extends Element {
 							player.changeResources("wood", -1);
 							player.changeResources("clay", -1);
 							}
+							else{
+								player.setFreeRoads(1);
+							}
 							
 							player.addPort(here.getPort());
 							player.addPoints(1);
