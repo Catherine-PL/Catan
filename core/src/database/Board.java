@@ -118,17 +118,16 @@ public class Board {
 		for(int i=0;i<54;i++){
 			nodes[i] = new Node(i);		
 		}
-<<<<<<< HEAD
 
-		loadMatrix();
-=======
+
+		//loadMatrix();
+
 		
 		//loadMatrix();
->>>>>>> origin/developMarcin
 		setNeighbours();
 		setRoadsy();
 		setNoRoads();
-		setNodesTiles();//ka¿demu nodowi przyporzakowuje tile z którymi s¹siaduje
+		//setNodesTiles();//ka¿demu nodowi przyporzakowuje tile z którymi s¹siaduje
 	}
 	
 	
