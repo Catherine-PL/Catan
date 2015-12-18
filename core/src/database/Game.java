@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class Game {
 	private Player thisPlayer = new Player(3);
-	static Player[] players = new Player[4];
+	private Player[] players = new Player[4];
 	private Board board;
 	private Dice dice;
 	//TODO aktualny gracz mo¿e byæ inaczej - to tylko teraz dla testów tekstur

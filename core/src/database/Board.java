@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Board {
@@ -89,7 +88,6 @@ public class Board {
 	//make the constructor private so that this class cannot be
 	//instantiated
 	protected Board(){
-		System.out.println("KONSTUKTOR W RUCHU");
 		//tabelka na cyferkê przy tile, nie wiem jak j¹ zrobiæ szyciej, na razie
 		/*letterToNumber.put('A', 5);
 		letterToNumber.put('B', 2);
@@ -113,26 +111,19 @@ public class Board {
 		//generowanie planszy
 		//przemieszanie kafli l¹du
 		Collections.shuffle(Arrays.asList(tiles));
-
+				
 		//indeksowanie wierzcho³ków
 		for(int i=0;i<54;i++){
 			nodes[i] = new Node(i);		
 		}
-<<<<<<< HEAD
-
-		loadMatrix();
-=======
 		
 		//loadMatrix();
->>>>>>> origin/developMarcin
 		setNeighbours();
 		setRoadsy();
 		setNoRoads();
-		setNodesTiles();//ka¿demu nodowi przyporzakowuje tile z którymi s¹siaduje
+
 	}
 	
-	
-
 	private static class BoardHolder { 
 	    private static final Board instance = new Board();
 	}
@@ -141,24 +132,7 @@ public class Board {
 		return BoardHolder.instance;
 	}
 	
-	public void setNodesTiles() {
-		// TODO Auto-generated method stub
-		Scanner scanner;
-		try {
-			scanner = new Scanner(new File("src\\database\\nodeTilematrix.txt"));
-			for(int i=0;i<54;i++){
-	    		for(int j=0;j<19;j++){
-	    			if(scanner.hasNextInt())
-	    			    nodes[i].addNearResources(tiles[scanner.nextInt()]);
-	    		}
-		    }
-			scanner.close();
-		}
-		catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
 	public void setNeighbours(){
 		for(int i=0;i<54;i++){
     		for(int j=0;j<54;j++){
@@ -228,59 +202,7 @@ public class Board {
 	public int getLetterToNumber(int i){
 		return this.letterToNumber[i];
 	}
-	/*
-	 * 0-uda³o siê
-	 * 1-"Nie mo¿esz przenieœæ z³odzieja w to samo miejsce";
-	 */
-	int moveThief(Player p,int intTo) {
-		
-		//czy to dobry sposób na pobieranie Tila który ma thief'a
-		Board board = Board.getInstance();
-		Tile from=board.getTile(board.thiefPosition);
-		Tile to=board.getTile(intTo);
-		if(from.equals(to)){
-			return 1;
-		}
-		else
-		{
-		from.changeThiefState();
-		to.changeThiefState();
-		
-		steal(p,to);
-		
-		return 0;
-		}		
-	}
-	/*
-	 * 0 -uda³o siê
-	 * 1- gracz nie ma surowców
-	 * 3- nie okrada siê samego siebie
-	 */
-	int steal(Player player,Tile hex){
-		ArrayList <Player> mayRob=hex.getTileplayer();
-		int count,number;
-		/*
-		 * Tu musi byæ asset ¿ebym móg³ wybraæ kogo okraœæ
-		 * 
-		 */
-		
-		Player toRob;
-		
-		String [] resureces={"clay","grain","ore","sheep","wood"};
-		Random generator=new Random();
-		
-		do{		
-			number=generator.nextInt(4);
-			count=toRob.getResources(resureces[number]);
-		}
-		while(count==0);
-		toRob.changeResources(resureces[number], -1);
-		player.changeResources(resureces[number], 1);
-		
-		return 0;
-	}
-
-
+	
 	public static void main(String [ ] args) throws FileNotFoundException{
 		Board board = Board.getInstance();
 	/*
@@ -317,17 +239,9 @@ public class Board {
 	    System.out.print("\n"+board.boardRoads.get(0).getOwnerID()+"  "+board.boardRoads.get(0).getState()+" to2imp"+board.nodes[0].getRoads2Improve()+" to2imp"+board.nodes[0].getRoadsIdImprove());
 		board.getNode(0).buildRoad(p1, 0);
 		board.getNode(0).buildRoad(p1, 1);
-		Building.buildSettlement(p1, board.getNode(3));
-		  System.out.print("fg"+ board.getNode(3).getPlayerNumber());
 	    System.out.print("\n"+board.boardRoads.get(0).getOwnerID()+"  "+board.boardRoads.get(0).getState()+" to2imp"+board.nodes[0].getRoads2Improve()+" to2imp"+board.nodes[0].getRoadsIdImprove());
 
-	    for(Road r:board.getNode(4).getRoads())
-	    System.out.println(r.getID()+" ");
-	    
-	    System.out.println(board.boardRoads.get(7).getOwnerID());
-	    board.getNode(4).buildRoad(p1, 7);
-	    System.out.println(board.boardRoads.get(7).getOwnerID());
-
+		
 	}
 	
 	

@@ -25,7 +25,6 @@ public class Building extends Element {
 						if(player.getResources("grain")>=1 && player.getResources("sheep")>=1 && player.getResources("wood")>=1 && player.getResources("clay")>=1 || player.getPoints()<2) {
 							here.setBuilding(1);
 							here.setPlayerNumber(player.getId());
-							here.addPlayerToTile(player);
 							
 							//maj¹c powy¿ej 2 punktów, osiedla s¹ na pewno budpwane za surowce, wiêc tylko wtedy je pobieramy
 							if(player.getPoints()>=2){
@@ -34,15 +33,8 @@ public class Building extends Element {
 							player.changeResources("wood", -1);
 							player.changeResources("clay", -1);
 							}
-							else{
-								//gdy budujemy osiedle za darmo, dostajemy za to jedn¹ drogê za darmo
-								player.setFreeRoads(player.getFreeRoads()+1);
-							}
 							
 							player.addPort(here.getPort());
-							//znalaz³em t¹ metodê u pleyera
-							player.addPlayerNodes(here);//dodaje noda do listy nodów które ma gracz, nie wiem czy to bêdzie potrzebne
-							
 							player.addPoints(1);
 							state = 0;
 							
@@ -93,18 +85,12 @@ public class Building extends Element {
 					if(player.getResources("grain")>=3 && player.getResources("sheep")>=1 && player.getResources("wood")>=1 && player.getResources("clay")>=1 && player.getResources("ore")>=3){
 						here.setBuilding(2);
 						here.setPlayerNumber(player.getId());
-						here.addPlayerToTile(player);
-
 						player.changeResources("grain", -3);
 						player.changeResources("sheep", -1);
 						player.changeResources("wood", -1);
 						player.changeResources("clay", -1);
 						player.changeResources("ore", -3);
-						
-						here.setPlayerNumber(player.getId());
-						player.addPoints(2);
-						player.addPort(here.getPort());
-						player.addPlayerNodes(here);
+						player.addPoints(1);
 
 						state = 0;
 					}

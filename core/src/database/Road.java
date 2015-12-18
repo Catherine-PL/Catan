@@ -47,12 +47,11 @@ public class Road extends Element{
 						from2.addImprovedRoads(to2);
 						to2.addImprovedRoads(from2); 													
 						
-						if(player.getFreeRoads()>0){
-							//wykorzystujemy punkt darmowej drogi
+						if(player.getFreeRoads()>=0){
 							player.setFreeRoads(player.getFreeRoads()-1);
 							
 						}
-						else{//albo p³acimy zasobami
+						else{
 							player.changeResources("clay", -1);
 							player.changeResources("wood", -1);
 						}
