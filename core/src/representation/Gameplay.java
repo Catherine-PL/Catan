@@ -52,6 +52,8 @@ public class Gameplay extends View implements InputProcessor
 	
 	private Texture gameplayMenu;
 	private Texture background;
+	private Texture playerAvatar;
+	private Texture cubePlayer;
 	private Texture trade;
 	private Texture endofturn;
 	
@@ -64,9 +66,6 @@ public class Gameplay extends View implements InputProcessor
 	private Texture village;
 	
 	private Texture[] roads = new Texture[12];
-	private Texture[] buildingColor = new Texture[4];
-	private Texture[] acColor = new Texture[4];
-	private Texture[] dice = new Texture[6];
 	
 	
 	private Game game;
@@ -79,7 +78,11 @@ public class Gameplay extends View implements InputProcessor
 	private Integer touchedBuildingID;
 	private Integer [] touchedBuildingRoads; //drogi tego wybranego budynku
 
-	SelectedKey selected; //zapobiega kilkukrotnemu wcisnieciu Q lub W lub E
+	private int gameplayMenuY=48;;
+	//TODO niewiadomo czemu aplikacja czasem jest pod, a czasem nad paskiem startu. St¹d przesuniecie menu w gore - do testow.
+	private Player thisPlayer;
+	
+	SelectedKey selected; //zapobiega kilkukrotnemu wcisnieciu Q lub W
 	BitmapFont font;
 	
 	
@@ -88,6 +91,7 @@ public class Gameplay extends View implements InputProcessor
 		initRoadsTextures();
 		game=new Game();
 		selected=SelectedKey.NOTHING;
+		thisPlayer= new Player(1);
 		touchedBuildingRoads=null;
 		touchedBuildingID=null; //null gdy nic nie wcisniete
 		buildingsXY = new Coordinates[54];
@@ -105,7 +109,9 @@ public class Gameplay extends View implements InputProcessor
 		initTiles();
 		initBuildings();
 		background = new Texture(Gdx.files.internal("ocean.png"));
+		cubePlayer = new Texture(Gdx.files.internal("avatars/playeravatar1.png"));
 		gameplayMenu = new Texture(Gdx.files.internal("gameplay/menugameplay.png"));
+		playerAvatar = new Texture(Gdx.files.internal("avatars/playeravatar4.png"));
 		trade = new Texture(Gdx.files.internal("gameplay/trade.png"));
 		endofturn = new Texture(Gdx.files.internal("gameplay/endofturn.png"));
 		
@@ -116,9 +122,6 @@ public class Gameplay extends View implements InputProcessor
 		nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingmenu.png"));
 		villagemenu = new Texture(Gdx.files.internal("gameplay/buildings/villagemenu.png"));		
 		
-		initBuildingColors();
-		initActualPlayerColors();
-		initDice();
 		font = new BitmapFont();
 		font.getData().setScale(1.5f, 1.5f);
 		//font.setColor(0, 0, 0, 1);
@@ -150,6 +153,7 @@ public class Gameplay extends View implements InputProcessor
 			if ("Hills".equals(t.getType() )) 
 			{
 				textures.add(new Texture(Gdx.files.internal("gameplay/tiles/tileHills.png")));
+			    //textures.add(new Texture(Gdx.files.absolute("/Zainstalowane/Eclipse/Catan-core/assets/tiles/tileHills.png")));
 			}
 			else if ("Forest".equals(t.getType() )) 
 			{
@@ -208,33 +212,6 @@ public class Gameplay extends View implements InputProcessor
 		}
 	}
 	
-	private void initDice()
-	{
-		dice[0]=new Texture(Gdx.files.internal("gameplay/dice1.png"));
-		dice[1]=new Texture(Gdx.files.internal("gameplay/dice2.png"));
-		dice[2]=new Texture(Gdx.files.internal("gameplay/dice3.png"));
-		dice[3]=new Texture(Gdx.files.internal("gameplay/dice4.png"));
-		dice[4]=new Texture(Gdx.files.internal("gameplay/dice5.png"));
-		dice[5]=new Texture(Gdx.files.internal("gameplay/dice6.png"));
-	}
-	
-	
-	
-	private void initBuildingColors()
-	{
-		buildingColor[0]=new Texture(Gdx.files.internal("gameplay/buildings/bred.png"));
-		buildingColor[1]=new Texture(Gdx.files.internal("gameplay/buildings/bblue.png"));
-		buildingColor[2]=new Texture(Gdx.files.internal("gameplay/buildings/byellow.png"));
-		buildingColor[3]=new Texture(Gdx.files.internal("gameplay/buildings/borange.png"));
-	}
-	
-	private void initActualPlayerColors()
-	{
-		acColor[0]=new Texture(Gdx.files.internal("gameplay/apbackred.png"));
-		acColor[1]=new Texture(Gdx.files.internal("gameplay/apbackblue.png"));
-		acColor[2]=new Texture(Gdx.files.internal("gameplay/apbackyellow.png"));
-		acColor[3]=new Texture(Gdx.files.internal("gameplay/apbackorange.png"));
-	}
 	
 	private void initRoadsTextures()
 	{
@@ -277,11 +254,9 @@ public class Gameplay extends View implements InputProcessor
 				batch.draw(nobuilding,X,Y);
 				break;
 			case 1:
-				batch.draw(buildingColor[game.getBoard().getNode(j).getPlayerNumber()],X,Y);
 				batch.draw(village,X,Y);
 				break;
 			case 2:
-				batch.draw(buildingColor[game.getBoard().getNode(j).getPlayerNumber()],X,Y);
 				batch.draw(city,X,Y);
 				break;
 			//nobuildingmenu
@@ -290,12 +265,10 @@ public class Gameplay extends View implements InputProcessor
 				break;
 			//villagemenu
 			case 4:
-				batch.draw(buildingColor[game.getBoard().getNode(j).getPlayerNumber()],X,Y);
 				batch.draw(villagemenu,X,Y);
 				break;
 			//citymenu
 			case 5:
-				batch.draw(buildingColor[game.getBoard().getNode(j).getPlayerNumber()],X,Y);
 				batch.draw(citymenu,X,Y);
 				break;
 			}
@@ -332,7 +305,7 @@ public class Gameplay extends View implements InputProcessor
 		{				
 			myX=buildingsXY[i].getX();
 			myY=buildingsXY[i].getY();
-			for (Road n : game.getBoard().getNode(i).getRoads())
+			for (Road n : game.getBoard().getNode(i).getRoadRoad())
 			{
 				if(n.getOwnerID()!=-1)
 				{	
@@ -449,39 +422,31 @@ public class Gameplay extends View implements InputProcessor
 		batch.draw(textures.get(16), cX-tileX+1, cY-4*tileY+4*tileY/4+4);
 		batch.draw(textures.get(18), cX+tileX-1, cY-4*tileY+4*tileY/4+4);
 		
-		
 	}
 	
 	private void batchMenuGameplay()
 	{
 		//ocean
 		batch.draw(background,0,0);		
-		//ten gracz
-		batch.draw(game.getThisPlayer().getAvatar(),0,0);
+		//gracz
+		batch.draw(playerAvatar,0,0);
 		//wyswietlenie paska na zasoby, opcje,miasta,drogi i punkty
-		batch.draw(gameplayMenu,0,0);
+		batch.draw(gameplayMenu,0,gameplayMenuY);
 		//wyswietlenie postaci gracza który aktualnie gra
-		batch.draw(game.getActualPlayer().getAvatar(),1100,500, 200, (float) 1.24*200);
-		batch.draw(acColor[game.getActualPlayer().getId()],1080,450);
-		batch.draw(dice[game.getDice().getFirst()-1],1120,510);
-		batch.draw(dice[game.getDice().getSecond()-1],1200,510);
-		
-		
-		//imie aktualnego gracza
-		font.draw(batch, " "+game.getActualPlayer().getName(), 1160,500);
+		batch.draw(cubePlayer,1050,400);
 		//koniec kolejki
-		batch.draw(endofturn,screensizeX/2-180 ,110);
+		batch.draw(endofturn,screensizeX/2-180 ,gameplayMenuY+60);
 		//handluj
-		batch.draw(trade,screensizeX/2-30,110);
+		batch.draw(trade,screensizeX/2-30,gameplayMenuY+60);
 		//liczby od surowców
 		int X=170;
 		int Y=82;
-		font.draw(batch, " "+game.getThisPlayer().getResources("clay"), X,Y);
-		font.draw(batch, " "+game.getThisPlayer().getResources("grain"), X+120,Y);
-		font.draw(batch, " "+game.getThisPlayer().getResources("ore"), X+2*120,Y);
-		font.draw(batch, " "+game.getThisPlayer().getResources("sheep"), X+3*118,Y);
-		font.draw(batch, " "+game.getThisPlayer().getResources("wood"), X+4*120,Y);
-		font.draw(batch, " "+game.getThisPlayer().getPoints(), X+4*120+65,Y);	
+		font.draw(batch, " "+thisPlayer.getResources("clay"), X,Y);
+		font.draw(batch, " "+thisPlayer.getResources("grain"), X+120,Y);
+		font.draw(batch, " "+thisPlayer.getResources("ore"), X+2*120,Y);
+		font.draw(batch, " "+thisPlayer.getResources("sheep"), X+3*118,Y);
+		font.draw(batch, " "+thisPlayer.getResources("wood"), X+4*120,Y);
+		font.draw(batch, " "+thisPlayer.getPoints(), X+6*120,Y);	
 		
 	}
 	
@@ -497,20 +462,23 @@ public boolean keyDown(int keycode) {
 		//to do wyboru drogi.
 		if(selected==SelectedKey.E)
 		{
-			int noRoadsSize =(game.getBoard().getNode(touchedBuildingID)).getRoadsIdImprove().size();
+			int noRoadsSize =(game.getBoard().getNode(touchedBuildingID)).getNoRoads().size();
 			 if(Gdx.input.isKeyPressed(Keys.NUM_1 ))
 			 {
-				 if(noRoadsSize>=1 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
+				 buildRoadRoad(,)
+				 //TODO
+				 
+				 if(noRoadsSize>=1 )  game.getBoard().getNode(touchedBuildingID).addRoad(game.getBoard().getNode(touchedBuildingID).getNoRoads().get(0));
 				 selected=SelectedKey.E;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_2 ))
 			 {
-				 if(noRoadsSize>=2 ) game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
+				 if(noRoadsSize>=2 )  game.getBoard().getNode(touchedBuildingID).addRoad(game.getBoard().getNode(touchedBuildingID).getNoRoads().get(1));
 				 selected=SelectedKey.E;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_3 ))
 			 {
-				 if(noRoadsSize>=3 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
+				 if(noRoadsSize>=3 )  game.getBoard().getNode(touchedBuildingID).addRoad(game.getBoard().getNode(touchedBuildingID).getNoRoads().get(2));
 				 selected=SelectedKey.E;
 			 }
 		}
@@ -523,18 +491,14 @@ public boolean keyDown(int keycode) {
 			 {
 				 int build=0;
 				 selected=SelectedKey.Q;
-				 build =Building.buildSettlement(game.getThisPlayer(), game.getBoard().getNode(touchedBuildingID));
-				 if(build>0) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingnocity.png"));}
-				 else 
-				 {
-					 citymenu = new Texture(Gdx.files.internal("gameplay/buildings/citymenu.png"));
-					 nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingmenu.png"));
-					 villagemenu = new Texture(Gdx.files.internal("gameplay/buildings/villagemenu.png"));
-					 touchedBuildingID=null;
-					 touchedBuildingRoads=null;
-					 selected=SelectedKey.NOTHING;
-		
-				 }
+				 build =Building.buildSettlement(thisPlayer, game.getBoard().getNode(touchedBuildingID),false);
+				 if(build==0) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
+				 if(build==1) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
+				 if(build==3) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
+				 if(build==4) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
+				 if(build==5) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}				 
+				 //TODO metoda budujaca w ifie zeby wyswietlic info o tym, ze nie mamy wystarczajaco surowcow
+				 //		 zamiana tekstury nastepuje przez za³adowanie innego pliku do zmiennej nobuildingmenu/viilagemeny/citymenu
 			 }
 			
 			
@@ -543,22 +507,15 @@ public boolean keyDown(int keycode) {
 			 {
 				 int build=0;
 				 selected=SelectedKey.W;
-				 build =Building.buildCity(game.getThisPlayer(), game.getBoard().getNode(touchedBuildingID));
-				 if(build>0) 
-				 { 
-					 if(game.getBoard().getNode(touchedBuildingID).getBuilding()==0) nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingnocity.png"));
-					 if(game.getBoard().getNode(touchedBuildingID).getBuilding()==1) villagemenu = new Texture(Gdx.files.internal("gameplay/buildings/villagenocity.png"));
-				 }
-				 else 
-				{
-					 citymenu = new Texture(Gdx.files.internal("gameplay/buildings/citymenu.png"));
-					 nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingmenu.png"));
-					 villagemenu = new Texture(Gdx.files.internal("gameplay/buildings/villagemenu.png"));
-					 touchedBuildingID=null;
-					 touchedBuildingRoads=null;
-					 selected=SelectedKey.NOTHING;
-		
-				}
+				 build =Building.buildCity(thisPlayer, game.getBoard().getNode(touchedBuildingID));
+				 if(build==0) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
+				 if(build==1) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
+				 if(build==2) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
+				 if(build==3) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
+				 if(build==4) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));}
+				 
+				 //TODO metoda budujaca w ifie zeby wyswietlic info o tym, ze nie mamy wystarczajaco surowcow
+				 //		 zamiana tekstury nastepuje przez za³adowanie innego pliku do zmiennej nobuildingmenu/viilagemeny/citymenu
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.E))//build a road
 			 {
