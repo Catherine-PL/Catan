@@ -9,11 +9,11 @@ public class Tile {
 	
 	private int diceNumber; 			
 	private ArrayList<Player> tileplayer=new ArrayList<Player>();
-	
+	private int number; 
+
 	public static class Builder{
 		private String type;
-		private Boolean  thiefState;
-		private int number; 
+		private Boolean  thiefState=false;
 		
 		public Builder(String type){
 			this.type = type;
@@ -62,6 +62,14 @@ public class Tile {
 
 	public void addTileplayer(Player p) {
 		this.tileplayer.add(p);
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
 	}
 
 }
