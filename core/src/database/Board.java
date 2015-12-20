@@ -171,19 +171,15 @@ public class Board {
 			
 		//numer koœci do tile
 		int numberT=0;//tile startu
-		int j;
-		for(int i=0;i<19;i++){
-		//	
-		//	else{
+		int k=0;
+		while(k<18){
 				
-				if(tiles[i].getType()=="Desert"){
-						tiles[i].setDiceNumber(0);
-						tiles[i+1].setDiceNumber(numberT);
-						continue;
-						
+				if(tiles[numberT].getType()=="Desert"){
+						tiles[numberT].setDiceNumber(0);					
 					}
 				else{
-					tiles[i].setDiceNumber(letterToNumber[numberT]);
+					tiles[numberT].setDiceNumber(letterToNumber[k]);
+					k++;
 				}
 				switch (numberT){
 				case 0: numberT=(tiles[3].getDiceNumber()<0)? 3:4;break;
