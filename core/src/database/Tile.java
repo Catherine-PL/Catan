@@ -7,7 +7,7 @@ public class Tile {
 	private Boolean thiefState;
 	
 	
-	private int diceNumber; 			
+	private int diceNumber=-1; 			
 	private ArrayList<Player> tileplayer=new ArrayList<Player>();
 	private int number; 
 

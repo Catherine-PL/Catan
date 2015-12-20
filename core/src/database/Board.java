@@ -22,7 +22,7 @@ public class Board {
 	//rivate int[][] adjencyMatrix=new int[54][54];
 	private int[] letterToNumber=new int [] {5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11};//zamiast tego ca³ego ABCDEF
 	public int numbersLayout=0;
-	private int[][] numberToDice=new int[][] {{5,2,6,8,10,9,3,3,11,4,8,4,6,5,10,11,12,9},{4,8,4,6,5,10,11,12,9,5,2,6,8,10,9,3,3,11},{11,12,9,5,2,6,8,10,9,3,3,11,4,8,4,6,5,10},{8,4,6,5,10,11,12,9,5,2,6,8,10,9,3,3,11,4}};
+	private int[][] numberToDice=new int[][] {{9,10,8,12,5,4,3,11,6,11,9,6,4,3,10,2,8,5},{5,2,6,8,10,9,3,3,11,4,8,4,6,5,10,11,12,9},{4,8,4,6,5,10,11,12,9,5,2,6,8,10,9,3,3,11},{11,12,9,5,2,6,8,10,9,3,3,11,4,8,4,6,5,10},{8,4,6,5,10,11,12,9,5,2,6,8,10,9,3,3,11,4}};
 	private int [][] tileToDice=new int [19][2];
 	public  ArrayList <Road> boardRoads=new ArrayList<Road> ();
 	private int[][] adjencyMatrix=new int[][] {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -152,7 +152,7 @@ public class Board {
 		//przemieszanie kafli l¹du
 		Collections.shuffle(Arrays.asList(tiles));
 		
-	//	int l=0;
+	int l=0;
 		for(int i=0;i<19;i++){		
 			tiles[i].setNumber(i);
 			//przypisanie z³odzieja do pustyni 
@@ -164,43 +164,51 @@ public class Board {
 			}
 			//else
 			//{
-			//	tiles[i].setDiceNumber(numberToDice[numbersLayout][l]);
-			//	l++;
+		//		tiles[i].setDiceNumber(numberToDice[numbersLayout][l]);
+		//		l++;
 			//}
 		}
 			
 		//numer koœci do tile
-		/*int numberT=0;
+		int numberT=0;//tile startu
+		int j;
 		for(int i=0;i<19;i++){
-			if(tiles[i].getType()=="Desert"){
-				tiles[i].setDiceNumber(0);
-			}
-			else{
-				tiles[i].setDiceNumber(letterToNumber[numberT]);
-				switch (numberT){
-				case 0: numberT=3;break;
-				case 1: numberT=0;break;
-				case 2: numberT=0;break;
-				case 3: numberT=7;break;
-				case 4: numberT=0;break;
-				case 5: numberT=0;break;
-				case 6: numberT=0;break;
-				case 7: numberT=0;break;
-				case 8: numberT=0;break;
-				case 9: numberT=0;break;
-				case 10: numberT=0;break;
-				case 11: numberT=0;break;
-				case 12: numberT=0;break;
-				case 13: numberT=0;break;
-				case 14: numberT=0;break;
-				case 15: numberT=0;break;
-				case 16: numberT=0;break;
-				case 17: numberT=0;break;
-				case 18: numberT=0;break;
-				default: numberT=0;break;
+		//	
+		//	else{
+				
+				if(tiles[i].getType()=="Desert"){
+						tiles[i].setDiceNumber(0);
+						tiles[i+1].setDiceNumber(numberT);
+						continue;
+						
+					}
+				else{
+					tiles[i].setDiceNumber(letterToNumber[numberT]);
 				}
+				switch (numberT){
+				case 0: numberT=(tiles[3].getDiceNumber()<0)? 3:4;break;
+				case 1: numberT=(tiles[0].getDiceNumber()<0)? 0:4;break;
+				case 2: numberT=(tiles[1].getDiceNumber()<0)? 1:5;break;
+				case 3: numberT=(tiles[7].getDiceNumber()<0)? 7:8;break;
+				case 4: numberT=(tiles[8].getDiceNumber()<0)? 8:9;break;
+				case 5: numberT=(tiles[4].getDiceNumber()<0)? 4:9;break;
+				case 6: numberT=(tiles[2].getDiceNumber()<0)? 2:5;break;
+				case 7: numberT=(tiles[12].getDiceNumber()<0)? 12:8;break;
+				case 8: numberT=(tiles[13].getDiceNumber()<0)? 13:9;break;
+				case 9: numberT=-2;break;//stan akceptuj¹cy
+				case 10: numberT=(tiles[5].getDiceNumber()<0)? 5:9;break;
+				case 11: numberT=(tiles[6].getDiceNumber()<0)? 6:10;break;
+				case 12: numberT=(tiles[16].getDiceNumber()<0)? 16:13;break;
+				case 13: numberT=(tiles[14].getDiceNumber()<0)? 14:9;break;
+				case 14: numberT=(tiles[10].getDiceNumber()<0)? 10:9;break;
+				case 15: numberT=(tiles[11].getDiceNumber()<0)? 11:10;break;
+				case 16: numberT=(tiles[17].getDiceNumber()<0)? 17:13;break;
+				case 17: numberT=(tiles[18].getDiceNumber()<0)? 18:14;break;
+				case 18: numberT=(tiles[15].getDiceNumber()<0)? 15:14;break;
+				default: numberT=-3;break;//-3 error
+				
 			}
-		}*/
+		}
 		//indeksowanie wierzcho³ków
 		for(int i=0;i<54;i++){
 			nodes[i] = new Node(i);		
