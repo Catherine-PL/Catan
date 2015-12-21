@@ -19,6 +19,9 @@ import database.*;
 
 public class Gameplay extends View implements InputProcessor
 {
+	public enum TradeState {
+	    MAKE_OFFER, RESPOND_OFFER, CHOOSE_RESPONSE ,NOTHING}
+	
 	public enum SelectedKey {
 	    Q,W,E,R,NOTHING}
 	
@@ -55,6 +58,11 @@ public class Gameplay extends View implements InputProcessor
 	private Texture trade;
 	private Texture endofturn;
 	
+	private Texture makeoffer;
+	private Texture chooseoffer;
+	private Texture reviewoffer;
+	
+	
 	private Texture citymenu;
 	private Texture nobuildingmenu;
 	private Texture villagemenu;
@@ -67,7 +75,7 @@ public class Gameplay extends View implements InputProcessor
 	private Texture[] buildingColor = new Texture[4];
 	private Texture[] acColor = new Texture[4];
 	private Texture[] dice = new Texture[6];
-	
+	private int[] tradeGoods=new int[10]; 
 	
 	private Game game;
 	
@@ -80,6 +88,7 @@ public class Gameplay extends View implements InputProcessor
 	private Integer [] touchedBuildingRoads; //drogi tego wybranego budynku
 
 	SelectedKey selected; //zapobiega kilkukrotnemu wcisnieciu Q lub W lub E
+	TradeState tradeState;
 	BitmapFont font;
 	
 	
@@ -88,6 +97,7 @@ public class Gameplay extends View implements InputProcessor
 		initRoadsTextures();
 		game=new Game();
 		selected=SelectedKey.NOTHING;
+		tradeState=TradeState.NOTHING;
 		touchedBuildingRoads=null;
 		touchedBuildingID=null; //null gdy nic nie wcisniete
 		buildingsXY = new Coordinates[54];
@@ -109,6 +119,11 @@ public class Gameplay extends View implements InputProcessor
 		trade = new Texture(Gdx.files.internal("gameplay/trade.png"));
 		endofturn = new Texture(Gdx.files.internal("gameplay/endofturn.png"));
 		
+		makeoffer =new Texture(Gdx.files.internal("gameplay/trade/offer1.png"));
+		chooseoffer= new Texture(Gdx.files.internal("gameplay/trade/offer3.png"));
+		reviewoffer =new Texture(Gdx.files.internal("gameplay/trade/offer2.png"));
+		
+		
 		city = new Texture(Gdx.files.internal("gameplay/buildings/city.png"));
 		nobuilding = new Texture(Gdx.files.internal("gameplay/buildings/nobuilding.png"));
 		village = new Texture(Gdx.files.internal("gameplay/buildings/village.png"));
@@ -116,6 +131,7 @@ public class Gameplay extends View implements InputProcessor
 		nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingmenu.png"));
 		villagemenu = new Texture(Gdx.files.internal("gameplay/buildings/villagemenu.png"));		
 		
+		coordinateTiles();
 		initBuildingColors();
 		initActualPlayerColors();
 		initDice();
@@ -135,6 +151,7 @@ public class Gameplay extends View implements InputProcessor
 		batchTiles();
 		batchRoads();
 		batchBuildings();
+		batchTrade();
 		batch.end();
 		batchTouchedBuildingRoads();
 	}	
@@ -254,7 +271,45 @@ public class Gameplay extends View implements InputProcessor
 	}
 	
 	
-	
+
+	private void batchTrade()
+	{
+		
+		
+		if (tradeState==TradeState.MAKE_OFFER)
+		{
+			batch.draw(makeoffer,0,screensizeY-150);
+		}
+		
+		if (tradeState==TradeState.CHOOSE_RESPONSE)
+		{
+			//TODO
+			batch.draw(chooseoffer,0,screensizeY-197);
+		}
+		
+		if (tradeState==TradeState.RESPOND_OFFER)
+		{
+			//TODO
+			batch.draw(reviewoffer,0,screensizeY-174);
+		}
+		
+		
+		//wyswietlanie liczb
+				if (tradeState==TradeState.MAKE_OFFER || tradeState==TradeState.CHOOSE_RESPONSE)
+				{
+					
+					for(int i=0;i<5;i++)
+					{
+						font.draw(batch, Integer.toString(tradeGoods[i]), 50+i*43,screensizeY-65);
+					}
+					for(int i=5;i<10;i++)
+					{
+						font.draw(batch, Integer.toString(tradeGoods[i]), 50+(i-5)*43,screensizeY-100);
+					}
+					
+				}
+		
+	}
 	
 	private void batchBuildings()
 	{
@@ -317,9 +372,6 @@ public class Gameplay extends View implements InputProcessor
 			batch.end();
 		}
 	}
-	
-	//TODO 
-	
 	private void batchRoads()
 	{
 		int x=0;
@@ -449,6 +501,16 @@ public class Gameplay extends View implements InputProcessor
 		batch.draw(textures.get(16), cX-tileX+1, cY-4*tileY+4*tileY/4+4);
 		batch.draw(textures.get(18), cX+tileX-1, cY-4*tileY+4*tileY/4+4);
 		
+		//.getDiceNumber
+		for(int i=0;i<19;i++)
+		{
+			
+			//game.getBoard().getTile(i).getDiceNumber();
+			//font.draw(batch, Integer.toString(tradeGoods[i]), 50+i*43,screensizeY-65)
+			//tilesXY[i].getDiceNumber();
+			//= game.getBoard().getTile(k);
+			//TODO
+		}
 		
 	}
 	
@@ -603,11 +665,88 @@ public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		int Y=screensizeY - screenY;
 	
 		buildingTouch(X,Y);
-		//TODO ktos wciska na menu? inne opcje 
-		//menu
-	
+		//endofturn
+		if (X>510 && Y<screensizeY-610 && X<670 && Y>screensizeY-635 )
+		{
+			//TODO
+			//game.endTurn();
+		}
+		//trade
+		tradeTouch(X,Y);
+		
 	}
     return false;
+}
+
+
+private void tradeTouch(int X, int Y)
+{
+
+	if (tradeState==TradeState.NOTHING)
+	{
+		if (X>705 && Y<screensizeY-610 && X<780 && Y>screensizeY-635 )
+		{
+			tradeState=TradeState.MAKE_OFFER;
+		}
+	}
+	
+	if (tradeState==TradeState.MAKE_OFFER)
+	{
+		for(int i=0;i<5;i++)
+		{
+			if (X>50+i*43 && Y<screensizeY-45 && X<65+i*43 && Y>screensizeY-65 )
+			{
+				tradeGoods[i]=tradeGoods[i]+1;
+			}
+		}
+		for(int i=5;i<10;i++)
+		{
+			if (X>50+(i-5)*43 && Y<screensizeY-85 && X<65+(i-5)*43 && Y>screensizeY-105 )
+			{
+				tradeGoods[i]=tradeGoods[i]+1;
+			}
+		}
+		
+		
+		
+		if (X>35 && Y<screensizeY-111 && X<80 && Y>screensizeY-125 )
+		{
+			for(int i=0;i<10;i++)
+			{
+				tradeGoods[i]=0;
+			}
+			tradeState=TradeState.NOTHING;
+		}
+		
+		if (X>210 && Y<screensizeY-111 && X<245 && Y>screensizeY-125 )
+		{
+			//przejdz do menu oczekiwania na oferty
+			tradeState=TradeState.CHOOSE_RESPONSE;
+			//wyslij wiadomosc do innych uzytkowników z ofert¹
+			//TODO
+		}
+	}
+	
+	if (tradeState==TradeState.CHOOSE_RESPONSE)
+	{
+		//TODO
+		if (X>705 && Y<screensizeY-610 && X<780 && Y>screensizeY-635 )
+		{
+			tradeState=TradeState.MAKE_OFFER;
+		}
+	}
+	
+	if (tradeState==TradeState.RESPOND_OFFER)
+	{
+		//TODO
+		if (X>705 && Y<screensizeY-610 && X<780 && Y>screensizeY-635 )
+		{
+			tradeState=TradeState.MAKE_OFFER;
+		}
+	}
+	
+	
+	
 }
 
 private void buildingTouch(int x, int y)
