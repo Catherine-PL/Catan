@@ -2,7 +2,7 @@ package catan.network;
 
 import java.io.IOException;
 
-class Receiver implements Runnable {								//	ObjectStreamException <-- UWAGA
+class Receiver implements Runnable{								//	ObjectStreamException <-- UWAGA
 
 	//String nickname;
 	Peer peer;
@@ -173,5 +173,7 @@ class Receiver implements Runnable {								//	ObjectStreamException <-- UWAGA
 		} 
 		
 	}
+
+
 
 }
