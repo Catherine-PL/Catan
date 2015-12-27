@@ -1,7 +1,12 @@
 package catan.network;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -14,6 +19,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import catan.network.FactoryProducer.FactoryType;
 import catan.network.Message.Type;
+import catan.network.Messenger.NumberOf;
 import catan.network.SystemMessage.SystemType;
 import catan.network.TradeMessage.TradeType;
 import catan.network.UpdateMessage.UpdateType;
@@ -38,7 +44,7 @@ public class Communication implements Runnable, P2P{
 	private String					nickname;										// my nickname
 	private ServerSocket			serv;	
 	private int						servport = 8080;
-	private MessageHandler			msgHandler;										// to handling system messages
+	private MessageHandler			msgHandler;										// to handling system messages -- prototype
 	
 	
 	public	Collection<String>		addresses;										// all nodes - addresses	
@@ -73,7 +79,7 @@ public class Communication implements Runnable, P2P{
 		addresses = rememberedNodes;		
 		nickname = myName;			
 		this.msgHandler = msgHandler;		
-		
+				
 		try			
 		{  
 			initServPort();		
@@ -159,11 +165,26 @@ public class Communication implements Runnable, P2P{
 						System.out.println("@Deamon thread - " + "#" + thread);	
 						System.out.println();
 						
-						
-						Thread deamon = new Thread(msgHandler,("#" + thread));				// podmieniaæ na odpowiednie
+												
+						try
+						{
+							MessageHandler mh = this.newHandler(peers.get(thread), thread);							
+							
+						Thread deamon = new Thread(mh,("#" + thread));				// podmieniaæ na odpowiednie
 						//Thread deamon = new Thread(new Receiver(newPeer, this),"#" + thread);				// podmieniaæ na odpowiednie
 						deamon.setDaemon(true);
 						deamon.start();
+						}
+						catch(IOException e)
+						{
+							System.err.println("Nie stworzono nowego watku dla nawiazanego polaczenia");
+							e.printStackTrace();
+						}
+						catch(ClassNotFoundException e)
+						{
+							System.err.println("Nie stworzono nowego watku dla nawiazanego polaczenia");
+							e.printStackTrace();
+						}
 					}						
 					else
 						System.err.println("Przy palaczeniu zostal wyslany zly podtyp wiadomosci");
@@ -197,7 +218,41 @@ public class Communication implements Runnable, P2P{
 		}	// while
 		
 	}	
-
+	
+	private MessageHandler		newHandler(Peer peer, String nick) throws IOException, ClassNotFoundException
+	{	
+		//System.err.println(msgHandler.getClass());
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();		
+		ObjectOutputStream oos = new ObjectOutputStream(bos);		
+		oos.writeObject(msgHandler);		
+		oos.flush();		
+		oos.close();		
+		bos.close();		
+		byte[] byteData = bos.toByteArray();
+		
+		
+		ByteArrayInputStream bais = new ByteArrayInputStream(byteData);		
+		MessageHandler handlerCopy;		
+		handlerCopy = (MessageHandler) new ObjectInputStream(bais).readObject();						
+		handlerCopy.setDecorator(msgHandler.comDecorator);
+		handlerCopy.setPeer(peer);
+		handlerCopy.setNick(nick);
+		
+		
+		/*
+		System.err.println(handlerCopy);
+		System.err.println("Peer: " + handlerCopy.peer);
+		System.err.println("Nick: " + handlerCopy.nick);
+		System.err.println("Decorator: " + handlerCopy.comDecorator);
+		
+		System.err.println("copia: " + handlerCopy.peer);
+		System.err.println(handlerCopy.nick);
+		System.err.println("oryginal: " + msgHandler.peer);
+		System.err.println(msgHandler.nick);
+		*/
+		
+		return handlerCopy;
+	}
 	private void				addAddress(String ip)
 	{
 		if(!addresses.contains(ip))
@@ -316,10 +371,9 @@ public class Communication implements Runnable, P2P{
 	{
 		return this.servport;
 	}
-	/**
-	 * Adding new NodeP2P to nodesP2P collection with adding nickname, creating new peer
-	 * @param n New PlayerIP to add
-	 */
+	public String getNickFromIp(String ip) {		
+		return ipToNick.get(ip);
+	}
 	public synchronized void 	addNodeP2P(String address)
 	{		
 		Iterator<String> it = addresses.iterator();
@@ -352,7 +406,7 @@ public class Communication implements Runnable, P2P{
 		}
 		
 	}
-	public synchronized void	removeNodeP2P(NodeP2P n)
+	public synchronized void	removeNodeP2P(String n)
 	{
 		// TODO
 	}
@@ -363,15 +417,13 @@ public class Communication implements Runnable, P2P{
 	}
 	public void 				disconnected(String nick)		
 	{
-		Iterator<String> it = addresses.iterator();
-		while(it.hasNext())
-		{
-			String p = it.next();
-			if(p == nick)
-			{				
-				peers.remove(nick);
-			}
+		try {
+			peers.get(nick).close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		peers.remove(nick);		
 	} 	
 		
 	
@@ -404,17 +456,20 @@ public class Communication implements Runnable, P2P{
 	
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
-			
-			
+				
+		
 		LinkedList<String> players = new LinkedList();									// nick i ip z hamachi
 		players.add("127.0.0.1");
 			
-//		Board board = Board.getInstance();													// na potrzeby handlu
-//		board.loadMatrix();
-//		board.setNeighbours();
+		Board board = Board.getInstance();													// na potrzeby handlu
+		board.loadMatrix();
+		board.setNeighbours();
 	
-		Communication com = Communication.getInstance();									// tworzenie komunikacji					
-		com.initCommunication("Sebastian", players, new MessageHandler(com, null));
+		Communication com = Communication.getInstance();									// tworzenie komunikacji
+		MessageHandler mh = new CatanMessageHandler();
+		CatanCommunication game = new CatanCommunication(com, "Sebastian", players, mh);
+		
+		
 		
 		com.sleep(5000);
 		
@@ -422,7 +477,7 @@ public class Communication implements Runnable, P2P{
 		System.out.println();		
 		
 
-		com.sleep(5000);																	// sleep
+		com.sleep(2000);																	// sleep
 			
 		
 		System.out.println();
@@ -448,9 +503,6 @@ public class Communication implements Runnable, P2P{
 					
 				
 		
-		
-		/*
-
 		// tworzenie gry
 		LinkedList<String> invited = new LinkedList<String>();								// lista graczy zaproszonych
 		invited.add("Sebastian");															// docelowo wybor myszka
@@ -458,7 +510,7 @@ public class Communication implements Runnable, P2P{
 		System.out.println("");
 		System.out.println("--Sending invitations to: " + invited);							// wyswalenie zaproszen
 		System.out.println("");
-		com.sendInvitations(invited);
+		game.sendInvitations(invited);
 	
 		com.sleep(5000);																	// sleep
 
@@ -466,38 +518,42 @@ public class Communication implements Runnable, P2P{
 		System.out.println();
 		System.out.println("--Starting the game ...");
 		System.out.println();
-		System.out.println(com.invPlayers);	
-		
-		boolean game = com.startGame();														// start gry
-		if(game == true)																	// jak sie nie uda to nie usuwa liste zaproszonych
+				
+		boolean gameState = game.startGame(3,4);														// start gry
+		if(gameState == true)																	// jak sie nie uda to nie usuwa liste zaproszonych
 			System.out.println("Welcome in Catan world!");
 		else
 			System.out.println("Starting game failed!");				
 		
+
 		com.sleep(3000);
 		
-		System.out.println("Place in the game: " + com.getPlace());							// numer w kolejce graczy 1-4
+		System.out.println(game.invPlayers);
+		game.setOrder();
+		com.sleep(3000);
+		System.out.println("Place: " + game.getPlace());									// numer w kolejce graczy 1-4
+		System.out.println(game.invPlayers);
 		
-		*/
+		
 		/* Testing Update Messages */
-		/*
+		
 		System.out.println();
 		System.out.println("----Testing Update Messages----");
 		System.out.println();
 		
-		Messenger msger = com;																// wysylanie wiadomosci
-		msger.sendUpdate(board);															// Board Update
+		
+		game.sendUpdate(board);															// Board Update
 				
-		msger.sendUpdate(board.getNode(5), 6);												// Node Update
-		msger.sendUpdate(board.getTile(5), 5);												// Tile Update
-		msger.sendUpdate(NumberOf.DICE, 5);													// Dice Update
-		msger.sendUpdate(NumberOf.RESOURCES, 5);											// Resources Update
+		game.sendUpdate(board.getNode(5), 6);												// Node Update
+		game.sendUpdate(board.getTile(5), 5);												// Tile Update
+		game.sendUpdate(NumberOf.DICE, 5);													// Dice Update
+		game.sendUpdate(NumberOf.RESOURCES, 5);											// Resources Update
 		
 		com.sleep(5000);
 		
-		*/
+		
 		/* Testing Trade Messages */
-		/*
+		
 		System.out.println();
 		System.out.println("----Testing Trade Messages----");
 		System.out.println();
@@ -511,23 +567,23 @@ public class Communication implements Runnable, P2P{
 		System.out.println("Sending offert ...");
 		System.out.println();
 		
-		msger.sendTrade(give, get);															// wyslanie oferty handlowej
+		game.sendTrade(give, get);															// wyslanie oferty handlowej
 				
 		com.sleep(3000);																	// sleep
-		
-		msger.sendTrade("Sebastian");		
+		/*
+		game.sendTrade("Sebastian");		
 		
 		com.sleep(2000);																	// sleep
 		
-		msger.sendTrade();																	// zakoncz handel
+		game.sendTrade();																	// zakoncz handel
 				
-		msger.sendEnd(SystemType.END_GAME);													// Wysylanie wiadomosci typu END
-		msger.sendEnd(SystemType.END_TURN);
+		game.sendEnd(UpdateType.END_GAME);													// Wysylanie wiadomosci typu END
+		game.sendEnd(UpdateType.END_TURN);
 		
 		com.sleep(3000);																	// sleep
 		
 		System.out.println();
-		System.out.println("Players: " + com.invPlayers);									// wyswietlenie statusu graczy w grze									
+		System.out.println("Players: " + game.invPlayers);									// wyswietlenie statusu graczy w grze									
 		System.out.println();
 		
 		System.out.println("all threads:");
@@ -538,8 +594,10 @@ public class Communication implements Runnable, P2P{
 			System.out.println(t.getName());
 		}
 		*/
+		
 	}
 	
+		
 	
 
 }

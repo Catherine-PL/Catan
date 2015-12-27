@@ -1,11 +1,13 @@
 package catan.network;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import catan.network.FactoryProducer.FactoryType;
 import catan.network.Messenger.NumberOf;
 import catan.network.SystemMessage.SystemType;
 import catan.network.TradeMessage.TradeType;
@@ -14,10 +16,16 @@ import database.Board;
 import database.Node;
 import database.Tile;
 
-public class CatanCommunication extends GameCommunication implements Messenger {
+public class CatanCommunication extends GameCommunication{
 
-	public CatanCommunication(P2P decoratedP2P) {
-		super(decoratedP2P);
+	AbstractMessageFactory			update = FactoryProducer.getFactory(FactoryType.UPDATE);
+	AbstractMessageFactory			trade = FactoryProducer.getFactory(FactoryType.TRADE);
+	
+	public int inQueue = 0;			// ilosc ludzi przede mna w grze, (kolejnosc)
+	public int myNumber = 0;
+	
+	public CatanCommunication(P2P decoratedP2P, String myName, Collection<String> rememberedNodes, MessageHandler msgHandler) throws IOException {
+		super(decoratedP2P, myName, rememberedNodes, msgHandler);
 	}
 	
 
@@ -28,7 +36,19 @@ public class CatanCommunication extends GameCommunication implements Messenger {
 	 * Number says which is our place, but when number is equal 0 that means,
 	 * not everyone has sent me a result and it was impossible to create sequence. 
 	 */
-	
+	public void setOrder()
+	{		
+		System.out.println("Sending result of my dice (creating a chain, sequence)");
+		myNumber = 5;
+		// TODO myNumber has to be random
+		try {
+			Message ms = update.getUpdateMessage(UpdateType.DICE, myNumber);
+			sendToAll(ms);
+		} catch (ContentException e) { 
+			e.printStackTrace();
+		}
+		
+	}	
 	public int getPlace()																// zwraca 0 jezeli jeszcze nie ustalono kolejnosci
 	{
 		Set<String> s = invPlayers.keySet();
@@ -39,10 +59,12 @@ public class CatanCommunication extends GameCommunication implements Messenger {
 				i++;
 		}
 		if(invPlayers.size() == i)								// wszyscy WAIT -> znam kolejnosc
-			return (msgHandler.inQueue + 1);
+			return (inQueue + 1);
 		else
-			return 0;
+			return -1;
 	}
+	
+	
 	/**
 	 * It should be a first message for a host of this game.
 	 * This method propagate our board to all players.
@@ -108,6 +130,8 @@ public class CatanCommunication extends GameCommunication implements Messenger {
 		sendToAll(msg);	
 	}
 	
+	
+	
 	/**
 	 * Sends to all players my offert.
 	 * @param give HashMap which contains names of resources and their quantity. This resources we are giving to somebody.
@@ -117,7 +141,6 @@ public class CatanCommunication extends GameCommunication implements Messenger {
 	{
 		for(String name : invPlayers.keySet())
 		{
-			invPlayers.remove(name);
 			invPlayers.put(name, InvStatus.WAIT);
 		}		
 		System.out.println("Players: " + invPlayers);													
@@ -171,8 +194,7 @@ public class CatanCommunication extends GameCommunication implements Messenger {
 			e.printStackTrace();
 		}
 		
-		Set<String> s = invPlayers.keySet();
-		s.remove(nick);
+		Set<String> s = invPlayers.keySet();		
 		invPlayers.put(nick, InvStatus.WAIT);
 		
 		ms = trade.getTradeMessage(TradeType.END_TRADE);
@@ -180,7 +202,6 @@ public class CatanCommunication extends GameCommunication implements Messenger {
 		{
 			try {
 				sendTo(name, ms);
-				invPlayers.remove(name);
 				invPlayers.put(name, InvStatus.WAIT);
 			} catch (IOException e) {
 				System.err.println("Utracono polaczenie z: " + name);			
@@ -217,18 +238,18 @@ public class CatanCommunication extends GameCommunication implements Messenger {
 	 * Sends END_GAME or END_TURN message to all players.
 	 * @param type Type of our ending. 
 	 */
-	public void sendEnd(SystemType type) 
+	public void sendEnd(UpdateType type) 
 	{
 		Message ms = null;
-		if(type == SystemType.END_GAME)
+		if(type == UpdateType.END_GAME)
 			try {
-				ms = system.getSystemMessage(SystemType.END_GAME, null);				
+				ms = system.getUpdateMessage(UpdateType.END_GAME, null);				
 			} catch (ContentException e) {
 				e.printStackTrace();
 			}
-		else if(type == SystemType.END_TURN)
+		else if(type == UpdateType.END_TURN)
 			try {
-				ms = system.getSystemMessage(SystemType.END_TURN, null);
+				ms = system.getUpdateMessage(UpdateType.END_TURN, null);
 			} catch (ContentException e) {
 				e.printStackTrace();
 			}

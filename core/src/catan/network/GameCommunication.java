@@ -2,12 +2,14 @@ package catan.network;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import catan.network.FactoryProducer.FactoryType;
 import catan.network.SystemMessage.SystemType;
 
 public class GameCommunication extends CommunicationDecorator {
@@ -17,20 +19,27 @@ public class GameCommunication extends CommunicationDecorator {
 		WAIT, ACCEPTED, REJECTED;
 	}
 	
-	
-	public GameCommunication(P2P decoratedP2P) {
-		super(decoratedP2P);	
+	// game == groupe
+	public GameCommunication(P2P decoratedP2P, String myName, Collection<String> rememberedNodes, MessageHandler msgHandler) throws IOException {
+		super(decoratedP2P);		
+		msgHandler.setDecorator(this);
+		this.initCommunication(myName, rememberedNodes, msgHandler);
 	}
-	private boolean					inGame;
 	
-	MessageHandler					msgHandler;
-	Map<String, InvStatus>			invPlayers;				// <-- W grze: przechowuje nicki graczy bedacych ze mna w grze, ich TradeStatus
-	AbstractMessageFactory			update;					//  Przed gra: przechowuje niki peerow i ich odpowiedzi na moje zaproszenie
-	AbstractMessageFactory			trade;
-	AbstractMessageFactory			system;
+	private boolean					inGame=false;					// my value		
+	Map<String, InvStatus>			invPlayers = new HashMap<String, InvStatus>();				// <-- W grze: przechowuje nicki graczy bedacych ze mna w grze, ich TradeStatus																
+	AbstractMessageFactory			system = FactoryProducer.getFactory(FactoryType.SYSTEM);   // 	Przed gra: przechowuje niki peerow i ich odpowiedzi na moje zaproszenie
 	
 
-	private void sendToAll(Message msg)										// send to everyone in invPlayers, ---> Mozna dodac wzorzec w zaleznosci od warunku <---
+	public void setInGame(boolean state)
+	{
+		this.inGame = state;
+	}
+	public boolean getInGame()
+	{
+		return inGame;
+	}
+	public void sendToAll(Message msg)										// send to everyone in invPlayers, ---> Mozna dodac wzorzec w zaleznosci od warunku <---
 	{
 		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
 		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
@@ -45,13 +54,13 @@ public class GameCommunication extends CommunicationDecorator {
 			{
 				System.err.println("Utracono polaczenie z: " + e.getKey());
 				ex.printStackTrace();
-				disconnected(e.getKey());
+				this.decoratedP2P.disconnected(e.getKey());		// usuniecie z peersow
 				invPlayers.remove(e.getKey());
 			}
 			
 		}
 	}
-	
+
 	/**
 	 * Method needed to send invitations to players.	
 	 * @param names Chosen players nicknames 
@@ -83,34 +92,42 @@ public class GameCommunication extends CommunicationDecorator {
 		System.out.println("Invitations sended, Players status:");
 		System.out.println(invPlayers);
 	}
-	/**
-	 * Creating a game. Whenever number of players is wrong it fails. 
-	 * In case of success this method sends Start_Game message to all who accepted, to the rest abandon.
-	 * @return boolean value, false - starting game failed, true - starting game succeed
-	 */
-	synchronized public boolean startGame()												// synchronizowane, by nikt w tej chwili nie przyjal zaproszenia...
+	public boolean checkNumberOfPlayers(int minnumber, int maxnumber)
 	{
 		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
 		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
-		LinkedList<String> toRemove = new LinkedList<String>();
 		Entry<String, InvStatus> e = null;
-		int i = 0 ;
 		
+		int i = 0 ;				
 		while(it.hasNext())
 		{
 			e = it.next();
 			if(e.getValue()==InvStatus.ACCEPTED)
 				i++;
-		}
-		
+		}		
 		// sprawdzenie ilosci graczy
-		if(i<3 || i>4)
+		if(i<minnumber || i>maxnumber)
 		{
 			System.out.println("Wrong number of players");
 			return false;
 		}
-						
+		else return true;
+	}
+	/**
+	 * Creating a game. Whenever number of players is wrong it fails. 
+	 * In case of success this method sends Start_Game message to all who accepted, to the rest abandon.
+	 * @return boolean value, false - starting game failed, true - starting game succeed
+	 */
+	synchronized public boolean startGame(int minnumber, int maxnumber)												// synchronizowane, by nikt w tej chwili nie przyjal zaproszenia...
+	{
+		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
+		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
+		LinkedList<String> toRemove = new LinkedList<String>();
+		Entry<String, InvStatus> e = null;
 		
+						
+//		if(!this.checkNumberOfPlayers(minnumber, maxnumber))
+//			return false;
 		
 		
 		it = entrySet.iterator();
@@ -170,10 +187,8 @@ public class GameCommunication extends CommunicationDecorator {
 					sendTo(e.getKey(), system.getSystemMessage(SystemType.ABANDON, null));
 				} catch (IOException e1) {
 					System.err.println("Utracono polaczenie z: " + e.getKey());
-					disconnected(e.getKey());					
-					
+					disconnected(e.getKey());										
 				} catch (ContentException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}			
@@ -184,16 +199,5 @@ public class GameCommunication extends CommunicationDecorator {
 		System.out.println("Gra porzucona ...");
 	}
 
-	@Override
-	public void addNodeP2P(String address) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void sendTo(String nick, Message msg) throws IOException {
-		// TODO Auto-generated method stub
-		
-	}	
 
 }

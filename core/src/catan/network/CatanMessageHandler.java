@@ -1,141 +1,149 @@
 package catan.network;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Set;
+
+import catan.network.GameCommunication.InvStatus;
+import catan.network.TradeMessage.TradeType;
+import database.Board;
+
 public class CatanMessageHandler extends GameMessageHandler {
 
+	CatanCommunication catanCom;
+	
 	private Board board;
 	private HashMap<String, Integer> give;
 	private HashMap<String, Integer> get;
-	private int myNumber;
-	private int inQueue = 0;		// ilosc ludzi przede mna w grze
-	private int msgdice = 0;
+
+	private static int msgdice = 0;			// how many msgDice
 	
-	MessageHandler(Board board)
+	
+	
+	@Override
+	public void setting() 
 	{
-		this.board = board;
+		super.setting();	
+		catanCom = (CatanCommunication) this.comDecorator;
+	}	
+	@Override
+	public void handleMsg(Message msg) 
+	{
+		switch(msg.type)
+		{
+			case SYSTEM:
+				handleMessage((SystemMessage)msg);
+				break;
+			case UPDATE:
+				handleMessage((UpdateMessage)msg);
+				break;
+			case TRADE:
+				handleMessage((TradeMessage)msg);
+				break;				
+		}
+		
 	}
+	
+	protected void handleMessage(UpdateMessage msg)		
+	{
+		//DICE;
+		switch (msg.getSubType())
+		{
+			case DICE:
+				handleMsgDice((MsgDice)msg);
+				break;
+				
+			case BOARD:
+				handleMsgBoard((MsgBoard)msg);
+				break;
+				
+			case TILE:
+				handleMsgTile((MsgTile)msg);
+				break;
+				
+			case NODE:
+				handleMsgNode((MsgNode)msg);
+				break;
+				
+			case RESOURCES:
+				handleMsgResources((MsgResources)msg);
+				break;
+				
+			case END_TURN:
+				handleMsgEndTurn();
+				break;
+				
+			case END_GAME:
+				handleMsgEndGame();
+				break;
+										
+			default:
+				System.err.println("Otrzymana wiadomosc jest bledna");
+				break;					
+		}
+		
+	}
+	protected void handleMessage(TradeMessage msg)
+	{
+		switch (msg.getSubType())
+		{
+			case OFFERT:
+				handleMsgOffert((MsgOffert)msg);
+				break;
+				
+			case YES:
+				handleMsgYes((MsgYes)msg);
+				break;
+				
+			case NO:
+				handleMsgNo((MsgNo)msg);
+				break;
+				
+			case DEAL:
+				handleMsgDeal((MsgDeal)msg);
+				break;
+				
+			case END_TRADE:
+				handleMsgEndTrade((MsgEndTrade)msg);
+				break;
+
+			default:
+				System.err.println("Otrzymana wiadomosc jest bledna");
+				break;					
+		}
+	}
+	
 	
 	/* SystemMessage */
 	
-	/*
-	synchronized void handleMsgInvitation(Peer peer)													// trzeba to jakos zgrac, wybor:  accept, reject 
-	{
-		String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
-		
-								// ten fragment tylko wystepuje w testowaniu lokalnym
-		if(inGame == true && !peer.socketIn.getInetAddress().getHostAddress().equals("127.0.0.1"))		// jezeli dostalem obce zaproszenie 
-		{
-			Message msg = null;
-			try {					
-				msg = system.getSystemMessage(SystemType.REJECT, null);
-			} catch (ContentException e) {
-				e.printStackTrace();
-			}
-			
-			try {
-				sendTo(nick, msg);
-			} catch (IOException e) {
-				System.err.println("MsgInvitation error, problem with sendTo");
-				e.printStackTrace();
-			}
-			return ;
-		}
-		
-		
-		
-		System.out.println("Invitation to a game from: " +  nick);
-		
-		// Tutaj musi nastapic wybor accepet albo reject wyslanie widomosci				<-----			
-		
-		Message msg = null;
-		try {
-			msg = system.getSystemMessage(SystemType.ACCEPT, null);
-			inGame = true;
-		} catch (ContentException e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			sendTo(nick, msg);
-		} catch (IOException e) {
-			System.err.println("MsgInvitation error, problem with sendTo");
-			e.printStackTrace();
-		}
-		
-	}
-	synchronized void handleMsgAccept(Peer peer)					// dodac zmienna, ze j
-	{
-		String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
-		System.out.println("Player: " +  nick + " - Accepted");
-		
-		invPlayers.remove(nick);
-		invPlayers.put(nick, InvStatus.ACCEPTED);
-		
-		System.out.println(invPlayers);
-		
-	}
-	synchronized void handleMsgReject(Peer peer)
-	{
-		String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
-		System.out.println("Player: " +  nick + " - Rejected");
-		
-		invPlayers.remove(nick);
-		invPlayers.put(nick, InvStatus.REJECTED);
-		
-		System.out.println(invPlayers);
-	}
-	synchronized void handleMsgStartGame(Peer peer)				// dodac metode startu gry jako takiej, ustawiæ zmienna inGame czy cos
-	{
-		System.out.println("The game starting ...");
-		System.out.println("Sending result of my dice (creating a chain)");
-		myNumber = 5;
-		try {
-			Message ms = update.getUpdateMessage(UpdateType.DICE, myNumber);
-			sendToAll(ms);
-		} catch (ContentException e) { 
-			e.printStackTrace();
-		}
-		
-		
-	
-	}
-	synchronized void handleMsgAbandon(Peer peer)				// 
-	{
-		System.out.println("The game has been abandoned ...");
-		inGame = false;
-	}
-	synchronized void handleMsgEndTurn(Peer peer)
-	{
-		String nick = ipToNick.get(peer.socketOut.getInetAddress().getHostAddress());
+	/* UpdateMessage */
+
+	synchronized void handleMsgEndTurn()
+	{				
 		System.out.println("Player: " + nick + " has finished turn.");
 	}
-	synchronized void handleMsgEndGame(Peer peer)
-	{
-		String nick = ipToNick.get(peer.socketOut.getInetAddress().getHostAddress());
+	synchronized void handleMsgEndGame()
+	{	
 		System.out.println("Player: " + nick + " has won the game.");
-	}
-	
-	/* UpdateMessage */
-	/*
-	synchronized void handleMsgDice(Peer peer, MsgDice msg)
-	{			
-		String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
+	}	
+	synchronized void handleMsgDice(MsgDice msg)
+	{					
 		System.out.print("From: " + nick);
 		System.out.println(" -- Dice result:" + msg.getContent());
 		
-		if(msgdice < invPlayers.size()-1)									// tylko do ustalenia kolejnosci
+		if(msgdice < this.gameCom.invPlayers.size())									// tylko do ustalenia kolejnosci
 		{
-			msgdice++;
-			invPlayers.remove(nick);
-			invPlayers.put(nick, InvStatus.WAIT);							// jezeli wszyscy sa wait, to kolejnosc ustalona
+			msgdice++;			
+			gameCom.invPlayers.put(nick, InvStatus.WAIT);							// jezeli wszyscy sa wait, to kolejnosc ustalona
 			
-			if(msg.getContent() > myNumber)
+			if(msg.getContent() > catanCom.myNumber)
 			{
-				inQueue++;
-			}else if(msg.getContent() == myNumber)
+				catanCom.inQueue++;
+			}else if(msg.getContent() == catanCom.myNumber)
 			{
-				if(nickname.compareToIgnoreCase(nick) > 0)
+				if(this.comDecorator.getNickname().compareToIgnoreCase(nick) > 0)
 				{
-					inQueue++;
+					catanCom.inQueue++;
 				}
 			}
 		}
@@ -166,20 +174,19 @@ public class CatanMessageHandler extends GameMessageHandler {
 		
 		
 	}
-	synchronized void handleMsgResources(Peer peer, MsgResources msg)
+	synchronized void handleMsgResources(MsgResources msg)
 	{
 		System.out.println("Resources number actualization...");
 		
 		int n = msg.getContent();			
-		System.out.println("Player: " + ipToNick.get(peer.socketIn.getInetAddress().getHostAddress()) + ", number of resources : " + n);
+		System.out.println("Player: " + nick + ", number of resources : " + n);
 		
 	}
 	
 	/* TradeMessage */
-	/*
-	synchronized void handleMsgOffert(Peer peer, MsgOffert msg)								// podobnie jak z zaproszeniami 
-	{			
-		String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
+	
+	synchronized void handleMsgOffert(MsgOffert msg)								// podobnie jak z zaproszeniami 
+	{					
 		System.out.println();
 		System.out.println("--Offert from: " + nick);
 		
@@ -192,56 +199,48 @@ public class CatanMessageHandler extends GameMessageHandler {
 		System.out.println("What i would get: " + get);
 		System.out.println();
 		
+		// TODO wybor czy sie zgadzamy czy nie na ta propozycje
 		// Sprawdzenie czy mogê siê zgodziæ. Jeœli nie to wysy³am od razu no.
 		//Message ms = trade.getTradeMessage(TradeType.NO);
-		Message ms = trade.getTradeMessage(TradeType.YES);
+		Message ms = catanCom.trade.getTradeMessage(TradeType.YES);
 		
 		try {
-			sendTo(nick, ms);
+			catanCom.sendTo(nick, ms);
 		} catch (IOException e) {
 			System.err.println("Utracono polaczenie z: " + nick);
-			disconnected(nick);				
+			catanCom.disconnected(nick);				
 		}
 		
 	}
-	synchronized void handleMsgYes(Peer peer, MsgYes msg)
-	{
-		String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
-		System.out.println("Player: " + nick + " has accepted your offert");
-				
-		invPlayers.remove(nick);
-		invPlayers.put(nick, InvStatus.ACCEPTED);
-		
-		System.out.println("Players" + invPlayers);			
+	synchronized void handleMsgYes(MsgYes msg)
+	{		
+		System.out.println("Player: " + nick + " has accepted your offert");						
+		catanCom.invPlayers.put(nick, InvStatus.ACCEPTED);		
+		System.out.println("Players" + catanCom.invPlayers);			
 	}
-	synchronized void handleMsgNo(Peer peer, MsgNo msg)
-	{
-		String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
-		System.out.println("Player " + nick + " has rejected your offert");			
-				
-		invPlayers.remove(nick);
-		invPlayers.put(nick, InvStatus.REJECTED);
-		System.out.println(invPlayers);
+	synchronized void handleMsgNo(MsgNo msg)
+	{				
+		System.out.println("Player " + nick + " has rejected your offert");									
+		catanCom.invPlayers.put(nick, InvStatus.REJECTED);
+		System.out.println(catanCom.invPlayers);
 		
 	}
-	synchronized void handleMsgDeal(Peer peer, MsgDeal msg)
-	{
-		String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
+	synchronized void handleMsgDeal(MsgDeal msg)
+	{			
 		System.out.println("Deal with: " + nick);	
 		
 		//	aktualizacja surowcow gracza. Dodajac surowce z get, Odejmujac surowce z give	
 	}
 	synchronized void handleMsgEndTrade(MsgEndTrade msg)
 	{			
-		Set<String> s = invPlayers.keySet();
+		Set<String> s = catanCom.invPlayers.keySet();
 		for(String nick : s)
-		{
-			invPlayers.remove(nick);
-			invPlayers.put(nick, InvStatus.WAIT);
+		{			
+			catanCom.invPlayers.put(nick, InvStatus.WAIT);
 		}
 	}
 	
-}						
-*/
+						
+
 	
 }
