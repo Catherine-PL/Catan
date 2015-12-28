@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -12,9 +13,9 @@ import java.util.Map.Entry;
 import catan.network.FactoryProducer.FactoryType;
 import catan.network.SystemMessage.SystemType;
 
-public class GameCommunication extends CommunicationDecorator {
+public class GameCommunication extends CommunicationDecorator implements Subject {
 	
-	enum InvStatus
+	public enum InvStatus
 	{
 		WAIT, ACCEPTED, REJECTED;
 	}
@@ -27,10 +28,23 @@ public class GameCommunication extends CommunicationDecorator {
 	}
 	
 	private boolean					inGame=false;					// my value		
-	Map<String, InvStatus>			invPlayers = new HashMap<String, InvStatus>();				// <-- W grze: przechowuje nicki graczy bedacych ze mna w grze, ich TradeStatus																
+	protected Map<String, InvStatus>invPlayers = new HashMap<String, InvStatus>();				// <-- W grze: przechowuje nicki graczy bedacych ze mna w grze, ich TradeStatus																
 	AbstractMessageFactory			system = FactoryProducer.getFactory(FactoryType.SYSTEM);   // 	Przed gra: przechowuje niki peerow i ich odpowiedzi na moje zaproszenie
 	
+	private List<Observer> 			observers = new LinkedList<Observer>();
 
+	
+	public void putInv(String nick, InvStatus status)
+	{
+		invPlayers.put(nick, status);
+		this.notifyObservers();
+	}
+	public void removeInv(String nick)
+	{
+		invPlayers.remove(nick);
+		this.notifyObservers();
+	}
+	
 	public void setInGame(boolean state)
 	{
 		this.inGame = state;
@@ -126,8 +140,8 @@ public class GameCommunication extends CommunicationDecorator {
 		Entry<String, InvStatus> e = null;
 		
 						
-//		if(!this.checkNumberOfPlayers(minnumber, maxnumber))
-//			return false;
+		if(!this.checkNumberOfPlayers(minnumber, maxnumber))
+			return false;
 		
 		
 		it = entrySet.iterator();
@@ -197,6 +211,36 @@ public class GameCommunication extends CommunicationDecorator {
 		inGame = false;
 		invPlayers.clear();
 		System.out.println("Gra porzucona ...");
+	}
+	
+	
+	@Override
+	public void add(Observer observer) {
+		if(observer.getClass()==ObserverPeers.class)
+			((Communication)this.decoratedP2P).add(observer);
+		else
+			this.observers.add(observer);
+	}
+	@Override
+	public void remove(Observer observer) {
+		this.observers.remove(observer);
+		
+	}
+	@Override
+	public void notifyObservers() {
+		for(Observer ob : observers)
+		{
+			ob.update();
+		}
+				
+	}
+	public Map<String, InvStatus> getStateInv()
+	{
+		return invPlayers;
+	}
+	public Set<String> getStatePeers()
+	{
+		return ((Communication)this.decoratedP2P).getStatePeers();		
 	}
 
 

@@ -112,9 +112,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 				break;					
 		}
 	}
-	
-	
-	/* SystemMessage */
+			
 	
 	/* UpdateMessage */
 
@@ -131,10 +129,10 @@ public class CatanMessageHandler extends GameMessageHandler {
 		System.out.print("From: " + nick);
 		System.out.println(" -- Dice result:" + msg.getContent());
 		
-		if(msgdice < this.gameCom.invPlayers.size())									// tylko do ustalenia kolejnosci
+		if(msgdice < this.gameCom.getStateInv().size())									// tylko do ustalenia kolejnosci
 		{
 			msgdice++;			
-			gameCom.invPlayers.put(nick, InvStatus.WAIT);							// jezeli wszyscy sa wait, to kolejnosc ustalona
+			gameCom.putInv(nick, InvStatus.WAIT);							// jezeli wszyscy sa wait, to kolejnosc ustalona
 			
 			if(msg.getContent() > catanCom.myNumber)
 			{
@@ -215,28 +213,29 @@ public class CatanMessageHandler extends GameMessageHandler {
 	synchronized void handleMsgYes(MsgYes msg)
 	{		
 		System.out.println("Player: " + nick + " has accepted your offert");						
-		catanCom.invPlayers.put(nick, InvStatus.ACCEPTED);		
-		System.out.println("Players" + catanCom.invPlayers);			
+		catanCom.putInv(nick, InvStatus.ACCEPTED);		
+		System.out.println("Players" + catanCom.getStateInv());			
 	}
 	synchronized void handleMsgNo(MsgNo msg)
 	{				
 		System.out.println("Player " + nick + " has rejected your offert");									
-		catanCom.invPlayers.put(nick, InvStatus.REJECTED);
-		System.out.println(catanCom.invPlayers);
+		catanCom.putInv(nick, InvStatus.REJECTED);
+		System.out.println(catanCom.getStateInv());
 		
 	}
 	synchronized void handleMsgDeal(MsgDeal msg)
 	{			
 		System.out.println("Deal with: " + nick);	
 		
-		//	aktualizacja surowcow gracza. Dodajac surowce z get, Odejmujac surowce z give	
+		//	TODO aktualizacja surowcow gracza. Dodajac surowce z get, Odejmujac surowce z give	
 	}
 	synchronized void handleMsgEndTrade(MsgEndTrade msg)
 	{			
-		Set<String> s = catanCom.invPlayers.keySet();
+		System.out.println("Trade has been ended");
+		Set<String> s = catanCom.getStateInv().keySet();
 		for(String nick : s)
 		{			
-			catanCom.invPlayers.put(nick, InvStatus.WAIT);
+			catanCom.putInv(nick, InvStatus.WAIT);
 		}
 	}
 	

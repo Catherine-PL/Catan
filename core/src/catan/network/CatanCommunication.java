@@ -129,6 +129,32 @@ public class CatanCommunication extends GameCommunication{
 		}		
 		sendToAll(msg);	
 	}
+	/**
+	 * Sends END_GAME or END_TURN message to all players.
+	 * @param type Type of our ending. 
+	 */
+	public void sendEnd(UpdateType type) 
+	{
+		Message ms = null;
+		if(type == UpdateType.END_GAME)
+			try {
+				ms = this.update.getUpdateMessage(UpdateType.END_GAME, null);
+				
+			} catch (ContentException e) {
+				e.printStackTrace();
+			}
+		else if(type == UpdateType.END_TURN)
+			try {
+				ms = this.update.getUpdateMessage(UpdateType.END_TURN, null);
+			} catch (ContentException e) {
+				e.printStackTrace();
+			}
+		else
+			System.err.println("Wrong type of end message");
+		
+		sendToAll(ms);
+		
+	}
 	
 	
 	
@@ -139,18 +165,18 @@ public class CatanCommunication extends GameCommunication{
 	 */
 	public void sendTrade(HashMap<String, Integer> give, HashMap<String, Integer> get) 
 	{
-		for(String name : invPlayers.keySet())
+		for(String name : this.getStateInv().keySet())
 		{
-			invPlayers.put(name, InvStatus.WAIT);
+			this.putInv(name, InvStatus.WAIT);
 		}		
-		System.out.println("Players: " + invPlayers);													
+		System.out.println("Players: " + this.getStateInv());													
 		
 		
 		Message msg = null;
 		msg = this.trade.getTradeMessage(TradeType.OFFERT, give, get);			
 			
 		
-		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
+		Set<Entry<String, InvStatus>> entrySet = this.getStateInv().entrySet();
 		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
 		while(it.hasNext())
 		{
@@ -165,7 +191,7 @@ public class CatanCommunication extends GameCommunication{
 				System.err.println("Utracono polaczenie z: " + e.getKey());
 				ex.printStackTrace();
 				disconnected(e.getKey());
-				invPlayers.remove(e.getKey());
+				this.removeInv(e.getKey());
 			}
 			
 		}
@@ -178,7 +204,7 @@ public class CatanCommunication extends GameCommunication{
 	 */
 	public void sendTrade(String nick) 
 	{
-		if(invPlayers.get(nick) != InvStatus.ACCEPTED)
+		if(this.getStateInv().get(nick) != InvStatus.ACCEPTED)
 		{
 			System.out.println("Player: " + nick + " hasn't accepted your offert.");
 			return;
@@ -190,23 +216,23 @@ public class CatanCommunication extends GameCommunication{
 		} catch (IOException e) {
 			System.err.println("Utracono polaczenie z: " + nick);			
 			disconnected(nick);
-			invPlayers.remove(nick);
+			this.removeInv(nick);
 			e.printStackTrace();
 		}
 		
-		Set<String> s = invPlayers.keySet();		
-		invPlayers.put(nick, InvStatus.WAIT);
+		Set<String> s = this.getStateInv().keySet();		
+		this.putInv(nick, InvStatus.WAIT);
 		
 		ms = trade.getTradeMessage(TradeType.END_TRADE);
 		for(String name : s)
 		{
 			try {
 				sendTo(name, ms);
-				invPlayers.put(name, InvStatus.WAIT);
+				this.putInv(name, InvStatus.WAIT);
 			} catch (IOException e) {
 				System.err.println("Utracono polaczenie z: " + name);			
 				disconnected(name);
-				invPlayers.remove(name);
+				this.removeInv(name);
 				e.printStackTrace();
 			}
 		}
@@ -218,46 +244,20 @@ public class CatanCommunication extends GameCommunication{
 	public void sendTrade()
 	{
 		System.out.println("--Closing trade--");
-		Set<String> s = invPlayers.keySet();		
+		Set<String> s = this.getStateInv().keySet();		
 		Message ms = trade.getTradeMessage(TradeType.END_TRADE);
 		for(String name : s)
 		{
 			try {
-				sendTo(name, ms);
-				invPlayers.remove(name);
-				invPlayers.put(name, InvStatus.WAIT);
+				sendTo(name, ms);				
+				this.putInv(name, InvStatus.WAIT);
 			} catch (IOException e) {
 				System.err.println("Utracono polaczenie z: " + name);			
 				disconnected(name);
-				invPlayers.remove(name);
+				this.removeInv(name);
 				e.printStackTrace();
 			}
 		}		
-	}
-	/**
-	 * Sends END_GAME or END_TURN message to all players.
-	 * @param type Type of our ending. 
-	 */
-	public void sendEnd(UpdateType type) 
-	{
-		Message ms = null;
-		if(type == UpdateType.END_GAME)
-			try {
-				ms = system.getUpdateMessage(UpdateType.END_GAME, null);				
-			} catch (ContentException e) {
-				e.printStackTrace();
-			}
-		else if(type == UpdateType.END_TURN)
-			try {
-				ms = system.getUpdateMessage(UpdateType.END_TURN, null);
-			} catch (ContentException e) {
-				e.printStackTrace();
-			}
-		else
-			System.err.println("Wrong type of end message");
-		
-		sendToAll(ms);
-		
 	}
 	
 

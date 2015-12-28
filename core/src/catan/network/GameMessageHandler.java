@@ -109,15 +109,15 @@ public class GameMessageHandler extends MessageHandler implements Serializable{
 	{
 		
 		System.out.println("Player: " +  nick + " - Accepted");				
-		gameCom.invPlayers.put(nick, InvStatus.ACCEPTED);		
+		gameCom.putInv(nick, InvStatus.ACCEPTED);		
 		System.out.println(gameCom.invPlayers);
 		
 	}
 	synchronized void handleMsgReject()
 	{		
 		System.out.println("Player: " +  nick + " - Rejected");				
-		gameCom.invPlayers.put(nick, InvStatus.REJECTED);		
-		System.out.println(gameCom.invPlayers);
+		gameCom.putInv(nick, InvStatus.REJECTED);		
+		System.out.println(gameCom.getStateInv());
 	}
 	synchronized void handleMsgStartGame()				// dodac metode startu gry jako takiej, ustawiæ zmienna inGame czy cos
 	{

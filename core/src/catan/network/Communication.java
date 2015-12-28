@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -33,7 +34,7 @@ import database.Tile;
  * @author Sebastian
  *
  */
-public class Communication implements Runnable, P2P{
+public class Communication implements Runnable, P2P, Subject{
 	
 	private static class CommunicationHolder
 	{
@@ -46,9 +47,10 @@ public class Communication implements Runnable, P2P{
 	private int						servport = 8080;
 	private MessageHandler			msgHandler;										// to handling system messages -- prototype
 	
+	private List<Observer> 			observers = new LinkedList<Observer>();
 	
 	public	Collection<String>		addresses;										// all nodes - addresses	
-	public	Map<String,Peer>		peers = new HashMap<String,Peer>();				// online nodes, nawi¹zane po³¹czenia
+	private	Map<String,Peer>		peers = new HashMap<String,Peer>();				// online nodes, nawi¹zane po³¹czenia
 	public	Map<String,String>		ipToNick = new HashMap<String,String>();					
 	
 	
@@ -207,7 +209,6 @@ public class Communication implements Runnable, P2P{
 			}
 			catch (ClassNotFoundException e) 
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
 			catch (Exception e) 
@@ -294,7 +295,7 @@ public class Communication implements Runnable, P2P{
 				
 				nickname = this.updateNickname(nickname);	// przypisanie uniwersalnej nazwy w peersach					
 				peers.remove(nick);							// aktualizacja peers, wczesniej nick = int
-				peers.put(nickname, peer);
+				this.putPeer(nickname, peer);
 					
 												
 				System.out.println("Player's nickname: " + nickname);
@@ -322,7 +323,7 @@ public class Communication implements Runnable, P2P{
 			String ip = newPeer.socketOut.getInetAddress().getHostAddress();
 		
 		
-			peers.put(nickname , newPeer);							// dodanie do mapy, gdzie przechowywane s¹ nawi¹zane po³¹czenia
+			this.putPeer(nickname , newPeer);							// dodanie do mapy, gdzie przechowywane s¹ nawi¹zane po³¹czenia
 						
 			System.out.println("Player's nickname: " + nickname);
 			System.out.println("Adding ip to ipToNick ...");
@@ -371,6 +372,18 @@ public class Communication implements Runnable, P2P{
 	{
 		return this.servport;
 	}
+	
+	public void					putPeer(String key, Peer value)
+	{
+		peers.put(key, value);
+		notifyObservers();
+	}
+	public void					removePeer(String key)
+	{		
+		peers.remove(key);
+		notifyObservers();
+	}
+
 	public String getNickFromIp(String ip) {		
 		return ipToNick.get(ip);
 	}
@@ -395,7 +408,7 @@ public class Communication implements Runnable, P2P{
 			// na wypadek, gdyby dodanie bylo wczesniej niz ich inicjalizacja
 			// jesli tak to dodaj tylko do playersIP a initPeers zrobi reszte
 			if((peers.size()!=0 && addresses.size()>1) || (addresses.size()==1))
-				peers.put(nick , new Peer(nickname, address, servport));		// proba polaczenia i wyslania wiadomosci z nickiem			
+				this.putPeer(nick , new Peer(nickname, address, servport));		// proba polaczenia i wyslania wiadomosci z nickiem			
 			System.out.println("Adding new player finished");
 			
 		}
@@ -425,7 +438,36 @@ public class Communication implements Runnable, P2P{
 		}
 		peers.remove(nick);		
 	} 	
+
+	
+	/* Obserwator - Subject */
+	
+	public Set<String> getStatePeers()
+	{
+		return peers.keySet();
+	}
+
+	@Override	
+	public void add(Observer observer) {
+		observers.add(observer);	
 		
+	}
+	@Override
+	public void remove(Observer observer) {
+		observers.remove(observer);
+		
+	}
+	@Override
+	public void notifyObservers() {
+		
+		for(Observer ob : observers)
+		{
+			ob.update();
+		}
+		
+	}
+	
+	
 	
 	/**
 	 * Method which is necessary to run a thread and it is done in initCommunication, so don't run it!
@@ -465,13 +507,16 @@ public class Communication implements Runnable, P2P{
 		board.loadMatrix();
 		board.setNeighbours();
 	
-		Communication com = Communication.getInstance();									// tworzenie komunikacji
-		MessageHandler mh = new CatanMessageHandler();
+		Communication com = Communication.getInstance();									// tworzenie komunikacji				
+		Observer ob = new ObserverPeers(com);	
+		com.notifyObservers();
+		
+		MessageHandler mh = new CatanMessageHandler();				
 		CatanCommunication game = new CatanCommunication(com, "Sebastian", players, mh);
-		
-		
-		
+		Observer ob2 = new ObserverInv(game);
+				
 		com.sleep(5000);
+		
 		
 		System.out.println("----Communication initialization finished----");
 		System.out.println();		
@@ -519,7 +564,7 @@ public class Communication implements Runnable, P2P{
 		System.out.println("--Starting the game ...");
 		System.out.println();
 				
-		boolean gameState = game.startGame(3,4);														// start gry
+		boolean gameState = game.startGame(1,4);														// start gry
 		if(gameState == true)																	// jak sie nie uda to nie usuwa liste zaproszonych
 			System.out.println("Welcome in Catan world!");
 		else
@@ -528,11 +573,11 @@ public class Communication implements Runnable, P2P{
 
 		com.sleep(3000);
 		
-		System.out.println(game.invPlayers);
+		//System.out.println(game.getStateInv());
 		game.setOrder();
 		com.sleep(3000);
 		System.out.println("Place: " + game.getPlace());									// numer w kolejce graczy 1-4
-		System.out.println(game.invPlayers);
+		//System.out.println(game.getStateInv());
 		
 		
 		/* Testing Update Messages */
@@ -570,21 +615,24 @@ public class Communication implements Runnable, P2P{
 		game.sendTrade(give, get);															// wyslanie oferty handlowej
 				
 		com.sleep(3000);																	// sleep
-		/*
-		game.sendTrade("Sebastian");		
+		
+		game.sendTrade("Sebastian");
 		
 		com.sleep(2000);																	// sleep
-		
+				
 		game.sendTrade();																	// zakoncz handel
+		com.sleep(2000);																	// sleep
 				
 		game.sendEnd(UpdateType.END_GAME);													// Wysylanie wiadomosci typu END
 		game.sendEnd(UpdateType.END_TURN);
-		
 		com.sleep(3000);																	// sleep
 		
+				
+		
 		System.out.println();
-		System.out.println("Players: " + game.invPlayers);									// wyswietlenie statusu graczy w grze									
+		System.out.println("Players: " + game.getStateInv());								// wyswietlenie statusu graczy w grze									
 		System.out.println();
+		
 		
 		System.out.println("all threads:");
 		
@@ -593,11 +641,8 @@ public class Communication implements Runnable, P2P{
 		{
 			System.out.println(t.getName());
 		}
-		*/
+		/**/
 		
 	}
 	
-		
-	
-
 }
