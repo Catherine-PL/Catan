@@ -47,7 +47,7 @@ public class Communication implements Runnable, P2P, Subject{
 	private int						servport = 8080;
 	private MessageHandler			msgHandler;										// to handling system messages -- prototype
 	
-	private List<Observer> 			observers = new LinkedList<Observer>();
+	List<Observer>		 			observers = new LinkedList<Observer>();
 	
 	public	Collection<String>		addresses;										// all nodes - addresses	
 	private	Map<String,Peer>		peers = new HashMap<String,Peer>();				// online nodes, nawi¹zane po³¹czenia
@@ -351,7 +351,7 @@ public class Communication implements Runnable, P2P, Subject{
 		}
 		
 	}
-	private void 				sleep(long time)
+	public static void			sleep(long time)
 	{
 		try 
 		{
@@ -630,7 +630,7 @@ public class Communication implements Runnable, P2P, Subject{
 				
 		
 		System.out.println();
-		System.out.println("Players: " + game.getStateInv());								// wyswietlenie statusu graczy w grze									
+		//System.out.println("Players: " + game.getStateInv());								// wyswietlenie statusu graczy w grze									
 		System.out.println();
 		
 		
