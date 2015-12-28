@@ -39,6 +39,7 @@ public class Building extends Element {
 							
 							player.addPort(here.getPort());
 							player.addPoints(1);
+							player.addPlayerNodes(here);
 							state = 0;
 							
 							
@@ -75,7 +76,7 @@ public class Building extends Element {
 						player.changeResources("grain", -2);
 						player.changeResources("ore", -3);
 						player.addPoints(1);
-
+						player.addPlayerNodes(here);
 						state = 0;
 					}
 					state = 1;
@@ -94,7 +95,7 @@ public class Building extends Element {
 						player.changeResources("clay", -1);
 						player.changeResources("ore", -3);
 						player.addPoints(2);
-
+						player.addPlayerNodes(here);
 						state = 0;
 					}
 						else 

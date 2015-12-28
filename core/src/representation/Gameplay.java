@@ -519,7 +519,7 @@ public class Gameplay extends View implements InputProcessor
 		//ocean
 		batch.draw(background,0,0);		
 		//ten gracz
-		batch.draw(game.getThisPlayer().getAvatar(),0,0);
+		batch.draw(game.getActualPlayer().getAvatar(),0,0);
 		//wyswietlenie paska na zasoby, opcje,miasta,drogi i punkty
 		batch.draw(gameplayMenu,0,0);
 		//wyswietlenie postaci gracza który aktualnie gra
@@ -538,12 +538,12 @@ public class Gameplay extends View implements InputProcessor
 		//liczby od surowców
 		int X=170;
 		int Y=82;
-		font.draw(batch, " "+game.getThisPlayer().getResources("clay"), X,Y);
-		font.draw(batch, " "+game.getThisPlayer().getResources("grain"), X+120,Y);
-		font.draw(batch, " "+game.getThisPlayer().getResources("ore"), X+2*120,Y);
-		font.draw(batch, " "+game.getThisPlayer().getResources("sheep"), X+3*118,Y);
-		font.draw(batch, " "+game.getThisPlayer().getResources("wood"), X+4*120,Y);
-		font.draw(batch, " "+game.getThisPlayer().getPoints(), X+4*120+65,Y);	
+		font.draw(batch, " "+game.getActualPlayer().getResources("clay"), X,Y);
+		font.draw(batch, " "+game.getActualPlayer().getResources("grain"), X+120,Y);
+		font.draw(batch, " "+game.getActualPlayer().getResources("ore"), X+2*120,Y);
+		font.draw(batch, " "+game.getActualPlayer().getResources("sheep"), X+3*118,Y);
+		font.draw(batch, " "+game.getActualPlayer().getResources("wood"), X+4*120,Y);
+		font.draw(batch, " "+game.getActualPlayer().getPoints(), X+4*120+65,Y);	
 		
 	}
 	
@@ -562,17 +562,17 @@ public boolean keyDown(int keycode) {
 			int noRoadsSize =(game.getBoard().getNode(touchedBuildingID)).getRoadsIdImprove().size();
 			 if(Gdx.input.isKeyPressed(Keys.NUM_1 ))
 			 {
-				 if(noRoadsSize>=1 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
+				 if(noRoadsSize>=1 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getActualPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
 				 selected=SelectedKey.E;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_2 ))
 			 {
-				 if(noRoadsSize>=2 ) game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
+				 if(noRoadsSize>=2 ) game.getBoard().getNode(touchedBuildingID).buildRoad(game.getActualPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
 				 selected=SelectedKey.E;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_3 ))
 			 {
-				 if(noRoadsSize>=3 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
+				 if(noRoadsSize>=3 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getActualPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
 				 selected=SelectedKey.E;
 			 }
 		}
@@ -585,7 +585,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 int build=0;
 				 selected=SelectedKey.Q;
-				 build =Building.buildSettlement(game.getThisPlayer(), game.getBoard().getNode(touchedBuildingID));
+				 build =Building.buildSettlement(game.getActualPlayer(), game.getBoard().getNode(touchedBuildingID));
 				 if(build>0) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingnocity.png"));}
 				 else 
 				 {
@@ -605,7 +605,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 int build=0;
 				 selected=SelectedKey.W;
-				 build =Building.buildCity(game.getThisPlayer(), game.getBoard().getNode(touchedBuildingID));
+				 build =Building.buildCity(game.getActualPlayer(), game.getBoard().getNode(touchedBuildingID));
 				 if(build>0) 
 				 { 
 					 if(game.getBoard().getNode(touchedBuildingID).getBuilding()==0) nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingnocity.png"));
@@ -669,7 +669,7 @@ public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		if (X>510 && Y<screensizeY-610 && X<670 && Y>screensizeY-635 )
 		{
 			//TODO
-			//game.endTurn();
+			game.endTurn();
 		}
 		//trade
 		tradeTouch(X,Y);
