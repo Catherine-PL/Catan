@@ -2,6 +2,7 @@ package database;
 
 /*
  * KLASA DO USUNIECIA
+
  */
 import java.util.ArrayList;
 

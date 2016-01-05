@@ -1,10 +1,10 @@
 package database;
 
-import database.Card.DevelopType;
 
-public class Monopol {
+
+public class Monopol implements Card {
 	DevelopType type=DevelopType.MONOPOL;
-	void playCard(Player player){
+	public void playCard(Player player){
 		//miejsce na aset
 		//wybranie zasobu
 		String resource="clay";
@@ -15,5 +15,10 @@ public class Monopol {
 			sum=sum+count;
 		}
 		player.changeResources(resource,sum);
+	}
+	@Override
+	public database.DevelopType getType() {
+		// TODO Auto-generated method stub
+		return type;
 	}
 }

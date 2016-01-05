@@ -1,5 +1,5 @@
 package database;
-
+//KLASA DO USUNIÊCIA
 public class SpecialCard extends Card {
 	private String type;
 	@Override

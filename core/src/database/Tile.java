@@ -9,6 +9,7 @@ public class Tile {
 	
 	private int diceNumber=-1; 			
 	private ArrayList<Player> tileplayer=new ArrayList<Player>();
+	private ArrayList<Node> tileNodes=new ArrayList<Node>();
 	private int number; 
 
 	public static class Builder{
@@ -70,6 +71,14 @@ public class Tile {
 
 	public void setNumber(int number) {
 		this.number = number;
+	}
+
+	public ArrayList<Node> getTileNodes() {
+		return tileNodes;
+	}
+
+	public void addTileNodes(Node tileNodes) {
+		this.tileNodes.add(tileNodes);
 	}
 
 }
