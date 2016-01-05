@@ -2,23 +2,24 @@
 \contentsline {section}{\numberline {1}Wst\IeC {\k e}p}{2}
 \contentsline {subsection}{\numberline {1.1}Dlaczego Catan?}{2}
 \contentsline {subsection}{\numberline {1.2}Opis gry}{2}
-\contentsline {section}{\numberline {2}U\IeC {\.z}yte wzorce projektowe}{2}
-\contentsline {subsection}{\numberline {2.1}Singleton}{2}
-\contentsline {subsection}{\numberline {2.2}Builder}{2}
-\contentsline {subsection}{\numberline {2.3}Abstract Factory}{3}
-\contentsline {subsection}{\numberline {2.4}Observer}{3}
-\contentsline {subsection}{\numberline {2.5}State}{3}
-\contentsline {subsection}{\numberline {2.6}Command}{3}
-\contentsline {section}{\numberline {3}U\IeC {\.z}yte biblioteki zewn\IeC {\k e}trzne}{3}
-\contentsline {subsection}{\numberline {3.1}Biblioteka graficzna}{3}
-\contentsline {subsection}{\numberline {3.2}Biblioteka sieciowa}{3}
-\contentsline {section}{\numberline {4}Architektura}{4}
-\contentsline {subsection}{\numberline {4.1}Warstwa prezentacji}{4}
-\contentsline {subsection}{\numberline {4.2}Warstwa interakcji}{5}
-\contentsline {subsection}{\numberline {4.3}Warstwa logiki gry}{5}
-\contentsline {subsection}{\numberline {4.4}Warstwa baz danych}{6}
-\contentsline {subsection}{\numberline {4.5}Warstwa komunikacji sieciowej}{6}
-\contentsline {section}{\numberline {5}Podsumowanie}{6}
-\contentsline {section}{\numberline {6}Testy}{6}
-\contentsline {section}{\numberline {7}Wnioski}{6}
-\contentsline {section}{\numberline {8}Literatura}{6}
+\contentsline {section}{\numberline {2}Skr\IeC {\'o}cone zasady gry}{2}
+\contentsline {section}{\numberline {3}U\IeC {\.z}yte wzorce projektowe}{3}
+\contentsline {subsection}{\numberline {3.1}Singleton}{3}
+\contentsline {subsection}{\numberline {3.2}Builder}{4}
+\contentsline {subsection}{\numberline {3.3}Abstract Factory}{4}
+\contentsline {subsection}{\numberline {3.4}Observer}{4}
+\contentsline {subsection}{\numberline {3.5}State}{4}
+\contentsline {subsection}{\numberline {3.6}Command}{4}
+\contentsline {section}{\numberline {4}U\IeC {\.z}yte biblioteki zewn\IeC {\k e}trzne}{5}
+\contentsline {subsection}{\numberline {4.1}Biblioteka graficzna}{5}
+\contentsline {subsection}{\numberline {4.2}Biblioteka sieciowa}{5}
+\contentsline {section}{\numberline {5}Architektura}{5}
+\contentsline {subsection}{\numberline {5.1}Warstwa prezentacji}{6}
+\contentsline {subsection}{\numberline {5.2}Warstwa interakcji}{6}
+\contentsline {subsection}{\numberline {5.3}Warstwa logiki gry}{7}
+\contentsline {subsection}{\numberline {5.4}Warstwa baz danych}{7}
+\contentsline {subsection}{\numberline {5.5}Warstwa komunikacji sieciowej}{8}
+\contentsline {section}{\numberline {6}Podsumowanie}{8}
+\contentsline {section}{\numberline {7}Testy}{8}
+\contentsline {section}{\numberline {8}Wnioski}{8}
+\contentsline {section}{\numberline {9}Literatura}{8}

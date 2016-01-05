@@ -223,6 +223,7 @@ public class Board implements Serializable{
 			for(int j=0;j<19;j++){
 				if(tilesToNodes[i][j]==1){
 					nodes[i].addNearResources(tiles[j]);
+					tiles[j].addTileNodes(nodes[i]);
 				}
 			}
 		}
@@ -338,17 +339,16 @@ public class Board implements Serializable{
 	int steal(Player player,Tile hex){
 		ArrayList <Player> mayRob=hex.getTileplayer();
 		int count,number;
-		
+		Player toRob;		
+		String [] resureces={"clay","grain","ore","sheep","wood"};
+		Random generator=new Random();
 		
 		/*
 		 * Tu musi byæ asset ¿ebym móg³ wybraæ kogo okraœæ
 		 * 
 		 */
 		
-		Player toRob;
 		
-		String [] resureces={"clay","grain","ore","sheep","wood"};
-		Random generator=new Random();
 		
 		do{		
 			number=generator.nextInt(4);
@@ -362,13 +362,60 @@ public class Board implements Serializable{
 	}
 	
 	
+	public void resourceDistribution(int dice){
+		String resource="";
+		for(Tile tile:Board.getInstance().tiles){
+			if(tile.getDiceNumber()==dice){
+				
+				if(tile.getType().equals("Forest"))
+					resource="wood";
+				if(tile.getType().equals("Fields"))
+					resource="grain";
+				if(tile.getType().equals("Mountains"))
+					resource="ore";
+				if(tile.getType().equals("Pasture"))
+					resource="sheep";
+				if(tile.getType().equals("Hills"))
+					resource="clay";
+				
+				for(Node node: tile.getTileNodes()){	
+					if(node.getPlayerNumber()>0)
+					//	if(node.getPlayer().equals(obj)) //sprawdzanie czy RealPlayer
+					node.getPlayer().changeResources(resource,node.getBuilding());
+				}
+				
+				}
+			
+			}
+		
+	}
+	
 	public static void main(String [ ] args) throws FileNotFoundException{
 		Board board = Board.getInstance();
 		
 		System.out.println(board.tilesToNodes[53][0]);
 		for(Tile t:board.tiles){
-			System.out.println(t.getNumber()+" "+t.getType()+" "+t.getDiceNumber());
+			//System.out.println(t.getNumber()+" "+t.getType()+" "+t.getDiceNumber());
+			//System.out.print("\n"+t.getNumber()+" "+t.getType()+" "+t.getDiceNumber());
+				//for(Node n: t.getTileNodes())
+			//		System.out.print(n.getNodeNumber()+"  ");
 		}
+		Player p=new Player(3);
+		System.out.println(p.getResources("clay"));
+		System.out.println(p.getResources("grain"));
+		System.out.println(p.getResources("sheep"));
+		System.out.println(p.getResources("ore"));
+		System.out.println(p.getResources("wood")+"------");
+		
+		Building.buildSettlement(p, board.getNodes()[0]);
+		
+		board.resourceDistribution(board.getNodes()[0].getNearResources().get(0).getDiceNumber());
+		System.out.println(p.getResources("clay"));
+		System.out.println(p.getResources("grain"));
+		System.out.println(p.getResources("sheep"));
+		System.out.println(p.getResources("ore"));
+		System.out.println(p.getResources("wood"));
+	
 	/*
 		//test, wypisanie s¹siadów
 		for(int i=0;i<54;i++){
@@ -404,10 +451,11 @@ public class Board implements Serializable{
 				board.getNode(0).buildRoad(p1, 0);
 				board.getNode(0).buildRoad(p1, 1);
 			    System.out.print("\n"+board.boardRoads.get(0).getOwnerID()+"  "+board.boardRoads.get(0).getState()+" to2imp"+board.nodes[0].getRoads2Improve()+" to2imp"+board.nodes[0].getRoadsIdImprove());
-*/
-		
+
+		*/
 	}
 	
+
 
 	public void testMarcin(){
 		

@@ -25,6 +25,8 @@ public class Building extends Element {
 						if(player.getResources("grain")>=1 && player.getResources("sheep")>=1 && player.getResources("wood")>=1 && player.getResources("clay")>=1 || player.getPoints()<2) {
 							here.setBuilding(1);
 							here.setPlayerNumber(player.getId());
+						/////czy potrzebne
+							here.setPlayer(player);
 							
 							//maj¹c powy¿ej 2 punktów, osiedla s¹ na pewno budpwane za surowce, wiêc tylko wtedy je pobieramy
 							if(player.getPoints()>=2){
@@ -39,6 +41,7 @@ public class Building extends Element {
 							
 							player.addPort(here.getPort());
 							player.addPoints(1);
+							player.addPlayerNodes(here);
 							state = 0;
 							
 							
@@ -75,7 +78,7 @@ public class Building extends Element {
 						player.changeResources("grain", -2);
 						player.changeResources("ore", -3);
 						player.addPoints(1);
-
+						player.addPlayerNodes(here);
 						state = 0;
 					}
 					state = 1;
@@ -88,13 +91,16 @@ public class Building extends Element {
 					if(player.getResources("grain")>=3 && player.getResources("sheep")>=1 && player.getResources("wood")>=1 && player.getResources("clay")>=1 && player.getResources("ore")>=3){
 						here.setBuilding(2);
 						here.setPlayerNumber(player.getId());
+						/////czy potrzebne
+						here.setPlayer(player);
+
 						player.changeResources("grain", -3);
 						player.changeResources("sheep", -1);
 						player.changeResources("wood", -1);
 						player.changeResources("clay", -1);
 						player.changeResources("ore", -3);
 						player.addPoints(2);
-
+						player.addPlayerNodes(here);
 						state = 0;
 					}
 						else 

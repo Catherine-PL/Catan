@@ -1,5 +1,5 @@
 package database;
-
+//KLASA DO USUNIÊCIA
 public class ResourceCard extends Card {
 	private String type;
 	private final int value=1;
