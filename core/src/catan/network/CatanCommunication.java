@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import catan.network.FactoryProducer.FactoryType;
+import catan.network.GameCommunication.InvStatus;
 import catan.network.Messenger.NumberOf;
 import catan.network.SystemMessage.SystemType;
 import catan.network.TradeMessage.TradeType;
@@ -36,13 +37,12 @@ public class CatanCommunication extends GameCommunication{
 	 * Number says which is our place, but when number is equal 0 that means,
 	 * not everyone has sent me a result and it was impossible to create sequence. 
 	 */
-	public void setOrder()
+	public void setOrder(int dice)
 	{		
-		System.out.println("Sending result of my dice (creating a chain, sequence)");
-		myNumber = 5;
+		System.out.println("Sending result of my dice (creating a chain, sequence)");		
 		// TODO myNumber has to be random
 		try {
-			Message ms = update.getUpdateMessage(UpdateType.DICE, myNumber);
+			Message ms = update.getUpdateMessage(UpdateType.DICE, dice);
 			sendToAll(ms);
 		} catch (ContentException e) { 
 			e.printStackTrace();
@@ -130,6 +130,48 @@ public class CatanCommunication extends GameCommunication{
 		sendToAll(msg);	
 	}
 	/**
+	 * Sends information about which resource that person stole from me...
+	 * @param nick Person who stole, who moved thief.
+	 * @param resource String representation of resource's type.
+	 */
+	public void sendUpdate(String nick, String resource)
+	{
+		Message msg = null;
+		try {			
+			msg = this.update.getUpdateMessage(UpdateType.THIEF_LOOT, resource);
+		} catch (ContentException e) {
+			e.printStackTrace();
+		}		
+		try {
+			this.sendTo(nick, msg);
+		} catch (IOException e) {
+			System.err.println("Utracono polaczenie z: " + nick);			
+			disconnected(nick);			
+			e.printStackTrace();
+		}		
+		
+	}
+	/**
+	 * Sends information to person who is robbed
+	 * @param nick Nickname of that person
+	 */
+	public void sendUpdate(String nick)
+	{
+		Message msg = null;
+		try {			
+			msg = this.update.getUpdateMessage(UpdateType.THIEF_TARGET, null);
+		} catch (ContentException e) {
+			e.printStackTrace();
+		}		
+		try {
+			this.sendTo(nick, msg);
+		} catch (IOException e) {
+			System.err.println("Utracono polaczenie z: " + nick);			
+			disconnected(nick);			
+			e.printStackTrace();
+		}
+	}
+	/**
 	 * Sends END_GAME or END_TURN message to all players.
 	 * @param type Type of our ending. 
 	 */
@@ -190,8 +232,7 @@ public class CatanCommunication extends GameCommunication{
 			{
 				System.err.println("Utracono polaczenie z: " + e.getKey());
 				ex.printStackTrace();
-				disconnected(e.getKey());
-				this.removeInv(e.getKey());
+				disconnected(e.getKey());				
 			}
 			
 		}
@@ -215,27 +256,13 @@ public class CatanCommunication extends GameCommunication{
 			sendTo(nick, ms);
 		} catch (IOException e) {
 			System.err.println("Utracono polaczenie z: " + nick);			
-			disconnected(nick);
-			this.removeInv(nick);
+			disconnected(nick);			
 			e.printStackTrace();
 		}
 		
-		Set<String> s = this.getStateInv().keySet();		
-		this.putInv(nick, InvStatus.WAIT);
-		
-		ms = trade.getTradeMessage(TradeType.END_TRADE);
-		for(String name : s)
-		{
-			try {
-				sendTo(name, ms);
-				this.putInv(name, InvStatus.WAIT);
-			} catch (IOException e) {
-				System.err.println("Utracono polaczenie z: " + name);			
-				disconnected(name);
-				this.removeInv(name);
-				e.printStackTrace();
-			}
-		}
+			
+		this.putInv(nick, InvStatus.WAIT);						
+		//this.sendTrade();
 		
 	}
 	/**
@@ -254,11 +281,28 @@ public class CatanCommunication extends GameCommunication{
 			} catch (IOException e) {
 				System.err.println("Utracono polaczenie z: " + name);			
 				disconnected(name);
-				this.removeInv(name);
 				e.printStackTrace();
 			}
 		}		
 	}
-	
+
+	public void sendTradeAnswer(String nick, TradeType answer)
+	{
+		Message msg = null;
+		if(answer==TradeType.YES)			
+			msg = trade.getTradeMessage(TradeType.YES);			
+		else if(answer==TradeType.CONTR)
+			msg = trade.getTradeMessage(TradeType.OFFERT);
+		else			
+			msg = trade.getTradeMessage(TradeType.NO);
+		
+		try {
+			sendTo(nick, msg);
+		} catch (IOException e) {
+			System.err.println("Utracono polaczenie z: " + nick);
+			disconnected(nick);				
+		}
+	}	
+
 
 }

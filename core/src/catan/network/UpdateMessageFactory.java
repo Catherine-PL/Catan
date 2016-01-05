@@ -33,6 +33,15 @@ class UpdateMessageFactory extends AbstractMessageFactory {
 				throw new ContentException();
 			else
 				return new MsgResources((Integer) content);
+			
+		case THIEF_TARGET:
+			return new MsgThiefTarget();			
+			
+		case THIEF_LOOT:
+			if (content.getClass()!=String.class)
+				throw new ContentException();
+			else
+				return new MsgThiefLoot((String) content);
 
 		case END_GAME:
 			return new MsgEndGame();
