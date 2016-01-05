@@ -3,6 +3,7 @@ package catan.network;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -13,6 +14,7 @@ class Peer{
 	Socket socketIn = null;
 	ObjectOutputStream output = null;
 	ObjectInputStream input = null;	
+	
 	
 	Peer(String nick, String ip, int port) throws IOException {		
 		SocketAddress sockaddr = new InetSocketAddress(ip, port);

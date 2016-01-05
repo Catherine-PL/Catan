@@ -33,6 +33,13 @@ class UpdateMessageFactory extends AbstractMessageFactory {
 				throw new ContentException();
 			else
 				return new MsgResources((Integer) content);
+
+		case END_GAME:
+			return new MsgEndGame();
+
+		case END_TURN:
+			return new MsgEndTurn();
+
 			
 		default:
 			System.err.println("Podany zosta³ niepoprawny typ wiadomosci");

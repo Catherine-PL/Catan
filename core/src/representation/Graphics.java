@@ -34,23 +34,18 @@ public class Graphics  extends ApplicationAdapter {
 		endGame.init();
 		credits.init();
 		rules.init();
+		
+		
 	}
 
 	@Override
 	public void render () 
-	{
-		//petla robi siê sama z siebie na szczêscie.
-		
-		   /*try {
-			    Thread.sleep(1500);                 //1000 milliseconds is one second.
-			} catch(InterruptedException ex) {
-			    Thread.currentThread().interrupt();
-			}*/
-		
+	{	
 			switch(View.getView())
 			{
 				case MAINMENU:
 					mainMenu.batch();
+					//newGameMenu.init();
 			        break;
 				case NEWGAMEMENU:
 			        newGameMenu.batch();

@@ -63,6 +63,7 @@ public class Game {
 		if(id>3)
 			id = 0;
 		return id;
+		//TODO networks
 	}
 	
 	public Player[] getPlayers(){

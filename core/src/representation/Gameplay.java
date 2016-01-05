@@ -97,7 +97,7 @@ public class Gameplay extends View implements InputProcessor
 		initRoadsTextures();
 		game=new Game();
 		selected=SelectedKey.NOTHING;
-		tradeState=TradeState.NOTHING;
+		tradeState=TradeState.RESPOND_OFFER;
 		touchedBuildingRoads=null;
 		touchedBuildingID=null; //null gdy nic nie wcisniete
 		buildingsXY = new Coordinates[54];
@@ -274,8 +274,6 @@ public class Gameplay extends View implements InputProcessor
 
 	private void batchTrade()
 	{
-		
-		
 		if (tradeState==TradeState.MAKE_OFFER)
 		{
 			batch.draw(makeoffer,0,screensizeY-150);
@@ -290,10 +288,19 @@ public class Gameplay extends View implements InputProcessor
 		if (tradeState==TradeState.RESPOND_OFFER)
 		{
 			//TODO
-			batch.draw(reviewoffer,0,screensizeY-174);
+			batch.draw(reviewoffer,0,screensizeY-173);
+			
+			//wyswietlanie liczb
+			for(int i=0;i<5;i++)
+			{
+				font.draw(batch, Integer.toString(tradeGoods[i]), 50+i*43,screensizeY-88);
+			}
+			for(int i=5;i<10;i++)
+			{
+				font.draw(batch, Integer.toString(tradeGoods[i]), 50+(i-5)*43,screensizeY-123);
+			}
+			
 		}
-		
-		
 		//wyswietlanie liczb
 				if (tradeState==TradeState.MAKE_OFFER || tradeState==TradeState.CHOOSE_RESPONSE)
 				{
@@ -501,15 +508,9 @@ public class Gameplay extends View implements InputProcessor
 		batch.draw(textures.get(16), cX-tileX+1, cY-4*tileY+4*tileY/4+4);
 		batch.draw(textures.get(18), cX+tileX-1, cY-4*tileY+4*tileY/4+4);
 		
-		//.getDiceNumber
 		for(int i=0;i<19;i++)
 		{
-			
-			//game.getBoard().getTile(i).getDiceNumber();
-			//font.draw(batch, Integer.toString(tradeGoods[i]), 50+i*43,screensizeY-65)
-			//tilesXY[i].getDiceNumber();
-			//= game.getBoard().getTile(k);
-			//TODO
+			font.draw(batch, Integer.toString(game.getBoard().getTile(i).getDiceNumber()), tilesXY[i].getX(),tilesXY[i].getY());
 		}
 		
 	}

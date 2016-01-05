@@ -1,7 +1,12 @@
 package catan.network;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -9,11 +14,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import catan.network.FactoryProducer.FactoryType;
 import catan.network.Message.Type;
+import catan.network.Messenger.NumberOf;
 import catan.network.SystemMessage.SystemType;
 import catan.network.TradeMessage.TradeType;
 import catan.network.UpdateMessage.UpdateType;
@@ -27,353 +34,24 @@ import database.Tile;
  * @author Sebastian
  *
  */
-public class Communication implements Runnable, Messenger{
+public class Communication implements Runnable, P2P, Subject{
 	
 	private static class CommunicationHolder
 	{
 		private static final Communication instance = new Communication();
 	}
-	enum InvStatus
-	{
-		WAIT, ACCEPTED, REJECTED;
-	}
+		
+		
+	private String					nickname;										// my nickname
+	private ServerSocket			serv;	
+	private int						servport = 8080;
+	private MessageHandler			msgHandler;										// to handling system messages -- prototype
 	
-	class MessageHandler 									/* Dodac metody ktore beda wywolywac podmiane informacji na nowe */
-	{														/* Tylko jeden receiver na raz moze wykonac jakas metode */
-		private Board board;
-		private HashMap<String, Integer> give;
-		private HashMap<String, Integer> get;
-		private int myNumber;
-		private int inQueue = 0;		// ilosc ludzi przede mna w grze
-		private int msgdice = 0;
-		
-		MessageHandler(Board board)
-		{
-			this.board = board;
-		}
-		
-		/* SystemMessage */
-		synchronized Peer handleMsgPeer(Socket client, ObjectInputStream input, MsgPeer msg)
-		{
-			Peer peer = null;
-			synchronized(Communication.this)
-			{
-				// 	Accepting connection and adding to peer socketIn and InputStream		
-				int i = 0;			
-				Iterator<PlayerIP> it = playersIP.iterator();
-					
-				while(it.hasNext())
-				{
-					PlayerIP p = it.next();
-																											// 	dopasowanie do moich peersow
-					if(p.address.equals(client.getInetAddress().getHostAddress()))
-					{
-						peer = peers.get(p.nickname);														// tutaj jeszcze ma tymczasowa nazwe
-						peer.socketIn = client;
-						peer.input = input;
-						String nick = msg.getContent();						
-						int j = 0;
-						while(peers.containsKey(nick))					
-							j++;						
-					
-						if(j>0)																				// zabezpieczenie jak juz istenieje taki nick
-							nick = nick + j;
-						
-						System.out.println("Player's nickname: " + nick);
-						System.out.println("Adding ip to ipToNick ...");
-						System.out.println("Adding to peers HashMap ...");						
-						ipToNick.put(client.getInetAddress().getHostAddress(), nick);
-						peers.remove(p.nickname);
-						peers.put(nick, peer);
-												
-					
-						System.out.println("Updating playersIP collection ...");
-						p.nickname = nick;
-						p.online = true;
-						it.remove();
-						playersIP.add(p);
-						break;
-					}	
-					i++;						
-				}																							// Jezeli obcy dla mnie gosc
-				if(i == playersIP.size())
-				{			
-					String ip = client.getInetAddress().getHostAddress();
-					PlayerIP pip = new PlayerIP(ip);
-					
-					try {
-						peer = new Peer(nickname, ip, servport);
-					} catch (IOException e) {
-						System.out.println("Niemoznosc utworzenia polaczenia dla obcego ip");
-						return null;
-					}
-					peer.input = input;
-					peer.socketIn = client;
-					
-					String nick = msg.getContent();
-					int j = 0;
-					while(peers.containsKey(nick))					
-						j++;						
-				
-					if(j>0)																				// zabezpieczenie jak juz istenieje taki nick
-						nick = nick + j;
-					
-					System.out.println("Player's nickname: " + nick);
-					System.out.println("Adding ip to ipToNick ...");
-					ipToNick.put(client.getInetAddress().getHostAddress(), nick);
-					
-					System.out.println("Adding to peers HashMap ...");						
-					peers.put(nick, peer);
-					
-					System.out.println("Updating playersIP collection ...");
-					pip.nickname = nick;
-					pip.online = true;
-					playersIP.add(pip);										
-										
-				}
-				
-			}
-			return peer;
-		}
-		synchronized void handleMsgInvitation(Peer peer)													/* trzeba to jakos zgrac, wybor:  accept, reject */
-		{
-			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
-			
-									// ten fragment tylko wystepuje w testowaniu lokalnym
-			if(inGame == true && !peer.socketIn.getInetAddress().getHostAddress().equals("127.0.0.1"))		// jezeli dostalem obce zaproszenie 
-			{
-				Message msg = null;
-				try {					
-					msg = system.getSystemMessage(SystemType.REJECT, null);
-				} catch (ContentException e) {
-					e.printStackTrace();
-				}
-				
-				try {
-					sendTo(nick, msg);
-				} catch (IOException e) {
-					System.err.println("MsgInvitation error, problem with sendTo");
-					e.printStackTrace();
-				}
-				return ;
-			}
-			
-			
-			
-			System.out.println("Invitation to a game from: " +  nick);
-			
-			// Tutaj musi nastapic wybor accepet albo reject wyslanie widomosci				<-----			
-			
-			Message msg = null;
-			try {
-				msg = system.getSystemMessage(SystemType.ACCEPT, null);
-				inGame = true;
-			} catch (ContentException e) {
-				e.printStackTrace();
-			}
-			
-			try {
-				sendTo(nick, msg);
-			} catch (IOException e) {
-				System.err.println("MsgInvitation error, problem with sendTo");
-				e.printStackTrace();
-			}
-			
-		}
-		synchronized void handleMsgAccept(Peer peer)					// dodac zmienna, ze j
-		{
-			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
-			System.out.println("Player: " +  nick + " - Accepted");
-			
-			invPlayers.remove(nick);
-			invPlayers.put(nick, InvStatus.ACCEPTED);
-			
-			System.out.println(invPlayers);
-			
-		}
-		synchronized void handleMsgReject(Peer peer)
-		{
-			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
-			System.out.println("Player: " +  nick + " - Rejected");
-			
-			invPlayers.remove(nick);
-			invPlayers.put(nick, InvStatus.REJECTED);
-			
-			System.out.println(invPlayers);
-		}
-		synchronized void handleMsgStartGame(Peer peer)				// dodac metode startu gry jako takiej, ustawiæ zmienna inGame czy cos
-		{
-			System.out.println("The game starting ...");
-			System.out.println("Sending result of my dice (creating a chain)");
-			myNumber = 5;
-			try {
-				Message ms = update.getUpdateMessage(UpdateType.DICE, myNumber);
-				sendToAll(ms);
-			} catch (ContentException e) { 
-				e.printStackTrace();
-			}
-			
-			
-		
-		}
-		synchronized void handleMsgAbandon(Peer peer)				// 
-		{
-			System.out.println("The game has been abandoned ...");
-			inGame = false;
-		}
-		synchronized void handleMsgEndTurn(Peer peer)
-		{
-			String nick = ipToNick.get(peer.socketOut.getInetAddress().getHostAddress());
-			System.out.println("Player: " + nick + " has finished turn.");
-		}
-		synchronized void handleMsgEndGame(Peer peer)
-		{
-			String nick = ipToNick.get(peer.socketOut.getInetAddress().getHostAddress());
-			System.out.println("Player: " + nick + " has won the game.");
-		}
-		
-		/* UpdateMessage */
-		synchronized void handleMsgDice(Peer peer, MsgDice msg)
-		{			
-			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
-			System.out.print("From: " + nick);
-			System.out.println(" -- Dice result:" + msg.getContent());
-			
-			if(msgdice < invPlayers.size()-1)									// tylko do ustalenia kolejnosci
-			{
-				msgdice++;
-				invPlayers.remove(nick);
-				invPlayers.put(nick, InvStatus.WAIT);							// jezeli wszyscy sa wait, to kolejnosc ustalona
-				
-				if(msg.getContent() > myNumber)
-				{
-					inQueue++;
-				}else if(msg.getContent() == myNumber)
-				{
-					if(nickname.compareToIgnoreCase(nick) > 0)
-					{
-						inQueue++;
-					}
-				}
-			}
-		}
-		synchronized void handleMsgBoard(MsgBoard msg)			// podmienic board tam gdzie jest ona przechowywana
-		{
-			System.out.println("Board actualization ...");
-			//this.board = msg.getContent();
-		}	
-		synchronized void handleMsgNode(MsgNode msg)			// problem z aktualizacja
-		{
-			System.out.println("Node actualization ...");
-			/*
-			Node n = msg.getContent();			
-			int i = msg.getIndex();
-			System.out.println("Node: " + n + " on index: " + i);
-			board.setNode(n, i);
-			System.out.println(n.getNodeNumber() + ", " + board.getNode(i));
-			*/
-		}
-		synchronized void handleMsgTile(MsgTile msg)
-		{
-			System.out.println("Tail actualization ...");
-			/*
-			Tile t = msg.getContent();
-			int i = msg.getIndex();
-			board.setTile(t, i);
-			*/
-			
-		}
-		synchronized void handleMsgResources(Peer peer, MsgResources msg)
-		{
-			System.out.println("Resources number actualization...");
-			
-			int n = msg.getContent();			
-			System.out.println("Player: " + ipToNick.get(peer.socketIn.getInetAddress().getHostAddress()) + ", number of resources : " + n);
-			
-		}
-		
-		/* TradeMessage */
-		synchronized void handleMsgOffert(Peer peer, MsgOffert msg)								/* podobnie jak z zaproszeniami */
-		{			
-			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
-			System.out.println();
-			System.out.println("--Offert from: " + nick);
-			
-			get = msg.getGive();
-			give = msg.getGet();
-			//HashMap<String, Integer> icanget = msg.getGive();
-			//HashMap<String, Integer> ihavetogive = msg.getGet();						
-			
-			System.out.println("What he wants: " + give);
-			System.out.println("What i would get: " + get);
-			System.out.println();
-			
-			// Sprawdzenie czy mogê siê zgodziæ. Jeœli nie to wysy³am od razu no.
-			//Message ms = trade.getTradeMessage(TradeType.NO);
-			Message ms = trade.getTradeMessage(TradeType.YES);
-			
-			try {
-				sendTo(nick, ms);
-			} catch (IOException e) {
-				System.err.println("Utracono polaczenie z: " + nick);
-				disconnected(nick);				
-			}
-			
-		}
-		synchronized void handleMsgYes(Peer peer, MsgYes msg)
-		{
-			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());
-			System.out.println("Player: " + nick + " has accepted your offert");
-					
-			invPlayers.remove(nick);
-			invPlayers.put(nick, InvStatus.ACCEPTED);
-			
-			System.out.println("Players" + invPlayers);			
-		}
-		synchronized void handleMsgNo(Peer peer, MsgNo msg)
-		{
-			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
-			System.out.println("Player " + nick + " has rejected your offert");			
-					
-			invPlayers.remove(nick);
-			invPlayers.put(nick, InvStatus.REJECTED);
-			System.out.println(invPlayers);
-			
-		}
-		synchronized void handleMsgDeal(Peer peer, MsgDeal msg)
-		{
-			String nick = ipToNick.get(peer.socketIn.getInetAddress().getHostAddress());			
-			System.out.println("Deal with: " + nick);	
-			
-			/*	aktualizacja surowcow gracza. Dodajac surowce z get, Odejmujac surowce z give	*/
-		}
-		synchronized void handleMsgEndTrade(MsgEndTrade msg)
-		{			
-			Set<String> s = invPlayers.keySet();
-			for(String nick : s)
-			{
-				invPlayers.remove(nick);
-				invPlayers.put(nick, InvStatus.WAIT);
-			}
-		}
-		
-	}						
+	List<Observer>		 			observers = new LinkedList<Observer>();
 	
-		
-	
-	private Collection<PlayerIP>	playersIP;					// wszyscy gracze online i offline
-	private String					nickname;
-	private Map<String,Peer>		peers;						// wszyscy online, w sieci
-	private Map<String,String>		ipToNick;
-	private ServerSocket			serv;
-	private boolean					inGame;
-	final int						servport = 8080;	
-	
-	MessageHandler					msgHandler;
-	Map<String, InvStatus>			invPlayers;				// <-- W grze: przechowuje nicki graczy bedacych ze mna w grze, ich TradeStatus
-	AbstractMessageFactory			update;					//  Przed gra: przechowuje niki peerow i ich odpowiedzi na moje zaproszenie
-	AbstractMessageFactory			trade;
-	AbstractMessageFactory			system;
+	public	Collection<String>		addresses;										// all nodes - addresses	
+	private	Map<String,Peer>		peers = new HashMap<String,Peer>();				// online nodes, nawi¹zane po³¹czenia
+	public	Map<String,String>		ipToNick = new HashMap<String,String>();					
 	
 	
 	
@@ -395,24 +73,15 @@ public class Communication implements Runnable, Messenger{
 	 * @param board Board which will be modified during the game.
 	 * @throws IOException When creating ServSocket fails.
 	 */
-	public void initCommunication(String myName, Collection<PlayerIP> players, Board board) throws IOException 
+	public void initCommunication(String myName, Collection<String> rememberedNodes, MessageHandler msgHandler) throws IOException 
 	{
 		System.out.println("----Communication initialization----");
 		System.out.println("");
 				
-		playersIP = players;		
+		addresses = rememberedNodes;		
 		nickname = myName;			
-		peers = new HashMap<String,Peer>();
-		ipToNick = new HashMap<String,String>();
-		msgHandler = new MessageHandler(board);
-		invPlayers = new HashMap<String,InvStatus>();
-		inGame = false;
-		
-		update = FactoryProducer.getFactory(FactoryType.UPDATE);
-		system = FactoryProducer.getFactory(FactoryType.SYSTEM);
-		trade = FactoryProducer.getFactory(FactoryType.TRADE);
-		
-		
+		this.msgHandler = msgHandler;		
+				
 		try			
 		{  
 			initServPort();		
@@ -424,11 +93,10 @@ public class Communication implements Runnable, Messenger{
 			throw new IOException();
 		}
 		
-		System.out.println("nickname: " + nickname);
-		System.out.println("players: " + nickname);
-		System.out.println("inGame: " + inGame);
-	
-																				 	
+		
+		System.out.println("My Nickname: " + nickname);
+		System.out.println("Nodes: " + addresses);		
+																			 	
 		System.out.println("@Deamon thread - #Communication");
 		Thread deamon = new Thread(this,"#Communication");
 		deamon.setDaemon(true);
@@ -437,38 +105,40 @@ public class Communication implements Runnable, Messenger{
 	}
 	
 	/*Private*/
-	private void initServPort() throws IOException							// a co gdy jednak nam wywali blad? obs³uzyæ czy nie?
+	private void 				initServPort() throws IOException							// a co gdy jednak nam wywali blad? obs³uzyæ czy nie?
 	{		
 		serv = new ServerSocket(servport);
 	}
-	private synchronized void initPeers() throws IOException, ClassNotFoundException
+	private void				initPeers() throws IOException, ClassNotFoundException
 	{			
 		System.out.println();
 		System.out.println("--Peers initialization ..."); 
 		System.out.println();
 		int i = 0;
-		for(PlayerIP p : playersIP)
+		for(String p : addresses)
 		{	
 			try
 			{
-				p.nickname = Integer.toString(i);	// przypisane tymczasowej nazwy
-				Peer newPeer = new Peer(nickname, p.getIp(), servport);
-				peers.put(p.nickname , newPeer);		// proba polaczenia i wyslania wiadomosci z nickiem												
+				Peer newPeer = new Peer(nickname, p, servport);		// proba polaczenia i wyslania wiadomosci z moim nickiem
+																			// zapisanie inf o socketOut, Output objectStream
+				
+				i++;				
+				peers.put(Integer.toString(i), newPeer);					// dodanie do mapy, gdzie przechowywane s¹ nawi¹zane po³¹czenia																			
 			}
 			catch(SocketTimeoutException e)
 			{
-				System.out.println("Problem z utworzeniem po³aczenia (timeout) z: " + p.getIp());					
+				System.out.println("Problem z utworzeniem po³aczenia (timeout) z: " + p);					
 			}
 			catch(IOException e)
 			{
-				System.out.println("Problem z utworzeniem po³aczenia z: " + p.getIp());					
+				System.out.println("Problem z utworzeniem po³aczenia z: " + p);					
 			}
 			
-			i++;
+			
 		}		
 		System.out.println("--Peers initialization finished");
 	}	
-	private void listenPort()
+	private void 				listenPort()
 	{
 		System.out.println("--Listening servport ...");
 		System.out.println();
@@ -481,25 +151,42 @@ public class Communication implements Runnable, Messenger{
 				Socket client = serv.accept();
 				System.out.println("New connection from: " + client.getInetAddress() + " : " + client.getPort());					
 								
-				ObjectInputStream input	= new ObjectInputStream(client.getInputStream());								
-				Message msg	= (Message)input.readObject();								
 				
-							
+				// jezeli jest nowe polaczenie to odczytuje imie i tworze nowy watek dla niego
+				
+				ObjectInputStream input	= new ObjectInputStream(client.getInputStream());								
+				Message msg	= (Message)input.readObject();																								
+				
 				if(msg.getType() == Type.SYSTEM)
 					if(((SystemMessage)msg).getSubType()==SystemMessage.SystemType.PEER)
 					{
-						Peer newPeer = this.msgHandler.handleMsgPeer(client, input, (MsgPeer) msg);
-						if(newPeer == null)
-							continue;
-												
+						handleMsgPeer(client, input, (MsgPeer) msg);
+																		
 						String thread = ipToNick.get(client.getInetAddress().getHostAddress());
 						
 						System.out.println("@Deamon thread - " + "#" + thread);	
 						System.out.println();
 						
-						Thread deamon = new Thread(new Receiver(newPeer, this),"#" + thread);
+												
+						try
+						{
+							MessageHandler mh = this.newHandler(peers.get(thread), thread);							
+							
+						Thread deamon = new Thread(mh,("#" + thread));				// podmieniaæ na odpowiednie
+						//Thread deamon = new Thread(new Receiver(newPeer, this),"#" + thread);				// podmieniaæ na odpowiednie
 						deamon.setDaemon(true);
 						deamon.start();
+						}
+						catch(IOException e)
+						{
+							System.err.println("Nie stworzono nowego watku dla nawiazanego polaczenia");
+							e.printStackTrace();
+						}
+						catch(ClassNotFoundException e)
+						{
+							System.err.println("Nie stworzono nowego watku dla nawiazanego polaczenia");
+							e.printStackTrace();
+						}
 					}						
 					else
 						System.err.println("Przy palaczeniu zostal wyslany zly podtyp wiadomosci");
@@ -522,7 +209,6 @@ public class Communication implements Runnable, Messenger{
 			}
 			catch (ClassNotFoundException e) 
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
 			catch (Exception e) 
@@ -533,32 +219,129 @@ public class Communication implements Runnable, Messenger{
 		}	// while
 		
 	}	
-	synchronized private void sendTo(String nick, Message msg) throws IOException		// send to peer not only in my game
-	{
-		peers.get(nick).send(msg);		
+	
+	private MessageHandler		newHandler(Peer peer, String nick) throws IOException, ClassNotFoundException
+	{	
+		//System.err.println(msgHandler.getClass());
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();		
+		ObjectOutputStream oos = new ObjectOutputStream(bos);		
+		oos.writeObject(msgHandler);		
+		oos.flush();		
+		oos.close();		
+		bos.close();		
+		byte[] byteData = bos.toByteArray();
+		
+		
+		ByteArrayInputStream bais = new ByteArrayInputStream(byteData);		
+		MessageHandler handlerCopy;		
+		handlerCopy = (MessageHandler) new ObjectInputStream(bais).readObject();						
+		handlerCopy.setDecorator(msgHandler.comDecorator);
+		handlerCopy.setPeer(peer);
+		handlerCopy.setNick(nick);
+		
+		
+		/*
+		System.err.println(handlerCopy);
+		System.err.println("Peer: " + handlerCopy.peer);
+		System.err.println("Nick: " + handlerCopy.nick);
+		System.err.println("Decorator: " + handlerCopy.comDecorator);
+		
+		System.err.println("copia: " + handlerCopy.peer);
+		System.err.println(handlerCopy.nick);
+		System.err.println("oryginal: " + msgHandler.peer);
+		System.err.println(msgHandler.nick);
+		*/
+		
+		return handlerCopy;
 	}
-	private void sendToAll(Message msg)										// send to everyone in invPlayers, ---> Mozna dodac wzorzec w zaleznosci od warunku <---
+	private void				addAddress(String ip)
 	{
-		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
-		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
-		while(it.hasNext())
-		{
-			Entry<String, InvStatus> e = it.next();		
-			try
-			{
-				sendTo(e.getKey(), msg);
-			}
-			catch (IOException ex) 
-			{
-				System.err.println("Utracono polaczenie z: " + e.getKey());
-				ex.printStackTrace();
-				disconnected(e.getKey());
-				invPlayers.remove(e.getKey());
-			}
+		if(!addresses.contains(ip))
+			addresses.add(ip);
+	}
+	private String				updateNickname(String nickname)
+	{
+		int j = 0;
+		while(peers.containsKey(nickname))					
+			j++;						
+
+		if(j>0)										// zabezpieczenie jak juz istenieje taki nick
+			nickname = nickname + j;
+		
+		return nickname;
+	}
+	private synchronized void 	handleMsgPeer(Socket client, ObjectInputStream input, MsgPeer msg)
+	{
+		// 	Accepting connection and adding to peer socketIn and InputStream		
+					
 			
+		Iterator<String> it = peers.keySet().iterator();										
+		while(it.hasNext())			// przejscie po wszystkich udanych nawiazanych polaczeniach
+		{
+			String nick = it.next();
+			Peer peer = peers.get(nick);														// tutaj jeszcze ma stara nazwe
+			String ip = peer.socketOut.getInetAddress().getHostAddress();
+			
+			if(ip.equals(client.getInetAddress().getHostAddress())) 				// jezeli output i input do tego samego ip
+			{
+					
+				// dopisanie input do utworzonego wczesniej peera
+				peer.socketIn = client;
+				peer.input = input;
+				
+				
+				
+				String nickname = msg.getContent();
+				
+				nickname = this.updateNickname(nickname);	// przypisanie uniwersalnej nazwy w peersach					
+				peers.remove(nick);							// aktualizacja peers, wczesniej nick = int
+				this.putPeer(nickname, peer);
+					
+												
+				System.out.println("Player's nickname: " + nickname);
+				System.out.println("Adding ip to ipToNick ...");
+				ipToNick.put(ip, nickname);								
+				
+				System.out.println("Peers updated succesfuly");
+				
+				return;
+								
+			}	
+								
+		}								
+		
+		
+		// jezeli nie nawiazalem z nim jeszcze polaczenia, nie ma w peers, nie jest to odpowiedz zwrotna
+		try
+		{
+			Peer newPeer = new Peer(nickname, client.getInetAddress().getHostAddress(), servport);	
+			newPeer.socketIn = client;
+			newPeer.input = input;
+		
+			String nickname = msg.getContent();
+			nickname = this.updateNickname(nickname);
+			String ip = newPeer.socketOut.getInetAddress().getHostAddress();
+		
+		
+			this.putPeer(nickname , newPeer);							// dodanie do mapy, gdzie przechowywane s¹ nawi¹zane po³¹czenia
+						
+			System.out.println("Player's nickname: " + nickname);
+			System.out.println("Adding ip to ipToNick ...");
+			ipToNick.put(ip, nickname);
+		
+			System.out.println("Updating addresses collection (database)...");
+			this.addAddress(ip);						
+		
+			System.out.println("peers updated succesfuly");
 		}
-	}
-	private synchronized void close() throws IOException
+		catch(IOException e)
+		{
+			System.err.println("Niemoznosc nawiazania polaczenia z nodem, ktory wlasnie do mnie napisal");
+		}
+		
+	}		
+	
+	private synchronized void 	close() throws IOException
 	{	
 		System.out.println("closing...");
 		serv.close();
@@ -568,424 +351,123 @@ public class Communication implements Runnable, Messenger{
 		}
 		
 	}
-	
-	/*Package*/	
- 	void disconnected(String nick)					// nadanie atrybutu na false, usuniecie z peersow
-	{
-		Iterator<PlayerIP> it = playersIP.iterator();
-		while(it.hasNext())
-		{
-			PlayerIP p = it.next();
-			if(p.nickname == nick)
-			{
-				p.online = false;		
-				peers.remove(nick);
-			}
-		}
-	}
- 	void sleep(long time)
+	public static void			sleep(long time)
 	{
 		try 
 		{
-			//System.out.println("");
-			//System.out.println("//" + Thread.currentThread().getName() + " sleep for " + time + " milisec.");
-			//System.out.println("");
 			Thread.sleep(time);
 		} catch (InterruptedException e) 
 		{		
 			e.printStackTrace();
-		}
-		
-		//System.out.println("");
-		//System.out.println("---" + Thread.currentThread().getName() + " is awake.");
-		//System.out.println("");
+		}		
 	}
 	
-	/*Public*/		
-	/**
-	 * Adding new PlayerIP to PlayerIP collection with adding nickname, creating new peer
-	 * @param p New PlayerIP to add
-	 */
-	public synchronized void addPlayerIP(PlayerIP p)
+	
+	/*Public*/	
+	public String 				getNickname()
+	{
+		return this.nickname;
+	}
+	public int 					getServPort()
+	{
+		return this.servport;
+	}
+	
+	public void					putPeer(String key, Peer value)
+	{
+		peers.put(key, value);
+		notifyObservers();
+	}
+	public void					removePeer(String key)
 	{		
-		Iterator<PlayerIP> it = playersIP.iterator();
+		peers.remove(key);
+		notifyObservers();
+	}
+
+	public String getNickFromIp(String ip) {		
+		return ipToNick.get(ip);
+	}
+	public synchronized void 	addNodeP2P(String address)
+	{		
+		Iterator<String> it = addresses.iterator();
 		while(it.hasNext())
 		{
-			if(it.next().address.equals(p.address))
+			if(it.next().equals(address))
 			{
-				System.out.println("PlayerIP exisists");
+				System.out.println("PlayerIP exists");
 				return;
 			}
 		}
 		
 		try
 		{
-			
-			p.nickname = Integer.toString(-1);
-			this.playersIP.add(p);	
+						
+			this.addresses.add(address);	
+			String nick = updateNickname(Integer.toString(0));
 			
 			// na wypadek, gdyby dodanie bylo wczesniej niz ich inicjalizacja
 			// jesli tak to dodaj tylko do playersIP a initPeers zrobi reszte
-			if((peers.size()!=0 && playersIP.size()>1) || (playersIP.size()==1))
-				peers.put(p.nickname , new Peer(nickname, p.getIp(), servport));		// proba polaczenia i wyslania wiadomosci z nickiem			
+			if((peers.size()!=0 && addresses.size()>1) || (addresses.size()==1))
+				this.putPeer(nick , new Peer(nickname, address, servport));		// proba polaczenia i wyslania wiadomosci z nickiem			
 			System.out.println("Adding new player finished");
 			
 		}
 		catch(IOException e)
 		{
-			System.out.println("Problem z utworzeniem po³aczenia z: " + p.getIp());	
-			playersIP.remove(p);
+			System.out.println("Problem z utworzeniem po³aczenia z: " + address);	
+			addresses.remove(address);
 		}
 		
 	}
-	/**
-	 * Method needed to send invitations to players.	
-	 * @param names Chosen players nicknames 
-	 */
-	public void sendInvitations(Collection<String> names)
-	{				
-		if(inGame == true)																	// jezeli juz przyjalem jedno zaproszenie
-			return;
-				
-		Message inv = null;
+	public synchronized void	removeNodeP2P(String n)
+	{
+		// TODO
+	}
+	public synchronized void 	sendTo(String nick, Message msg) throws IOException		// send to peer not only in my game
+	{
+		// TODO Obs³uga b³edu
+		peers.get(nick).send(msg);		
+	}
+	public void 				disconnected(String nick)		
+	{
 		try {
-			inv = system.getSystemMessage(SystemType.INVITATION, null);
-		} catch (ContentException e) {
-			e.printStackTrace();
-		}
-		
-		for(String name : names)
-		{			
-			invPlayers.put(name, InvStatus.WAIT);
-			try {
-				sendTo(name, inv);
-			} catch (IOException e) {
-				System.err.println("Utracono polaczenie z: " + name);
-				disconnected(name);
-				invPlayers.remove(name);
-			}
-		}
-		inGame = true;																		// jak sam tworze gre to w niej jestem :P
-		System.out.println("Invitations sended, Players status:");
-		System.out.println(invPlayers);
-	}
-	/**
-	 * Creating a game. Whenever number of players is wrong it fails. 
-	 * In case of success this method sends Start_Game message to all who accepted, to the rest abandon.
-	 * @return boolean value, false - starting game failed, true - starting game succeed
-	 */
-	synchronized public boolean startGame()												// synchronizowane, by nikt w tej chwili nie przyjal zaproszenia...
-	{
-		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
-		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
-		LinkedList<String> toRemove = new LinkedList<String>();
-		Entry<String, InvStatus> e = null;
-		int i = 0 ;
-		
-		while(it.hasNext())
-		{
-			e = it.next();
-			if(e.getValue()==InvStatus.ACCEPTED)
-				i++;
-		}
-		
-		// sprawdzenie ilosci graczy
-		if(i<3 || i>4)
-		{
-			System.out.println("Wrong number of players");
-			return false;
-		}
-						
-		
-		
-		
-		it = entrySet.iterator();
-		while(it.hasNext())
-		{
-			e = it.next();
-			if(e.getValue() == InvStatus.ACCEPTED)
-			{
-				try {
-					sendTo(e.getKey(), system.getSystemMessage(SystemType.START_GAME, null));
-				} catch (ContentException e1) {					
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					System.err.println("Utracono polaczenie z: " + e.getKey());
-					disconnected(e.getKey());
-					invPlayers.remove(e.getKey());
-				}
-			}
-			else if(e.getValue() == InvStatus.WAIT)
-			{
-				try {
-					sendTo(e.getKey(), system.getSystemMessage(SystemType.ABANDON, null));
-					toRemove.add(e.getKey());
-				} catch (ContentException e1) {
-					e1.printStackTrace();
-				}catch (IOException e1) {
-					System.err.println("Utracono polaczenie z: " + e.getKey());
-					disconnected(e.getKey());
-					invPlayers.remove(e.getKey());
-				}
-			}else	toRemove.add(e.getKey());
-				
-		}
-		
-		for(String nick : toRemove)
-			invPlayers.remove(nick);
-		
-		return true;
-		
-		
-	}
-	/**
-	 * Useful when you have sent invitations, but you don't want to create a game.
-	 * This method sends to all invited players abandon message.
-	 */
-	public void abandonGame()
-	{
-		
-		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
-		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
-		while(it.hasNext())
-		{
-			Entry<String, InvStatus> e = it.next();
-			if(e.getValue() != InvStatus.REJECTED)
-			{
-				try {
-					sendTo(e.getKey(), system.getSystemMessage(SystemType.ABANDON, null));
-				} catch (IOException e1) {
-					System.err.println("Utracono polaczenie z: " + e.getKey());
-					disconnected(e.getKey());					
-					
-				} catch (ContentException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}			
-				
-		}
-		inGame = false;
-		invPlayers.clear();
-		System.out.println("Gra porzucona ...");
-	}	
-	/**
-	 * After starting a game, all players send dice result.
-	 * If we have all results, we know  sequence of players. 
-	 * @return number is positive or equal 0.
-	 * Number says which is our place, but when number is equal 0 that means,
-	 * not everyone has sent me a result and it was impossible to create sequence. 
-	 */
-	
-	public int getPlace()																// zwraca 0 jezeli jeszcze nie ustalono kolejnosci
-	{
-		Set<String> s = invPlayers.keySet();
-		int i = 0;
-		for(String nick : s)
-		{
-			if(invPlayers.get(nick) == InvStatus.WAIT)
-				i++;
-		}
-		if(invPlayers.size() == i)								// wszyscy WAIT -> znam kolejnosc
-			return (msgHandler.inQueue + 1);
-		else
-			return 0;
-	}
-	/**
-	 * It should be a first message for a host of this game.
-	 * This method propagate our board to all players.
-	 * @param board Board to propagate.
-	 */
-	public void sendUpdate(Board board)
-	{	
-		Message msg = null;
-		try {
-			msg = this.update.getUpdateMessage(UpdateType.BOARD, board);
-		} catch (ContentException e) {
-			e.printStackTrace();
-		}		
-		sendToAll(msg);				
-	}	
-	/**
-	 * Method useful to update a tile. It will be necessary in case of thief moving.  
-	 * @param tile Tile object which has been modified. 
-	 * @param index Index of this tile in our board.
-	 */
-	public void sendUpdate(Tile tile, int index) 
-	{
-		Message msg = null;
-		try {			
-			msg = this.update.getUpdateMessage(UpdateType.TILE, tile, index);
-		} catch (ContentException e) {
-			e.printStackTrace();
-		}		
-		sendToAll(msg);		
-	}	
-	/**
-	 * Sends update message to all players. Needed whenever some node of our graph has been changed. 
-	 * Useful after building new city, road etc. 
-	 * @param node Node object which has been modified.
-	 * @param index Index of this node in our board.
-	 */
-	public void sendUpdate(Node node, int index) 
-	{
-		Message msg = null;
-		try {			
-			msg = this.update.getUpdateMessage(UpdateType.NODE, node, index);
-		} catch (ContentException e) {
-			e.printStackTrace();
-		}		
-		sendToAll(msg);	
-	}
-	/**
-	 * Everyone has to know how many resource card i have. (Thief) 
-	 * @param what It might be DICE or RESOURCE
-	 * @param quantity Number of what parameter.
-	 */
-	public void sendUpdate(NumberOf what, int quantity)			// DICE, RESOURCE 
-	{
-		Message msg = null;
-		try {			
-			if(what.toString().equals(UpdateType.DICE.toString()))
-				msg = this.update.getUpdateMessage(UpdateType.DICE, quantity);
-			else
-				msg = this.update.getUpdateMessage(UpdateType.RESOURCES, quantity);
-		} catch (ContentException e) {
-			e.printStackTrace();
-		}		
-		sendToAll(msg);	
-	}
-	
-	/**
-	 * Sends to all players my offert.
-	 * @param give HashMap which contains names of resources and their quantity. This resources we are giving to somebody.
-	 * @param give HashMap which contains names of resources and their quantity. This resources we are getting from somebody.
-	 */
-	public void sendTrade(HashMap<String, Integer> give, HashMap<String, Integer> get) 
-	{
-		for(String name : invPlayers.keySet())
-		{
-			invPlayers.remove(name);
-			invPlayers.put(name, InvStatus.WAIT);
-		}		
-		System.out.println("Players: " + invPlayers);													
-		
-		
-		Message msg = null;
-		msg = this.trade.getTradeMessage(TradeType.OFFERT, give, get);			
-			
-		
-		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
-		Iterator<Entry<String, InvStatus>> it = entrySet.iterator();
-		while(it.hasNext())
-		{
-			Entry<String, InvStatus> e = it.next();		
-			try
-			{
-				if(e.getValue() != InvStatus.REJECTED)
-					sendTo(e.getKey(), msg);
-			}
-			catch (IOException ex) 
-			{
-				System.err.println("Utracono polaczenie z: " + e.getKey());
-				ex.printStackTrace();
-				disconnected(e.getKey());
-				invPlayers.remove(e.getKey());
-			}
-			
-		}
-		
-		
-	}		
-	/**
-	 * Whenever a player accepts our offer, then we can make this transaction true by sending deal message.
-	 * @param nick Player's nickname who has accepted our offer. 
-	 */
-	public void sendTrade(String nick) 
-	{
-		if(invPlayers.get(nick) != InvStatus.ACCEPTED)
-		{
-			System.out.println("Player: " + nick + " hasn't accepted your offert.");
-			return;
-		}
-		Message ms = trade.getTradeMessage(TradeType.DEAL);
-		
-		try {
-			sendTo(nick, ms);
+			peers.get(nick).close();
 		} catch (IOException e) {
-			System.err.println("Utracono polaczenie z: " + nick);			
-			disconnected(nick);
-			invPlayers.remove(nick);
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		peers.remove(nick);		
+	} 	
+
+	
+	/* Obserwator - Subject */
+	
+	public Set<String> getStatePeers()
+	{
+		return peers.keySet();
+	}
+
+	@Override	
+	public void add(Observer observer) {
+		observers.add(observer);	
 		
-		Set<String> s = invPlayers.keySet();
-		s.remove(nick);
-		invPlayers.put(nick, InvStatus.WAIT);
+	}
+	@Override
+	public void remove(Observer observer) {
+		observers.remove(observer);
 		
-		ms = trade.getTradeMessage(TradeType.END_TRADE);
-		for(String name : s)
+	}
+	@Override
+	public void notifyObservers() {
+		
+		for(Observer ob : observers)
 		{
-			try {
-				sendTo(name, ms);
-				invPlayers.remove(name);
-				invPlayers.put(name, InvStatus.WAIT);
-			} catch (IOException e) {
-				System.err.println("Utracono polaczenie z: " + name);			
-				disconnected(name);
-				invPlayers.remove(name);
-				e.printStackTrace();
-			}
+			ob.update();
 		}
 		
 	}
-	/**
-	 * Closes trade.
-	 */
-	public void sendTrade()
-	{
-		System.out.println("--Closing trade--");
-		Set<String> s = invPlayers.keySet();		
-		Message ms = trade.getTradeMessage(TradeType.END_TRADE);
-		for(String name : s)
-		{
-			try {
-				sendTo(name, ms);
-				invPlayers.remove(name);
-				invPlayers.put(name, InvStatus.WAIT);
-			} catch (IOException e) {
-				System.err.println("Utracono polaczenie z: " + name);			
-				disconnected(name);
-				invPlayers.remove(name);
-				e.printStackTrace();
-			}
-		}		
-	}
-	/**
-	 * Sends END_GAME or END_TURN message to all players.
-	 * @param type Type of our ending. 
-	 */
-	public void sendEnd(SystemType type) 
-	{
-		Message ms = null;
-		if(type == SystemType.END_GAME)
-			try {
-				ms = system.getSystemMessage(SystemType.END_GAME, null);				
-			} catch (ContentException e) {
-				e.printStackTrace();
-			}
-		else if(type == SystemType.END_TURN)
-			try {
-				ms = system.getSystemMessage(SystemType.END_TURN, null);
-			} catch (ContentException e) {
-				e.printStackTrace();
-			}
-		else
-			System.err.println("Wrong type of end message");
-		
-		sendToAll(ms);
-		
-	}
+	
+	
 	
 	/**
 	 * Method which is necessary to run a thread and it is done in initCommunication, so don't run it!
@@ -996,7 +478,7 @@ public class Communication implements Runnable, Messenger{
 		// inicjalizacji wszystkich peer. Wysy³anie od razu wiadomoœci o nicku
 		try 
 		{
-			initPeers();								
+			initPeers();		// inicjalizacja z nodesP2P, mam peery w peers z SocketOut, Output, ip i nick pobrane z nodesP2P	
 		} 
 		catch (Exception e1) {
 			System.err.println("Problem z nas³uchiwaniem, odebraniem po³¹czenia  -  initPeers");
@@ -1005,9 +487,9 @@ public class Communication implements Runnable, Messenger{
 		
 			
 		System.out.println();
-		System.out.println("Collection PlayerIP at the moment");
-		for(PlayerIP p : playersIP)
-			System.out.println(p.nickname + ": " + p.address + "; ");							
+		System.out.println("peers at the moment:");		
+		for(String p : peers.keySet())
+			System.out.println("Nick: " + p + ", Address: " + peers.get(p).socketOut.getInetAddress().getHostName());							
 		System.out.println("");
 		
 						
@@ -1015,41 +497,45 @@ public class Communication implements Runnable, Messenger{
 	}
 	
 	
-	static void main(String[] args) throws IOException, ClassNotFoundException {
-			
-			
-		LinkedList<PlayerIP> players = new LinkedList();									// nick i ip z hamachi
-		players.add(new PlayerIP("127.0.0.1"));
+	public static void main(String[] args) throws IOException, ClassNotFoundException {
+				
+		
+		LinkedList<String> players = new LinkedList();									// nick i ip z hamachi
+		players.add("127.0.0.1");
 			
 		Board board = Board.getInstance();													// na potrzeby handlu
 		board.loadMatrix();
 		board.setNeighbours();
 	
-		Communication com = Communication.getInstance();									// tworzenie komunikacji					
-		com.initCommunication("Sebastian", players, board);
+		Communication com = Communication.getInstance();									// tworzenie komunikacji				
+		Observer ob = new ObserverPeers(com);	
+		com.notifyObservers();
 		
+		MessageHandler mh = new CatanMessageHandler();				
+		CatanCommunication game = new CatanCommunication(com, "Sebastian", players, mh);
+		Observer ob2 = new ObserverInv(game);
+				
 		com.sleep(5000);
+		
 		
 		System.out.println("----Communication initialization finished----");
 		System.out.println();		
 		
-		/*System.out.println("Adding new player ... (synchronized)");							// dodawanie nowego gracza
-		com.addPlayerIP(new PlayerIP("127.0.0.1"));	
-		*/
+
+		com.sleep(2000);																	// sleep
+			
 		
-		com.sleep(5000);																	// sleep
-		
-					
-		System.out.println("Collection PlayerIP:");											// wyswietl playersIP
-		for(PlayerIP p : players)
-		{
-			System.out.println(p);
-		}
+		System.out.println();
+		System.out.println("peers at the moment:");		
+		System.out.println("peers size: " + com.peers.size());								// wyswietl ilosc peers'ow		
+		for(String p : com.peers.keySet())
+			System.out.println("Nick: " + p + ", Address: " + com.peers.get(p).socketOut.getInetAddress().getHostName());							
+		System.out.println();
 		
 		
 		
-		System.out.println("");
-		System.out.println("ipToNick");														// wyswietl ipToNick
+		System.out.println();
+		System.out.println("ipToNick:");														// wyswietl ipToNick
 		Set<Entry<String, String>> entrySet = com.ipToNick.entrySet();
 		Iterator<Entry<String, String>> it = entrySet.iterator();
 		while(it.hasNext())
@@ -1061,11 +547,7 @@ public class Communication implements Runnable, Messenger{
 		
 					
 				
-		System.out.println("");
-		System.out.println(com.peers);
-		System.out.println("peers size: " + com.peers.size());								// wyswietl ilosc peers'ow
-								
-
+		
 		// tworzenie gry
 		LinkedList<String> invited = new LinkedList<String>();								// lista graczy zaproszonych
 		invited.add("Sebastian");															// docelowo wybor myszka
@@ -1073,7 +555,7 @@ public class Communication implements Runnable, Messenger{
 		System.out.println("");
 		System.out.println("--Sending invitations to: " + invited);							// wyswalenie zaproszen
 		System.out.println("");
-		com.sendInvitations(invited);
+		game.sendInvitations(invited);
 	
 		com.sleep(5000);																	// sleep
 
@@ -1081,17 +563,21 @@ public class Communication implements Runnable, Messenger{
 		System.out.println();
 		System.out.println("--Starting the game ...");
 		System.out.println();
-		System.out.println(com.invPlayers);	
-		
-		boolean game = com.startGame();														// start gry
-		if(game == true)																	// jak sie nie uda to nie usuwa liste zaproszonych
+				
+		boolean gameState = game.startGame(1,4);														// start gry
+		if(gameState == true)																	// jak sie nie uda to nie usuwa liste zaproszonych
 			System.out.println("Welcome in Catan world!");
 		else
 			System.out.println("Starting game failed!");				
 		
+
 		com.sleep(3000);
 		
-		System.out.println("Place in the game: " + com.getPlace());							// numer w kolejce graczy 1-4
+		//System.out.println(game.getStateInv());
+		game.setOrder();
+		com.sleep(3000);
+		System.out.println("Place: " + game.getPlace());									// numer w kolejce graczy 1-4
+		//System.out.println(game.getStateInv());
 		
 		
 		/* Testing Update Messages */
@@ -1100,13 +586,13 @@ public class Communication implements Runnable, Messenger{
 		System.out.println("----Testing Update Messages----");
 		System.out.println();
 		
-		Messenger msger = com;																// wysylanie wiadomosci
-		msger.sendUpdate(board);															// Board Update
+		
+		game.sendUpdate(board);															// Board Update
 				
-		msger.sendUpdate(board.getNode(5), 6);												// Node Update
-		msger.sendUpdate(board.getTile(5), 5);												// Tile Update
-		msger.sendUpdate(NumberOf.DICE, 5);													// Dice Update
-		msger.sendUpdate(NumberOf.RESOURCES, 5);											// Resources Update
+		game.sendUpdate(board.getNode(5), 6);												// Node Update
+		game.sendUpdate(board.getTile(5), 5);												// Tile Update
+		game.sendUpdate(NumberOf.DICE, 5);													// Dice Update
+		game.sendUpdate(NumberOf.RESOURCES, 5);											// Resources Update
 		
 		com.sleep(5000);
 		
@@ -1126,24 +612,27 @@ public class Communication implements Runnable, Messenger{
 		System.out.println("Sending offert ...");
 		System.out.println();
 		
-		msger.sendTrade(give, get);															// wyslanie oferty handlowej
+		game.sendTrade(give, get);															// wyslanie oferty handlowej
 				
 		com.sleep(3000);																	// sleep
 		
-		msger.sendTrade("Sebastian");		
+		game.sendTrade("Sebastian");
 		
 		com.sleep(2000);																	// sleep
-		
-		msger.sendTrade();																	// zakoncz handel
 				
-		msger.sendEnd(SystemType.END_GAME);													// Wysylanie wiadomosci typu END
-		msger.sendEnd(SystemType.END_TURN);
-		
+		game.sendTrade();																	// zakoncz handel
+		com.sleep(2000);																	// sleep
+				
+		game.sendEnd(UpdateType.END_GAME);													// Wysylanie wiadomosci typu END
+		game.sendEnd(UpdateType.END_TURN);
 		com.sleep(3000);																	// sleep
 		
+				
+		
 		System.out.println();
-		System.out.println("Players: " + com.invPlayers);									// wyswietlenie statusu graczy w grze									
+		//System.out.println("Players: " + game.getStateInv());								// wyswietlenie statusu graczy w grze									
 		System.out.println();
+		
 		
 		System.out.println("all threads:");
 		
@@ -1152,9 +641,8 @@ public class Communication implements Runnable, Messenger{
 		{
 			System.out.println(t.getName());
 		}
-	
+		/**/
+		
 	}
 	
-	
-
 }

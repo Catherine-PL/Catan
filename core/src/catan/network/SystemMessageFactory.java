@@ -45,15 +45,7 @@ class SystemMessageFactory extends AbstractMessageFactory {
 			return new MsgStartGame();
 			
 		case ABANDON:
-			return new MsgAbandon();
-		
-		
-		case END_GAME:
-			return new MsgEndGame();
-
-		case END_TURN:
-			return new MsgEndTurn();
-		
+			return new MsgAbandon();								
 			
 		default:
 			System.err.println("Podany zosta³ niepoprawny typ wiadomosci");

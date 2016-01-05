@@ -1,9 +1,9 @@
 package catan.network;
 
-class MsgEndGame extends SystemMessage {
+class MsgEndGame extends UpdateMessage {
 
 	MsgEndGame() {
-		super(SystemType.END_GAME);
+		super(UpdateType.END_GAME);
 	}
 
 }

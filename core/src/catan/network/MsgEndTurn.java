@@ -1,9 +1,9 @@
 package catan.network;
 
-class MsgEndTurn extends SystemMessage {
+class MsgEndTurn extends UpdateMessage {
 
 	MsgEndTurn() {
-		super(SystemType.END_TURN);
+		super(UpdateType.END_TURN);
 		// TODO Auto-generated constructor stub
 	}
 
