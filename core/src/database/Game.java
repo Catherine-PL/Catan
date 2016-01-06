@@ -6,7 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Game {
-	private Player thisPlayer = new Player(3);
+	private Player thisPlayer = new Player(0);
 	static Player[] players = new Player[4];
 	private Board board;
 	private Dice dice;
@@ -54,16 +54,44 @@ public class Game {
 		return colors;
 	}
 	
-	/* szablon funkcji - mo¿e byæ wywo³ywana, gdy zostanie wciœniêty jakiœ przycisk EndTurn 
-	 * przyjmuje gracza, zwraca id kolejnego gracza */
-	public int endTurn(Player player){
-		int id;
+	public void endTurn(){
+		int nextId = actualPlayer.getId()+1;
+		if(nextId>3)
+			nextId = 0;
 		
-		id = player.getId()+1;
-		if(id>3)
-			id = 0;
-		return id;
-		//TODO networks
+		for(int i=0;i<4;i++){
+			if(players[i].getId() == nextId){
+				actualPlayer = players[i];
+			}
+		}
+		dice.throwDice();
+		
+		if((dice.getFirst()+dice.getSecond())!=7){
+			for(Player player:players){
+				for(Node node: player.getPlayerNodes()){
+					for(Tile tile:node.getNearResources()){
+						if(tile.getDiceNumber()==(dice.getFirst()+dice.getSecond())){
+							//jesli osada zwiekszy o 1, jesli miasto zwiekszy zasob o 2
+							if(tile.getType()=="Forest")
+								player.changeResources("wood", node.getBuilding());
+							if(tile.getType()=="Hills")
+								player.changeResources("clay", node.getBuilding());
+							if(tile.getType()=="Pasture")
+								player.changeResources("sheep", node.getBuilding());
+							if(tile.getType()=="Fields")
+								player.changeResources("grain", node.getBuilding());
+							if(tile.getType()=="Mountains")
+								player.changeResources("ore", node.getBuilding());
+						}
+					}
+				}
+			}
+		}
+		else{
+			//TODO budzi sie zlodziej
+		}
+		
+		
 	}
 	
 	public Player[] getPlayers(){
@@ -84,8 +112,9 @@ public class Game {
 	        System.out.println();
 		}
 		//testy
-		System.out.println("Obecny gracz id - " + game.players[0].getId());
-		System.out.println("Kolejny gracz ma id - " + game.endTurn(game.players[0]));
+		System.out.println("Obecny gracz id - " + game.actualPlayer.getId());
+		game.endTurn();
+		System.out.println("Kolejny gracz ma id - " + game.actualPlayer.getId());
 
 		
 

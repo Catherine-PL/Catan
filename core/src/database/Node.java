@@ -13,6 +13,7 @@ public class Node extends Element {
 	}
 	private int building; //0-nic 1-osada 2-miasto
 	private int playerNumber;//ID gracza
+	private Player player;
 	private int nodeNumber;//numer ID noda
 	private portType port;
 	private ArrayList <Node> neighbours=new ArrayList<Node>();//referencja do s1siednich Node
@@ -266,6 +267,16 @@ public class Node extends Element {
 
 	public void setPort(portType port) {
 		this.port=port;
+	}
+
+
+	public Player getPlayer() {
+		return player;
+	}
+
+
+	public void setPlayer(Player player) {
+		this.player = player;
 	}
 	
 }

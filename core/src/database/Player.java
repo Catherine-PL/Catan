@@ -49,7 +49,7 @@ public class Player {
 		resources.put("wood", 10) ;
 		soldierCount=0;
 		points=0;
-		freeRoads=0;//ka¿dy ma dwie drogi za darmo na start
+		freeRoads=0;
 		
 	}
 	

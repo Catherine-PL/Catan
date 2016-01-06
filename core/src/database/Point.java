@@ -1,10 +1,18 @@
 package database;
 import database.Player;
 
-public class Point extends Card {
+public class Point implements Card {
 DevelopType type=DevelopType.POINT;
 
-void playCard(Player p){
+public void playCard(Player p){
 		p.addPoints(1);
-	};
+	}
+
+
+
+@Override
+public DevelopType getType() {
+	// TODO Auto-generated method stub
+	return this.type;
+};
 }

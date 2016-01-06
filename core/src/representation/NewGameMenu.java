@@ -218,6 +218,7 @@ public class NewGameMenu  extends View implements InputProcessor
 				if ((X>95) && (X<95+300) &&(Y>170) && (Y<170+60))
 				{
 					accepted= true;
+					namestring=nametext.toString();
 					//network initialization
 					setNetwork(new CatanNetwork(namestring));
 					getNetwork().readAddresses();
@@ -229,16 +230,17 @@ public class NewGameMenu  extends View implements InputProcessor
 					}
 					
 					
-					//TODO usun¹æ potem - na razie dodaje sama siebie				
+					//TODO usun¹æ potem - na razie dodaje sama siebie	
+					//Communication.sleep(5000);
 					invitedpeers.add(namestring);
 					
 					
 					//TODO do razu przejscie do Gameplay
-					getNetwork().invite(invitedpeers);
+					//getNetwork().invite(invitedpeers);
 					
-					Communication.sleep(5000);
+					//Communication.sleep(5000);
 					
-					getNetwork().start();
+					//getNetwork().start();
 					
 					
 					
