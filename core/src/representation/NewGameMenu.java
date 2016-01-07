@@ -51,15 +51,12 @@ public class NewGameMenu  extends View implements InputProcessor
 	BitmapFont font;
 	boolean accepted;
 	boolean inputname;
-	List<String> invitedpeers;
 	private Map<Integer,String> peers=new HashMap<Integer,String>();
 	private Map<Integer,String> guests=new HashMap<Integer,String>();
 	
 	
 	public void init()
 	{
-		invitedpeers= new LinkedList<String>();
-		
 		nametext=new StringBuilder(12);
 		nametext=nametext.append("YOUR NAME");
 		font = new BitmapFont();
@@ -136,10 +133,6 @@ public class NewGameMenu  extends View implements InputProcessor
 				
 			}
 			
-			
-			
-			//TODO wyswietlanie tez listy zaproszonych
-			//Map<String, InvStatus>
 			Map<String, InvStatus> invitedmap = getNetwork().invObservers.get(0).getAllStatuses();
 			if (invitedmap.size()>0)
 			{
@@ -153,6 +146,7 @@ public class NewGameMenu  extends View implements InputProcessor
 					switch (invitedmap.get(s))
 					{
 					case WAIT:
+						font.setColor(Color.YELLOW);
 						font.draw(batch, s, 1060,peersStringY);	
 						break;
 					case ACCEPTED:
@@ -232,7 +226,7 @@ public class NewGameMenu  extends View implements InputProcessor
 					{
 						guests.put(guests.size(),peers.get(i));
 						//TODO !!!!!! remove from list in network
-						
+						//TODO usunac z listy peers w network, po usunieciu z guest dodaæ do peers w network
 						peers.remove(i);
 						for(int j=i+1;j<peers.size();j++)
 						{
@@ -255,7 +249,7 @@ public class NewGameMenu  extends View implements InputProcessor
 					{
 						peers.put(peers.size(),guests.get(i));
 						//TODO ??? jakiœ b³¹d jest :v
-						
+						//TODO usunac z listy peers w network, po usunieciu z guest dodaæ do peers w network
 						guests.remove(i);
 						for(int j=i+1;j<guests.size();j++)
 						{
@@ -264,13 +258,9 @@ public class NewGameMenu  extends View implements InputProcessor
 						}
 						return true;
 					}
-					
-				
 				}
 			}	
 		}
-		
-		
 		return false;
 	}
     
@@ -300,7 +290,6 @@ public class NewGameMenu  extends View implements InputProcessor
 			{
 				return true;
 			}
-			//TODO usunac z listy peers w network
 			
 			if ((X>600) && (X<600+200) &&(Y>120) && (Y<130+31))
 			{
@@ -357,15 +346,16 @@ public class NewGameMenu  extends View implements InputProcessor
 					//TODO ? znika INVITE, pojawia siê START GAME (wcisniecie na to nic nie powodujejesli za malo graczy)
 					//abandon game tez musi byæ
 					//accepted=false;
-					List <String> toinvite = new LinkedList<String>();
+					List <String> toinvite = new LinkedList<String>(); 
 					for(int i=0;i<guests.size();i++)
 					{
-						toinvite.add(guests.get(i));
+						if (guests.get(i)!=null) 	toinvite.add(guests.get(i));;
 					}
 					System.out.println(guests.size());
 					System.out.println(guests.get(0));
-					if(toinvite.get(0)!=null)
+					if(toinvite.size()>0)
 					{
+						//TODO? nullami rzuca czasem
 						getNetwork().invite(toinvite);						
 					}
 				//	getNetwork().invite(invitedpeers);
