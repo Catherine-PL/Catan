@@ -3,6 +3,7 @@ package representation;
 import java.io.IOException;
 import java.nio.channels.NetworkChannel;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -50,6 +52,8 @@ public class NewGameMenu  extends View implements InputProcessor
 	boolean accepted;
 	boolean inputname;
 	List<String> invitedpeers;
+	private Map<Integer,String> peers=new HashMap<Integer,String>();
+	private Map<Integer,String> guests=new HashMap<Integer,String>();
 	
 	
 	public void init()
@@ -104,37 +108,69 @@ public class NewGameMenu  extends View implements InputProcessor
 			batch.draw(allusers, 650, 650);
 			batch.draw(guestlist, 1010, 650);
 			batch.draw(invite, 1080, 220);	
-			//TODO
-			//batch users lists
+			
 			Set<String> peersnames = getNetwork().peersObservers.get(0).getPeersNames();
-			for(String s: peersnames)
+			
+			int peersStringY=620;
+			if(peersnames.size()>0)
 			{
-				//TODO inne wspó³rzêdne
-				font.draw(batch, s, 500,500);	
+				for(String s: peersnames)
+				{
+					//¿eby potem da³o siê ³atwo wyci¹gn¹æ Stringa na podstawie touchdown
+					peers.put((620-peersStringY)/30,s);
+					font.draw(batch, s, 690,peersStringY);
+					peersStringY=peersStringY-30;
+				}
 			}
+			//guests
+			peersStringY=620;
+			if(guests.get(0)!=null)
+			{
+				for(String s:guests.values() )
+				{
+					//¿eby potem da³o siê ³atwo wyci¹gn¹æ Stringa na podstawie touchdown
+					//peers.put((620-peersStringY)/30,s);
+					font.draw(batch, s,1060,peersStringY);
+					peersStringY=peersStringY-30;
+				}
+				
+			}
+			
+			
+			
 			//TODO wyswietlanie tez listy zaproszonych
 			//Map<String, InvStatus>
 			Map<String, InvStatus> invitedmap = getNetwork().invObservers.get(0).getAllStatuses();
-			for(String s: invitedmap.keySet())
+			if (invitedmap.size()>0)
 			{
-				//TODO inne wspó³rzêdne
-				switch (invitedmap.get(s))
-				{
-				case WAIT:
-					font.setColor(1, 0, 0, 1);
-					font.draw(batch, s, 600,600);	
-					break;
-				case ACCEPTED:
-					font.setColor(1, 0, 0, 1);
-					font.draw(batch, s, 600,600);	
-					break;
-				case REJECTED:
-					font.setColor(1, 0, 0, 1);
-					font.draw(batch, s, 600,600);	
-					break;
+				guests.clear();
 				
+				peersStringY=620;
+				for(String s: invitedmap.keySet())
+				{
+					//¿eby potem da³o siê ³atwo wyci¹gn¹æ Stringa na podstawie touchdown
+					guests.put( (620-peersStringY)/30,s);
+					switch (invitedmap.get(s))
+					{
+					case WAIT:
+						font.draw(batch, s, 1060,peersStringY);	
+						break;
+					case ACCEPTED:
+						font.setColor(Color.GREEN);
+						font.draw(batch, s, 1060,peersStringY);	
+						font.setColor(Color.WHITE);
+						break;
+					case REJECTED:
+						font.setColor(Color.RED);
+						font.draw(batch, s, 1060,peersStringY);	
+						font.setColor(Color.WHITE);
+						break;
+					
+					}
+					peersStringY=peersStringY-30;
 				}
 			}
+			
 			
 		}
 		batch.end();
@@ -183,6 +219,65 @@ public class NewGameMenu  extends View implements InputProcessor
     	return false;
     }
 
+    
+	public boolean touchList(int X, int Y, int Xth, int Yth)
+	{
+		if(Xth==690) //click on peers
+		{
+			for(int i=0;i<peers.size();i++)
+			{
+				if((X>Xth) && (X<Xth+200) && (Y>(Yth-i*30)) && (Y<(Yth-i*30+20)))
+				{
+					if(peers.get(i)!=null)
+					{
+						guests.put(guests.size(),peers.get(i));
+						//TODO !!!!!! remove from list in network
+						
+						peers.remove(i);
+						for(int j=i+1;j<peers.size();j++)
+						{
+							peers.put(j-1, peers.get(j));
+							peers.remove(j);
+						}
+						return true;
+					}
+					
+				}
+			}	
+		}
+		if(Xth==1060) //click on guests
+		{
+			for(int i=0;i<guests.size();i++)
+			{
+				if((X>Xth) && (X<Xth+200) && (Y>(Yth-i*30)) && (Y<(Yth-i*30+20)))
+				{
+					if(guests.get(i)!=null)
+					{
+						peers.put(peers.size(),guests.get(i));
+						//TODO ??? jakiœ b³¹d jest :v
+						
+						guests.remove(i);
+						for(int j=i+1;j<guests.size();j++)
+						{
+							guests.put(j-1, guests.get(j));
+							guests.remove(j);
+						}
+						return true;
+					}
+					
+				
+				}
+			}	
+		}
+		
+		
+		return false;
+	}
+    
+    
+    
+    
+    
     @Override
     public boolean keyUp(int keycode) {
         return false;
@@ -196,8 +291,17 @@ public class NewGameMenu  extends View implements InputProcessor
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
     	if(button == Buttons.LEFT){
+    		
+    		
+    		
     		int X= screenX;
 			int Y=screensizeY - screenY;
+			if ((touchList(X,Y,690,620)) || (touchList(X,Y,1060,620)) )
+			{
+				return true;
+			}
+			//TODO usunac z listy peers w network
+			
 			if ((X>600) && (X<600+200) &&(Y>120) && (Y<130+31))
 			{
 				
@@ -232,9 +336,8 @@ public class NewGameMenu  extends View implements InputProcessor
 					
 					//TODO usun¹æ potem - na razie dodaje sama siebie	
 					//Communication.sleep(5000);
-					invitedpeers.add(namestring);
-					
-					
+					//TODO usunac invitedpeers bo to samo mam w guests
+					//invitedpeers.add(namestring);
 					//TODO do razu przejscie do Gameplay
 					//getNetwork().invite(invitedpeers);
 					
@@ -254,7 +357,18 @@ public class NewGameMenu  extends View implements InputProcessor
 					//TODO ? znika INVITE, pojawia siê START GAME (wcisniecie na to nic nie powodujejesli za malo graczy)
 					//abandon game tez musi byæ
 					//accepted=false;
-					getNetwork().invite(invitedpeers);
+					List <String> toinvite = new LinkedList<String>();
+					for(int i=0;i<guests.size();i++)
+					{
+						toinvite.add(guests.get(i));
+					}
+					System.out.println(guests.size());
+					System.out.println(guests.get(0));
+					if(toinvite.get(0)!=null)
+					{
+						getNetwork().invite(toinvite);						
+					}
+				//	getNetwork().invite(invitedpeers);
 					
 				}
 				//all users
