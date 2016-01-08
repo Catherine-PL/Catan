@@ -87,54 +87,26 @@ public class GameMessageHandler extends MessageHandler implements Serializable{
 		
 		System.out.println("Invitation to a game from: " +  this.nick);
 		
-		// Tutaj musi nastapic wybor accepet albo reject wyslanie widomosci				<-----			
-		//TODO
-		Message msg = null;
-		try {
-			msg = gameCom.system.getSystemMessage(SystemType.ACCEPT, null);
-			gameCom.setInGame(true);
-		} catch (ContentException e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			gameCom.sendTo(nick, msg);
-		} catch (IOException e) {
-			System.err.println("MsgInvitation error, problem with sendTo");
-			e.printStackTrace();
-		}
-		
+		// TODO Wyswietlenie okienka z powiadomieniem i 2 guzikami		
+			
 	}
 	synchronized void handleMsgAccept()					// dodac zmienna, ze j
 	{
 		
 		System.out.println("Player: " +  nick + " - Accepted");				
 		gameCom.putInv(nick, InvStatus.ACCEPTED);		
-		System.out.println(gameCom.invPlayers);
-		
+				
 	}
 	synchronized void handleMsgReject()
 	{		
 		System.out.println("Player: " +  nick + " - Rejected");				
-		gameCom.putInv(nick, InvStatus.REJECTED);		
-		System.out.println(gameCom.getStateInv());
+		gameCom.putInv(nick, InvStatus.REJECTED);				
 	}
 	synchronized void handleMsgStartGame()				// dodac metode startu gry jako takiej, ustawiæ zmienna inGame czy cos
-	{
-		System.out.println("The game starting ...");
-		
-		/*
-		System.out.println("Sending result of my dice (creating a chain)");
-		myNumber = 5;
-		try {
-			Message ms = update.getUpdateMessage(UpdateType.DICE, myNumber);
-			sendToAll(ms);
-		} catch (ContentException e) { 
-			e.printStackTrace();
-		}
-		*/
-		
-	
+	{		
+		System.out.println("~~	The game starting ...");	
+		// TODO change view of game
+			
 	}
 	synchronized void handleMsgAbandon()				// 
 	{

@@ -68,8 +68,7 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 			{
 				System.err.println("Utracono polaczenie z: " + e.getKey());
 				ex.printStackTrace();
-				this.decoratedP2P.disconnected(e.getKey());		// usuniecie z peersow
-				invPlayers.remove(e.getKey());
+				disconnected(e.getKey());		// usuniecie z peersow				
 			}
 			
 		}
@@ -98,14 +97,38 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 				sendTo(name, inv);
 			} catch (IOException e) {
 				System.err.println("Utracono polaczenie z: " + name);
-				disconnected(name);
-				invPlayers.remove(name);
+				disconnected(name);				
 			}
 		}
 		inGame = true;																		// jak sam tworze gre to w niej jestem :P
 		System.out.println("Invitations sended, Players status:");
 		System.out.println(invPlayers);
+		System.out.println();
 	}
+	public void sendInvitationAnswer(String nick, SystemType what)
+	{
+		Message msg = null;
+		try {
+			if(what==SystemType.ACCEPT)
+			{
+				msg = system.getSystemMessage(SystemType.ACCEPT, null);
+				setInGame(true);
+			}else
+			{
+				msg = system.getSystemMessage(SystemType.REJECT, null);				
+			}
+		} catch (ContentException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			sendTo(nick, msg);
+		} catch (IOException e) {
+			System.err.println("MsgInvitation error, problem with sendTo");
+			e.printStackTrace();
+		}
+
+	}	
 	public boolean checkNumberOfPlayers(int minnumber, int maxnumber)
 	{
 		Set<Entry<String, InvStatus>> entrySet = invPlayers.entrySet();
@@ -169,8 +192,7 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 					e1.printStackTrace();
 				}catch (IOException e1) {
 					System.err.println("Utracono polaczenie z: " + e.getKey());
-					disconnected(e.getKey());
-					invPlayers.remove(e.getKey());
+					disconnected(e.getKey());					
 				}
 			}else	toRemove.add(e.getKey());
 				
@@ -243,5 +265,10 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 		return ((Communication)this.decoratedP2P).getStatePeers();		
 	}
 
-
+	public void disconnected(String nick)
+	{
+		super.disconnected(nick);
+		this.invPlayers.remove(nick);
+	}
+	
 }

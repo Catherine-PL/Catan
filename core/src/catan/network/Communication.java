@@ -557,8 +557,11 @@ public class Communication implements Runnable, P2P, Subject{
 		System.out.println("");
 		game.sendInvitations(invited);
 	
-		com.sleep(5000);																	// sleep
+		com.sleep(2000);																	// sleep
+ 
+		game.sendInvitationAnswer("Sebastian", SystemType.ACCEPT);
 
+		com.sleep(2000);																	// sleep
 
 		System.out.println();
 		System.out.println("--Starting the game ...");
@@ -573,8 +576,8 @@ public class Communication implements Runnable, P2P, Subject{
 
 		com.sleep(3000);
 		
-		//System.out.println(game.getStateInv());
-		game.setOrder();
+		game.setOrder(5);
+		
 		com.sleep(3000);
 		System.out.println("Place: " + game.getPlace());									// numer w kolejce graczy 1-4
 		//System.out.println(game.getStateInv());
@@ -616,11 +619,15 @@ public class Communication implements Runnable, P2P, Subject{
 				
 		com.sleep(3000);																	// sleep
 		
-		game.sendTrade("Sebastian");
+		game.sendTradeAnswer("Sebastian", TradeType.YES);									// my answer
+		
+		com.sleep(3000);																	// sleep
+		
+		game.sendTrade("Sebastian");														// deal with Sebastian
 		
 		com.sleep(2000);																	// sleep
 				
-		game.sendTrade();																	// zakoncz handel
+		game.sendTrade();																	// ending trade
 		com.sleep(2000);																	// sleep
 				
 		game.sendEnd(UpdateType.END_GAME);													// Wysylanie wiadomosci typu END

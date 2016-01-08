@@ -4,17 +4,10 @@ import java.util.Set;
 
 public class ObserverPeers extends Observer {
 
-
 	ObserverPeers(Communication sub)
 	{
 		super(sub);		
 		this.sub.add(this);
-	}
-
-	public Set<String> getPeersNames()
-	{
-		Set<String> connected = ((Communication)this.sub).getStatePeers();
-		return connected;
 	}
 	
 	@Override
@@ -25,7 +18,12 @@ public class ObserverPeers extends Observer {
 		System.out.print("-Observer: ");
 		System.out.println(connected);
 		// TODO Co zrobiæ, gdy peersy siê zmieni¹
-		//
+
+	}
+
+	public Set<String> getPeersNames() {
+		// TODO Auto-generated method stub
+		return ((Communication)this.sub).getStatePeers();
 	}
 
 }

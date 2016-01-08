@@ -670,7 +670,7 @@ public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		if (X>510 && Y<screensizeY-610 && X<670 && Y>screensizeY-635 )
 		{
 			//TODO
-		//	game.endTurn();
+			game.endTurn();
 		}
 		//trade
 		tradeTouch(X,Y);

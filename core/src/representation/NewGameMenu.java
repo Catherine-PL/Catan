@@ -12,6 +12,7 @@ import java.util.Set;
 import representation.View.Screen;
 import catan.network.*;
 import catan.network.GameCommunication.InvStatus;
+import catan.network.SystemMessage.SystemType;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -31,8 +32,6 @@ import database.*;
 
 public class NewGameMenu  extends View implements InputProcessor
 {
-	//private Player realPlayer;
-	
 	private SpriteBatch batch;
 	
 	private StringBuilder nametext;
@@ -46,10 +45,13 @@ public class NewGameMenu  extends View implements InputProcessor
 	private Texture guestlist;
 	private Texture name;
 	private Texture invite;	
+	private Texture start;	
+	
 	private ArrayList<Texture> textures = new ArrayList<Texture>();
 	private int avatarTextureID;
 	BitmapFont font;
 	boolean accepted;
+	boolean invited;
 	boolean inputname;
 	private Map<Integer,String> peers=new HashMap<Integer,String>();
 	private Map<Integer,String> guests=new HashMap<Integer,String>();
@@ -57,6 +59,7 @@ public class NewGameMenu  extends View implements InputProcessor
 	
 	public void init()
 	{
+		start = new Texture(Gdx.files.internal("startgameaborttext.png"));
 		nametext=new StringBuilder(12);
 		nametext=nametext.append("YOUR NAME");
 		font = new BitmapFont();
@@ -91,6 +94,9 @@ public class NewGameMenu  extends View implements InputProcessor
 		namestring=nametext.toString();
 		if(namestring.length()>12) namestring=nametext.substring(0,13);
 		font.draw(batch, namestring, 190, 260);	
+		//if(invited==true) System.out.println("aaaaa");
+
+
 		
 		if(accepted==false)
 		{
@@ -104,19 +110,29 @@ public class NewGameMenu  extends View implements InputProcessor
 		{
 			batch.draw(allusers, 650, 650);
 			batch.draw(guestlist, 1010, 650);
-			batch.draw(invite, 1080, 220);	
-			
+			if(invited==false) 
+			{
+				batch.draw(invite, 1080, 220);	
+			}
+			else
+			{
+				batch.draw(start, 0,0);	
+			}
 			Set<String> peersnames = getNetwork().peersObservers.get(0).getPeersNames();
 			
 			int peersStringY=620;
 			if(peersnames.size()>0)
 			{
+				peers.clear();
 				for(String s: peersnames)
 				{
 					//¿eby potem da³o siê ³atwo wyci¹gn¹æ Stringa na podstawie touchdown
-					peers.put((620-peersStringY)/30,s);
-					font.draw(batch, s, 690,peersStringY);
-					peersStringY=peersStringY-30;
+					if (!guests.containsValue(s))
+					{
+						peers.put((620-peersStringY)/30,s);
+						font.draw(batch, s, 690,peersStringY);
+						peersStringY=peersStringY-30;
+					}
 				}
 			}
 			//guests
@@ -296,7 +312,7 @@ public class NewGameMenu  extends View implements InputProcessor
 				
 				setView(Screen.MAINMENU);
 			}
-			if(accepted==false)
+			if(accepted==false )
 			{
 				if ((X>95) && (X<95+300) &&(Y>240) && (Y<240+60))
 				{
@@ -306,12 +322,15 @@ public class NewGameMenu  extends View implements InputProcessor
 					}
 					else 
 						inputname=true;
+
 				}
 				
 				if ((X>95) && (X<95+300) &&(Y>170) && (Y<170+60))
 				{
 					accepted= true;
+					
 					namestring=nametext.toString();
+					//TODO zmienic imie gracza u gracza!!!
 					//network initialization
 					setNetwork(new CatanNetwork(namestring));
 					getNetwork().readAddresses();
@@ -338,38 +357,45 @@ public class NewGameMenu  extends View implements InputProcessor
 					
 				}		
 			}
-			else
+			else if (invited==false)
 			{
 				//invite
 				if ((X>1060) && (X<1060+130) &&(Y>235) && (Y<235+45))
 				{
-					//TODO ? znika INVITE, pojawia siê START GAME (wcisniecie na to nic nie powodujejesli za malo graczy)
-					//abandon game tez musi byæ
-					//accepted=false;
 					List <String> toinvite = new LinkedList<String>(); 
 					for(int i=0;i<guests.size();i++)
 					{
 						if (guests.get(i)!=null) 	toinvite.add(guests.get(i));;
 					}
-					System.out.println(guests.size());
-					System.out.println(guests.get(0));
-					if(toinvite.size()>0)
-					{
-						//TODO? nullami rzuca czasem
-						getNetwork().invite(toinvite);						
-					}
-				//	getNetwork().invite(invitedpeers);
-					
-				}
-				//all users
-				
-				//guest list
-				//zapros do gry z listy
-				//TODO start/abandon
-				
-				
+					if(toinvite.size()>0) getNetwork().invite(toinvite);						
+					invited=true;
+				}				
 			}
-				
+			
+			
+		    if (invited==true)
+			{
+				if ((X>1000) && (X<1195) &&(Y>235) && (Y<270))
+				{
+					//TODO 
+					//obsluga Start Game
+					//TODO from GAme dice
+					System.out.println(getNetwork().start(5));
+					//TODO tylko tymaczasowo pomi¿sze
+					Communication.sleep(1000);
+					getNetwork().sendInvitationAnswer("YOUR NAME", SystemType.ACCEPT);
+					
+				 	View.setView(Screen.GAMEPLAY);
+				}
+				else if ((X>1097) && (X<1195) &&(Y>screensizeY-612) && (Y<screensizeY-577))
+				{
+					//TODO 
+					//obsluga Abort
+					//getNetwork().
+				}
+			}
+			
+			
     		
     	}
         return false;

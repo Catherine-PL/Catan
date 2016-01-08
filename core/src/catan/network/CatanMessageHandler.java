@@ -69,6 +69,14 @@ public class CatanMessageHandler extends GameMessageHandler {
 				handleMsgResources((MsgResources)msg);
 				break;
 				
+			case THIEF_TARGET:
+				handleMsgThiefTarget((MsgThiefTarget)msg);
+				break;
+				
+			case THIEF_LOOT:
+				handleMsgThiefLoot((MsgThiefLoot)msg);
+				break;
+				
 			case END_TURN:
 				handleMsgEndTurn();
 				break;
@@ -106,7 +114,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 			case END_TRADE:
 				handleMsgEndTrade((MsgEndTrade)msg);
 				break;
-
+						
 			default:
 				System.err.println("Otrzymana wiadomosc jest bledna");
 				break;					
@@ -145,13 +153,11 @@ public class CatanMessageHandler extends GameMessageHandler {
 				}
 			}
 		}
-		//TODO else normalna tura czyli surowce rozdajemy 
 	}
 	synchronized void handleMsgBoard(MsgBoard msg)			// podmienic board tam gdzie jest ona przechowywana
 	{
 		System.out.println("Board actualization ...");
 		//this.board = msg.getContent();
-		// TODO
 	}	
 	synchronized void handleMsgNode(MsgNode msg)			// problem z aktualizacja
 	{
@@ -180,8 +186,21 @@ public class CatanMessageHandler extends GameMessageHandler {
 		
 		int n = msg.getContent();			
 		System.out.println("Player: " + nick + ", number of resources : " + n);
-		// TODO
+		
 	}
+	synchronized void handleMsgThiefTarget(MsgThiefTarget msg) {
+		// TODO wylosowanie i wys³anie odpowiedniego surowca
+		System.out.println("I am Thief's target.... I will lose a resource ....");
+		System.out.println("It is a wood ....");
+		this.catanCom.sendUpdate(nick, "wood");
+	}
+	
+	synchronized void handleMsgThiefLoot(MsgThiefLoot msg) {
+		// TODO 
+		String resource = msg.getContent();
+		System.out.println("I stole a " + resource + " from: " + this.nick);
+	}
+	
 	
 	/* TradeMessage */
 	
@@ -192,38 +211,24 @@ public class CatanMessageHandler extends GameMessageHandler {
 		
 		get = msg.getGive();
 		give = msg.getGet();
-		//HashMap<String, Integer> icanget = msg.getGive();
-		//HashMap<String, Integer> ihavetogive = msg.getGet();						
 		
 		System.out.println("What he wants: " + give);
 		System.out.println("What i would get: " + get);
 		System.out.println();
 		
 		// TODO wybor czy sie zgadzamy czy nie na ta propozycje
-		// Sprawdzenie czy mogê siê zgodziæ. Jeœli nie to wysy³am od razu no.
-		//Message ms = trade.getTradeMessage(TradeType.NO);
-		Message ms = catanCom.trade.getTradeMessage(TradeType.YES);
-		
-		try {
-			catanCom.sendTo(nick, ms);
-		} catch (IOException e) {
-			System.err.println("Utracono polaczenie z: " + nick);
-			catanCom.disconnected(nick);				
-		}
+		// Sprawdzenie czy mogê siê zgodziæ. Jeœli nie to wysy³am od razu no ?			
 		
 	}
 	synchronized void handleMsgYes(MsgYes msg)
 	{		
 		System.out.println("Player: " + nick + " has accepted your offert");						
-		catanCom.putInv(nick, InvStatus.ACCEPTED);		
-		System.out.println("Players" + catanCom.getStateInv());			
+		catanCom.putInv(nick, InvStatus.ACCEPTED);				
 	}
 	synchronized void handleMsgNo(MsgNo msg)
 	{				
 		System.out.println("Player " + nick + " has rejected your offert");									
-		catanCom.putInv(nick, InvStatus.REJECTED);
-		System.out.println(catanCom.getStateInv());
-		
+		catanCom.putInv(nick, InvStatus.REJECTED);		
 	}
 	synchronized void handleMsgDeal(MsgDeal msg)
 	{			

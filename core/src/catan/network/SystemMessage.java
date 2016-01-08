@@ -1,6 +1,6 @@
 package catan.network;
 
-abstract class SystemMessage extends Message{
+public abstract class SystemMessage extends Message{
 
 	/**
 	 * Types of system messages

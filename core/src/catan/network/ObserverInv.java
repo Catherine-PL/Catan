@@ -12,12 +12,6 @@ public class ObserverInv extends Observer {
 		this.sub.add(this);
 	}
 
-	public Map<String, InvStatus> getAllStatuses()
-	{
-		Map<String, InvStatus> invstatus = ((GameCommunication)sub).getStateInv();
-		return invstatus;
-	}
-	
 	@Override
 	void update() 
 	{
@@ -27,6 +21,10 @@ public class ObserverInv extends Observer {
 		System.out.println(invstatus);
 		// TODO Co zrobiæ, gdy peersy siê zmieni¹
 
+	}
+
+	public Map<String, InvStatus> getAllStatuses() {
+		return ((GameCommunication)sub).getStateInv();
 	}
 
 }
