@@ -3,6 +3,7 @@ package catan.network;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -166,6 +167,12 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 		if(!this.checkNumberOfPlayers(minnumber, maxnumber))
 			return false;
 		
+		Set<String> names = invPlayers.keySet();
+		Set<String> addresses = new HashSet<String>();
+		
+		for(String n : names)
+			addresses.add(this.decoratedP2P.getIpFromNick(n));
+			
 		
 		it = entrySet.iterator();
 		while(it.hasNext())
@@ -174,7 +181,7 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 			if(e.getValue() == InvStatus.ACCEPTED)
 			{
 				try {
-					sendTo(e.getKey(), system.getSystemMessage(SystemType.START_GAME, null));
+					sendTo(e.getKey(), system.getSystemMessage(SystemType.START_GAME, addresses));
 				} catch (ContentException e1) {					
 					e1.printStackTrace();
 				} catch (IOException e1) {
@@ -270,5 +277,6 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 		super.disconnected(nick);
 		this.invPlayers.remove(nick);
 	}
+	
 	
 }

@@ -57,6 +57,10 @@ public abstract class CommunicationDecorator implements P2P{
 		return this.decoratedP2P.getNickFromIp(ip);
 	}
 	
+	public String getIpFromNick(String nick) {
+		return this.decoratedP2P.getIpFromNick(nick);
+	}
+	
 	@Override
 	public void 	sendTo(String nick, Message msg) throws IOException {
 		this.decoratedP2P.sendTo(nick, msg);
