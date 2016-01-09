@@ -11,6 +11,6 @@ public class FreeRoads implements Card{
 	@Override
 	public DevelopType getType() {
 		// TODO Auto-generated method stub
-		return type;
+		return this.type;
 	}
 }

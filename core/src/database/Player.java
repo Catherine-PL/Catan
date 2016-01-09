@@ -26,6 +26,8 @@ public class Player {
 	private HashMap <String,Integer> resources=new HashMap <String,Integer>();	//get,change
 	private	ArrayList <SpecialCard> specialCards=new ArrayList <SpecialCard>();//add,rm,get
 	private int soldierCount;
+	private boolean biggestArmy;
+	private boolean longestRoad;
 	private int freeRoads;
 	private ArrayList<Node> playerNodes=new ArrayList<Node>();
 	// jakiœ set private ArrayList <portType> ports=new ArrayList<portType>;
@@ -201,6 +203,22 @@ public class Player {
 	public void addPlayerNodes(Node node) {
 		if(!this.playerNodes.contains(node))
 		this.playerNodes.add(node);
+	}
+
+	public boolean getBiggestArmy() {
+		return biggestArmy;
+	}
+
+	public void setBiggestArmy(boolean biggestArmy) {
+		this.biggestArmy = biggestArmy;
+	}
+
+	public boolean getLongestRoad() {
+		return longestRoad;
+	}
+
+	public void setLongestRoad(boolean longestRoad) {
+		this.longestRoad = longestRoad;
 	}
 	
 }

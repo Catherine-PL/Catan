@@ -19,6 +19,8 @@ import java.util.Scanner;
 public class Board implements Serializable{
 	//private Map<Character ,Integer> letterToNumber = new HashMap<Character, Integer>();
 	public int thiefPosition=0;
+	private Player whoArmy=null;
+	private Player whoRoad=null;
 	private Node[] nodes = new Node[54];
 	//rivate int[][] adjencyMatrix=new int[54][54];
 	private int[] letterToNumber=new int [] {5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11};//zamiast tego ca³ego ABCDEF
@@ -390,6 +392,50 @@ public class Board implements Serializable{
 		
 	}
 	
+	//
+	public Player getWhoArmy() {
+		return whoArmy;
+	}
+
+
+	public void setWhoArmy(Player whoArmy) {
+		if(this.whoArmy==null)
+		{
+		this.whoArmy = whoArmy;
+		whoArmy.setBiggestArmy(true);
+		whoArmy.addPoints(2);		
+		}
+		else{
+			this.whoArmy.setBiggestArmy(false);
+			this.whoArmy.addPoints(-2);	
+			this.whoArmy = whoArmy;
+			whoArmy.setBiggestArmy(true);
+			whoArmy.addPoints(2);
+		}
+	}
+
+
+	public Player getWhoRoad() {
+		return whoRoad;
+	}
+
+
+	public void setWhoRoad(Player whoRoad) {
+		if(this.whoRoad==null)
+		{
+		this.whoRoad = whoRoad;
+		whoRoad.setBiggestArmy(true);
+		whoRoad.addPoints(2);		
+		}
+		else{
+			this.whoRoad.setBiggestArmy(false);
+			this.whoRoad.addPoints(-2);	
+			this.whoRoad = whoRoad;
+			whoRoad.setBiggestArmy(true);
+			whoRoad.addPoints(2);
+		}
+	}
+	
 	public static void main(String [ ] args) throws FileNotFoundException{
 		Board board = Board.getInstance();
 		
@@ -553,6 +599,8 @@ public class Board implements Serializable{
 		}
 		*/
 	}
+
+
 	
 	
 }

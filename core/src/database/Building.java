@@ -72,7 +72,7 @@ public class Building extends Element {
 			//sprawdza czy pole jest moje i ma osade czy jest puste(niczyje)
 			if(here.getPlayerNumber()==player.getId() || here.getPlayerNumber()==0){
 				//
-				if(here.getBuilding()==1){
+				if(here.getBuilding()==1 && here.getPlayerNumber()==player.getId()){
 					if(player.getResources("grain")>=2 && player.getResources("ore")>=3){
 						here.setBuilding(2);
 						player.changeResources("grain", -2);

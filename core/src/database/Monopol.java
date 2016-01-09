@@ -19,6 +19,6 @@ public class Monopol implements Card {
 	@Override
 	public database.DevelopType getType() {
 		// TODO Auto-generated method stub
-		return type;
+		return this.type;
 	}
 }

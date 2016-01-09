@@ -11,6 +11,6 @@ public class Year implements Card{
 	@Override
 	public DevelopType getType() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.type;
 	}
 }
