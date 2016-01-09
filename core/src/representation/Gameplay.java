@@ -77,7 +77,6 @@ public class Gameplay extends View implements InputProcessor
 	private Texture[] dice = new Texture[6];
 	private int[] tradeGoods=new int[10]; 
 	
-	private Game game;
 	
 	//tekstury na wszystkie tile
 	private ArrayList<Texture> textures = new ArrayList<Texture>();

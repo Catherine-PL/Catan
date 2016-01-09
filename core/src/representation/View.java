@@ -1,6 +1,7 @@
 package representation;
 
 import catan.network.CatanNetwork;
+import database.Game;
 
 public abstract class View {
 
@@ -12,6 +13,7 @@ public abstract class View {
 	final static int screensizeX=1366; 
 	final static int screensizeY=768; 
 	private CatanNetwork network;
+	public static Game game;
 	
 	public void init(){}
 	public void batch(){}

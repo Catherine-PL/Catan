@@ -331,6 +331,9 @@ public class NewGameMenu  extends View implements InputProcessor
 					
 					namestring=nametext.toString();
 					//TODO zmienic imie gracza u gracza!!!
+					
+					//TODO wys³aæ zmienione imiê
+					
 					//network initialization
 					setNetwork(new CatanNetwork(namestring));
 					getNetwork().readAddresses();
