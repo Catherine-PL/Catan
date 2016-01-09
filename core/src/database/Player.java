@@ -27,6 +27,7 @@ public class Player {
 	private	ArrayList <SpecialCard> specialCards=new ArrayList <SpecialCard>();//add,rm,get
 	private int soldierCount;
 	private boolean biggestArmy;
+	private int longestRoadDistance;
 	private boolean longestRoad;
 	private int freeRoads;
 	private ArrayList<Node> playerNodes=new ArrayList<Node>();
@@ -50,6 +51,7 @@ public class Player {
 		resources.put("sheep", 10) ;
 		resources.put("wood", 10) ;
 		soldierCount=0;
+		longestRoadDistance=0;
 		points=0;
 		freeRoads=0;
 		
@@ -219,6 +221,14 @@ public class Player {
 
 	public void setLongestRoad(boolean longestRoad) {
 		this.longestRoad = longestRoad;
+	}
+
+	public int getLongestRoadDistance() {
+		return longestRoadDistance;
+	}
+
+	public void setLongestRoadDistance(int longestRoadDistance) {
+		this.longestRoadDistance = longestRoadDistance;
 	}
 	
 }

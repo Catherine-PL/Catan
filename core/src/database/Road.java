@@ -45,7 +45,18 @@ public class Road extends Element{
 						this.state=1;
 												
 						from2.addImprovedRoads(to2);
-						to2.addImprovedRoads(from2); 													
+						to2.addImprovedRoads(from2);
+						
+						//
+						player.setLongestRoadDistance(player.getLongestRoadDistance()+1);
+						//dopisaæ tu sprawdzanie nad³u¿szej drogi
+						if(Board.getInstance().getWhoRoad().equals(null) && player.getLongestRoadDistance()>=5){
+							Board.getInstance().setWhoRoad(player);
+						}else{
+							if(Board.getInstance().getWhoRoad().getLongestRoadDistance()<player.getLongestRoadDistance())
+								Board.getInstance().setWhoRoad(player);
+						}
+							
 						
 						if(player.getFreeRoads()>0){
 							player.setFreeRoads(player.getFreeRoads()-1);
@@ -97,5 +108,6 @@ public class Road extends Element{
 		ID = iD;
 	}
 
+	
 	
 }

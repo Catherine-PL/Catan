@@ -25,9 +25,12 @@ public class Board implements Serializable{
 	//rivate int[][] adjencyMatrix=new int[54][54];
 	private int[] letterToNumber=new int [] {5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11};//zamiast tego ca³ego ABCDEF
 	public int numbersLayout=0;
-	private int[][] numberToDice=new int[][] {{9,10,8,12,5,4,3,11,6,11,9,6,4,3,10,2,8,5},{5,2,6,8,10,9,3,3,11,4,8,4,6,5,10,11,12,9},{4,8,4,6,5,10,11,12,9,5,2,6,8,10,9,3,3,11},{11,12,9,5,2,6,8,10,9,3,3,11,4,8,4,6,5,10},{8,4,6,5,10,11,12,9,5,2,6,8,10,9,3,3,11,4}};
-	private int [][] tileToDice=new int [19][2];
+	
+	//private int[][] numberToDice=new int[][] {{9,10,8,12,5,4,3,11,6,11,9,6,4,3,10,2,8,5},{5,2,6,8,10,9,3,3,11,4,8,4,6,5,10,11,12,9},{4,8,4,6,5,10,11,12,9,5,2,6,8,10,9,3,3,11},{11,12,9,5,2,6,8,10,9,3,3,11,4,8,4,6,5,10},{8,4,6,5,10,11,12,9,5,2,6,8,10,9,3,3,11,4}};
+	//private int [][] tileToDice=new int [19][2];
 	public  ArrayList <Road> boardRoads=new ArrayList<Road> ();
+	
+	private ArrayList <Card> developmentCards=new ArrayList <Card>();
 	private int[][] adjencyMatrix=new int[][] {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -149,13 +152,30 @@ public class Board implements Serializable{
 	//make the constructor private so that this class cannot be
 	//instantiated
 	protected Board(){
-	
+		
+		//tworzenie puli kart rozwoju
+		CardFactory cardFactory=new CardFactory();
+		
+		for(int i=0;i<14;i++)
+		developmentCards.add(cardFactory.getCard("soldier"));
+		for(int i=0;i<5;i++)
+		developmentCards.add(cardFactory.getCard("point"));
+
+		developmentCards.add(cardFactory.getCard("year"));
+		developmentCards.add(cardFactory.getCard("year"));
+		developmentCards.add(cardFactory.getCard("monopol"));
+		developmentCards.add(cardFactory.getCard("monopol"));
+		developmentCards.add(cardFactory.getCard("FreeRoads"));
+		developmentCards.add(cardFactory.getCard("FreeRoads"));
+		
+		//przemieszanie kart rozwoju
+		Collections.shuffle(developmentCards);
 		
 		//generowanie planszy
 		//przemieszanie kafli l¹du
 		Collections.shuffle(Arrays.asList(tiles));
 		
-	int l=0;
+	//int l=0;
 		for(int i=0;i<19;i++){		
 			tiles[i].setNumber(i);
 			//przypisanie z³odzieja do pustyni 
@@ -336,31 +356,35 @@ public class Board implements Serializable{
 	/*
 	 * 0 -uda³o siê
 	 * 1- gracz nie ma surowców
-	 * 3- nie okrada siê samego siebie
+	 * 2- nie ma nikogo do okradzenia
+	 * 
 	 */
 	int steal(Player player,Tile hex){
 		ArrayList <Player> mayRob=hex.getTileplayer();
 		int count,number;
-		Player toRob;		
-		String [] resureces={"clay","grain","ore","sheep","wood"};
-		Random generator=new Random();
+		String [] resources={"clay","grain","ore","sheep","wood"};
+		if(!mayRob.isEmpty()){
+			Random generator=new Random();
+			
+			mayRob.remove(player);//gracz nie mo¿e okraœæ sam siebie
+			
+			//losowanie gracza którego okradnê
+			Player toRob=mayRob.get(generator.nextInt(mayRob.size()));	
+			//brak sorowców do ukradzenia
+			if(toRob.getResources(resources[0])==0 && toRob.getResources(resources[1])==0 && toRob.getResources(resources[2])==0 && toRob.getResources(resources[3])==0 && toRob.getResources(resources[4])==0 )
+				return 1;
+			
+			do{				
+				number=generator.nextInt(4);
+				count=toRob.getResources(resources[number]);				
+			}
+			while(count==0);
+			toRob.changeResources(resources[number], -1);
+			player.changeResources(resources[number], 1);
 		
-		/*
-		 * Tu musi byæ asset ¿ebym móg³ wybraæ kogo okraœæ
-		 * 
-		 */
-		
-		
-		
-		do{		
-			number=generator.nextInt(4);
-			count=toRob.getResources(resureces[number]);
+			return 0;
 		}
-		while(count==0);
-		toRob.changeResources(resureces[number], -1);
-		player.changeResources(resureces[number], 1);
-		
-		return 0;
+		return 2;
 	}
 	
 	
@@ -399,7 +423,7 @@ public class Board implements Serializable{
 
 
 	public void setWhoArmy(Player whoArmy) {
-		if(this.whoArmy==null)
+		if(this.whoArmy.equals(null))
 		{
 		this.whoArmy = whoArmy;
 		whoArmy.setBiggestArmy(true);
@@ -421,7 +445,7 @@ public class Board implements Serializable{
 
 
 	public void setWhoRoad(Player whoRoad) {
-		if(this.whoRoad==null)
+		if(this.whoRoad.equals(null))
 		{
 		this.whoRoad = whoRoad;
 		whoRoad.setBiggestArmy(true);
@@ -436,32 +460,24 @@ public class Board implements Serializable{
 		}
 	}
 	
+	public void buyCard(Player player){
+		Board board=Board.getInstance();
+		if(board.developmentCards.get(1)!=null){
+			Card card= board.developmentCards.get(0);
+			player.addCard(card);
+			board.developmentCards.remove(card);
+			
+			player.changeResources("grain", -1);
+			player.changeResources("ore", -1);
+			player.changeResources("sheep", -1);
+
+			
+		}
+	}
 	public static void main(String [ ] args) throws FileNotFoundException{
 		Board board = Board.getInstance();
 		
-		System.out.println(board.tilesToNodes[53][0]);
-		for(Tile t:board.tiles){
-			//System.out.println(t.getNumber()+" "+t.getType()+" "+t.getDiceNumber());
-			//System.out.print("\n"+t.getNumber()+" "+t.getType()+" "+t.getDiceNumber());
-				//for(Node n: t.getTileNodes())
-			//		System.out.print(n.getNodeNumber()+"  ");
-		}
-		Player p=new Player(3);
-		System.out.println(p.getResources("clay"));
-		System.out.println(p.getResources("grain"));
-		System.out.println(p.getResources("sheep"));
-		System.out.println(p.getResources("ore"));
-		System.out.println(p.getResources("wood")+"------");
-		
-		Building.buildSettlement(p, board.getNodes()[0]);
-		
-		board.resourceDistribution(board.getNodes()[0].getNearResources().get(0).getDiceNumber());
-		System.out.println(p.getResources("clay"));
-		System.out.println(p.getResources("grain"));
-		System.out.println(p.getResources("sheep"));
-		System.out.println(p.getResources("ore"));
-		System.out.println(p.getResources("wood"));
-	
+
 	/*
 		//test, wypisanie s¹siadów
 		for(int i=0;i<54;i++){
@@ -504,6 +520,42 @@ public class Board implements Serializable{
 
 
 	public void testMarcin(){
+		
+		
+		
+
+		System.out.println(board.tilesToNodes[53][0]);
+		for(Tile t:board.tiles){
+			//System.out.println(t.getNumber()+" "+t.getType()+" "+t.getDiceNumber());
+			//System.out.print("\n"+t.getNumber()+" "+t.getType()+" "+t.getDiceNumber());
+				//for(Node n: t.getTileNodes())
+			//		System.out.print(n.getNodeNumber()+"  ");
+		}
+		Player p=new Player(3);
+		System.out.println(p.getResources("clay"));
+		System.out.println(p.getResources("grain"));
+		System.out.println(p.getResources("sheep"));
+		System.out.println(p.getResources("ore"));
+		System.out.println(p.getResources("wood")+"------");
+		
+		Building.buildSettlement(p, board.getNodes()[0]);
+		
+		board.resourceDistribution(board.getNodes()[0].getNearResources().get(0).getDiceNumber());
+		System.out.println(p.getResources("clay"));
+		System.out.println(p.getResources("grain"));
+		System.out.println(p.getResources("sheep"));
+		System.out.println(p.getResources("ore"));
+		System.out.println(p.getResources("wood"));
+	
+		
+		System.out.println(board.developmentCards.get(0));
+		board.buyCard(p);
+		System.out.println(p.getResources("clay"));
+		System.out.println(p.getResources("grain"));
+		System.out.println(p.getResources("sheep"));
+		System.out.println(p.getResources("ore"));
+		System.out.println(p.getResources("wood"));
+		System.out.println(board.developmentCards.get(0));
 		
 		//nie usuwajcie tego narazie dobra
 		//st¹d sobie kopiuje kod do testów, a nie chce wrzycaæ zasmieconego main'a

@@ -6,6 +6,7 @@ DevelopType type=DevelopType.POINT;
 
 public void playCard(Player p){
 		p.addPoints(1);
+		p.rmCard(this);
 	}
 
 

@@ -6,6 +6,7 @@ public class FreeRoads implements Card{
 	
 	public void playCard(Player p){
 		p.setFreeRoads(2);
+		p.rmCard(this);
 	}
 
 	@Override
