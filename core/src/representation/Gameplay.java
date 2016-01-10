@@ -310,19 +310,7 @@ public class Gameplay extends View implements InputProcessor
 		
 	}
 	
-	private void batchThief()
-	{
-		Coordinates thiefC=tilesXY[game.getBoard().getTile(game.getBoard().thiefPosition).getDiceNumber()];
-		System.out.println(game.getBoard().getTile(game.getBoard().thiefPosition).getDiceNumber());
-		System.out.println(game.getBoard().thiefPosition);
-		//font.draw(batch, Integer.toString(game.getBoard().getTile(i).getDiceNumber()), tilesXY[i].getX(),tilesXY[i].getY());
-		
-		//TODO
-		//game.getBoard().getTile(game.getBoard().thiefPosition).getDiceNumber();
-		batch.draw(thief ,thiefC.getX(),thiefC.getY());
-		
-		
-	}
+
 	private void batchCards()
 	{
 		if (game.getThisPlayer().getBiggestArmy()==true)
@@ -613,16 +601,19 @@ public class Gameplay extends View implements InputProcessor
 		batch.draw(textures.get(16), cX-tileX+1, cY-4*tileY+4*tileY/4+4);
 		batch.draw(textures.get(18), cX+tileX-1, cY-4*tileY+4*tileY/4+4);
 		
+		font.getData().setScale(1.0f, 1.0f);
 		for(int i=0;i<19;i++)
 		{
-			font.draw(batch, Integer.toString(game.getBoard().getTile(i).getDiceNumber()), tilesXY[i].getX(),tilesXY[i].getY());
+			font.draw(batch,"d " +Integer.toString(game.getBoard().getTile(i).getDiceNumber()), tilesXY[i].getX(),tilesXY[i].getY());
+			font.draw(batch, "t "+Integer.toString(i), tilesXY[i].getX(),tilesXY[i].getY()-15);
 			if(i==game.getBoard().thiefPosition)
 			{
 				batch.draw(thief ,tilesXY[i].getX(),tilesXY[i].getY());
+			//	System.out.println(i);
+			//	System.out.println(game.getBoard().getTile(i).getDiceNumber());
 			}
-			//TODO
 		}
-		
+		font.getData().setScale(1.5f, 1.5f);
 	}
 	
 	private void batchMenuGameplay()
