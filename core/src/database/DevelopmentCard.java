@@ -1,9 +1,5 @@
 package database;
 
-/*
- * KLASA DO USUNIECIA
-
- */
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,7 +8,7 @@ public class DevelopmentCard{
 		
 	//TO DO interakcja okineka itp, w okienku wybieram co kradne, na planszy gdzie z³odzieja postawie, co z banku wezme, gdzie wybuduje drogi
 	
-	public void playCard(DevelopType which,Player player, String resource) {
+	public static void playCard(DevelopType which,Player player, String resource) {
 		// TODO Auto-generated method stub
 		//Board board=Board.getInstance();
 		switch(which){
@@ -42,7 +38,7 @@ public class DevelopmentCard{
 			break;	
 		}
 	}
-		public void playCard(DevelopType which,Player player, int where) {
+		public static void playCard(DevelopType which,Player player, int where) {
 			// TODO Auto-generated method stub
 			Board board=Board.getInstance();
 				
