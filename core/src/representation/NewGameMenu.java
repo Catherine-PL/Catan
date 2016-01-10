@@ -59,6 +59,7 @@ public class NewGameMenu  extends View implements InputProcessor
 	
 	public void init()
 	{
+		
 		start = new Texture(Gdx.files.internal("startgameaborttext.png"));
 		nametext=new StringBuilder(12);
 		nametext=nametext.append("YOUR NAME");
@@ -328,7 +329,6 @@ public class NewGameMenu  extends View implements InputProcessor
 				if ((X>95) && (X<95+300) &&(Y>170) && (Y<170+60))
 				{
 					accepted= true;
-					
 					namestring=nametext.toString();
 					//TODO zmienic imie gracza u gracza!!!
 					
@@ -383,10 +383,13 @@ public class NewGameMenu  extends View implements InputProcessor
 					//TODO 
 					//obsluga Start Game
 					//TODO from GAme dice
-					System.out.println(getNetwork().start(5));
-					//TODO tylko tymaczasowo pomi¿sze
 					Communication.sleep(1000);
 					getNetwork().sendInvitationAnswer("YOUR NAME", SystemType.ACCEPT);
+					
+					
+					
+					System.out.println(getNetwork().start(5));
+					//TODO tylko tymaczasowo pomi¿sze
 					
 				 	View.setView(Screen.GAMEPLAY);
 				}

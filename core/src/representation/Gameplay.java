@@ -112,8 +112,8 @@ public class Gameplay extends View implements InputProcessor
 	
 	public void init()
 	{
-		initRoadsTextures();
 		game=new Game();
+		initRoadsTextures();
 		tilenumber=1;
 		
 		thief=new Texture(Gdx.files.internal("gameplay/thief.png"));
@@ -772,19 +772,23 @@ public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		int X=screenX;
 		int Y=screensizeY - screenY;
 	
-		//endofturn
-		if (X>510 && Y<screensizeY-610 && X<670 && Y>screensizeY-635 )
+		//rzeczy do robienia podczas kolejki
+		if(game.getActualPlayer()==game.getThisPlayer())
 		{
-			//TODO
-			game.endTurn();
-			return true;
+			//endofturn
+			if (X>510 && Y<screensizeY-610 && X<670 && Y>screensizeY-635 )
+			{
+				//TODO
+				game.endTurn();
+				return true;
+			}
+			if (buildingTouch(X,Y)==true) return true;;
+			if (tradeTouch(X,Y)==true) return true;
+			if (buycardTouch(X,Y)==true) return true;;
+			if (cardsTouch(X,Y)==true) return true;;
+			
+			
 		}
-		else 
-			buildingTouch(X,Y);
-		//trade
-		if (tradeTouch(X,Y)==true) return true;
-		if (buycardTouch(X,Y)==true) return true;;
-		if (cardsTouch(X,Y)==true) return true;;
 		
 	}
     return false;
