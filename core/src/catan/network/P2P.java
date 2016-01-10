@@ -19,6 +19,7 @@ public interface P2P {
 	public void		removeNodeP2P(String n);
 	
 	public String	getNickFromIp(String ip);
+	public String	getIpFromNick(String ip);
 	
 	public void		sendTo(String nick, Message msg) throws IOException;
 	public void 	disconnected(String nick);		

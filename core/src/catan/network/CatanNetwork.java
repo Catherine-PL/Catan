@@ -174,7 +174,7 @@ public class CatanNetwork {
 		board.loadMatrix();
 		board.setNeighbours();
 			
-		
+		/*
 		game.updateBoard(board);		
 		game.updateNode(board.getNode(5), 6);
 		game.updateTile(board.getTile(5), 5);
@@ -182,7 +182,7 @@ public class CatanNetwork {
 		game.updateResources(5);
 		game.updateThiefSteal("Sebastian");
 		game.updateGiveThiefLoot("Sebastian", "ore");
-		
+		*/
 		Communication.sleep(2000);
 		
 		

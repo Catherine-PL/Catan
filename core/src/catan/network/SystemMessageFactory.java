@@ -1,7 +1,10 @@
 package catan.network;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
+import catan.network.GameCommunication.InvStatus;
 import catan.network.TradeMessage.TradeType;
 import catan.network.UpdateMessage.UpdateType;
 
@@ -42,7 +45,10 @@ class SystemMessageFactory extends AbstractMessageFactory {
 			return new MsgReject();
 			
 		case START_GAME:
-			return new MsgStartGame();
+			return new MsgStartGame((Set<String>) content);
+			
+		case INV_LIST:
+			return new MsgInvList((Map<String, InvStatus>) content);
 			
 		case ABANDON:
 			return new MsgAbandon();								

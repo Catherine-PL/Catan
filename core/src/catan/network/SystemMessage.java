@@ -9,7 +9,7 @@ public abstract class SystemMessage extends Message{
 	 */
 	public enum SystemType		
 	{
-		PEER, INVITATION, ACCEPT, REJECT, START_GAME, ABANDON;
+		PEER, INVITATION, ACCEPT, REJECT, START_GAME, ABANDON, INV_LIST;
 	}
 	
 	protected SystemType subType;

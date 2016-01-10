@@ -386,7 +386,14 @@ public class Communication implements Runnable, P2P, Subject{
 
 	public String getNickFromIp(String ip) {		
 		return ipToNick.get(ip);
+	}	
+	public String getIpFromNick(String nick) {		
+		if(peers.containsKey(nick))
+			return peers.get(nick).socketOut.getInetAddress().getHostAddress();
+		else
+			return null;
 	}
+	
 	public synchronized void 	addNodeP2P(String address)
 	{		
 		Iterator<String> it = addresses.iterator();
