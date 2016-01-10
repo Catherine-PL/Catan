@@ -86,7 +86,7 @@ public class Gameplay extends View implements InputProcessor
 	//menu kart
 	private Texture menuresource;
 	private Texture menusoldier;
-	
+	private Texture thief;
 	
 	
 	private Texture[] roads = new Texture[12];
@@ -116,6 +116,7 @@ public class Gameplay extends View implements InputProcessor
 		game=new Game();
 		tilenumber=1;
 		
+		thief=new Texture(Gdx.files.internal("gameplay/thief.png"));
 		//karty
 		 cardyear=new Texture(Gdx.files.internal("gameplay/cards/year.png"));
 		  cardpoint=new Texture(Gdx.files.internal("gameplay/cards/point.png"));
@@ -190,6 +191,7 @@ public class Gameplay extends View implements InputProcessor
 		batchBuildings();
 		batchTrade();
 		batchCards();
+		//batchThief();
 		batch.end();
 		batchTouchedBuildingRoads();
 	}	
@@ -308,7 +310,19 @@ public class Gameplay extends View implements InputProcessor
 		
 	}
 	
-	
+	private void batchThief()
+	{
+		Coordinates thiefC=tilesXY[game.getBoard().getTile(game.getBoard().thiefPosition).getDiceNumber()];
+		System.out.println(game.getBoard().getTile(game.getBoard().thiefPosition).getDiceNumber());
+		System.out.println(game.getBoard().thiefPosition);
+		//font.draw(batch, Integer.toString(game.getBoard().getTile(i).getDiceNumber()), tilesXY[i].getX(),tilesXY[i].getY());
+		
+		//TODO
+		//game.getBoard().getTile(game.getBoard().thiefPosition).getDiceNumber();
+		batch.draw(thief ,thiefC.getX(),thiefC.getY());
+		
+		
+	}
 	private void batchCards()
 	{
 		if (game.getThisPlayer().getBiggestArmy()==true)
@@ -602,6 +616,11 @@ public class Gameplay extends View implements InputProcessor
 		for(int i=0;i<19;i++)
 		{
 			font.draw(batch, Integer.toString(game.getBoard().getTile(i).getDiceNumber()), tilesXY[i].getX(),tilesXY[i].getY());
+			if(i==game.getBoard().thiefPosition)
+			{
+				batch.draw(thief ,tilesXY[i].getX(),tilesXY[i].getY());
+			}
+			//TODO
 		}
 		
 	}
@@ -658,16 +677,19 @@ public boolean keyDown(int keycode) {
 			 {
 				 if(noRoadsSize>=1 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
 				 selected=SelectedKey.E;
+				 return true;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_2 ))
 			 {
 				 if(noRoadsSize>=2 ) game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
 				 selected=SelectedKey.E;
+				 return true;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_3 ))
 			 {
 				 if(noRoadsSize>=3 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
 				 selected=SelectedKey.E;
+				 return true;
 			 }
 		}
 		
@@ -691,6 +713,7 @@ public boolean keyDown(int keycode) {
 					 selected=SelectedKey.NOTHING;
 		
 				 }
+				 return true;
 			 }
 			
 			
@@ -715,6 +738,7 @@ public boolean keyDown(int keycode) {
 					 selected=SelectedKey.NOTHING;
 		
 				}
+				 return true;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.E))//build a road
 			 {
@@ -722,7 +746,7 @@ public boolean keyDown(int keycode) {
 				 citymenu = new Texture(Gdx.files.internal("gameplay/buildings/cityroad.png"));
 				 nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingroad.png"));
 				 villagemenu = new Texture(Gdx.files.internal("gameplay/buildings/villageroad.png"));
-	
+				 return true;
 			 }
 		}
 		 if(Gdx.input.isKeyPressed(Keys.R))//zamknij menu
@@ -733,12 +757,10 @@ public boolean keyDown(int keycode) {
 			 touchedBuildingID=null;
 			 touchedBuildingRoads=null;
 			 selected=SelectedKey.NOTHING;
+			 return true;
 		 }
 	}
-	
-	
-	
-	
+
     return false;
 }
 
@@ -759,24 +781,26 @@ public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		int X=screenX;
 		int Y=screensizeY - screenY;
 	
-		buildingTouch(X,Y);
 		//endofturn
 		if (X>510 && Y<screensizeY-610 && X<670 && Y>screensizeY-635 )
 		{
 			//TODO
 			game.endTurn();
+			return true;
 		}
+		else 
+			buildingTouch(X,Y);
 		//trade
-		tradeTouch(X,Y);
-		buycardTouch(X,Y);
-		cardsTouch(X,Y);
+		if (tradeTouch(X,Y)==true) return true;
+		if (buycardTouch(X,Y)==true) return true;;
+		if (cardsTouch(X,Y)==true) return true;;
 		
 	}
     return false;
 }
 
 
-private void cardsTouch(int X, int Y)
+private boolean cardsTouch(int X, int Y)
 {
 	if ( Y<157)
 	{
@@ -787,26 +811,31 @@ private void cardsTouch(int X, int Y)
 			if (X>771 &&  X<856 && cards.contains(DevelopType.POINT) )
 			{
 				DevelopmentCard.playCard(DevelopType.POINT, game.getThisPlayer(), "marcinniezda");
+				return true;
 			}
 			//Year
 			else if (X>856 &&  X<940 && cards.contains(DevelopType.YEAR))
 			{
 				cardState=CardMenu.YEAR;
+				return true;
 			}
 			//FreeRoads
 			else if (X>940 &&  X<1026 && cards.contains(DevelopType.ROAD))
 			{
 				DevelopmentCard.playCard(DevelopType.ROAD, game.getThisPlayer(), "marcinniezda");
+				return true;
 			}
 			//Monopol
 			else if (X>1026 &&  X<1111 && cards.contains(DevelopType.MONOPOL))
 			{
 				cardState=CardMenu.MONOPOL;
+				return true;
 			}
 			//Soldier
 			else if (X>1111 &&  X<1197 && cards.contains(DevelopType.SOLDIER))
 			{
 				cardState=CardMenu.TILE;
+				return true;
 			}
 				
 		}
@@ -818,12 +847,14 @@ private void cardsTouch(int X, int Y)
 		if (Y>199 &&  Y<216 && X>1142 && X<1172)
 		{
 			tilenumber=tilenumber+1;
+			return true;
 		}
 		if (Y>170 &&  Y<187 && X>1142 && X<1172)
 		{
 			DevelopmentCard.playCard(DevelopType.SOLDIER, game.getThisPlayer(), tilenumber);
 			cardState=CardMenu.NOTHING;
 			tilenumber=1;
+			return true;
 		}
 	}
 	else if(cardState==CardMenu.MONOPOL || cardState==CardMenu.YEAR)
@@ -837,47 +868,55 @@ private void cardsTouch(int X, int Y)
 			{
 				DevelopmentCard.playCard(type, game.getThisPlayer(), "clay");
 				cardState=CardMenu.NOTHING;
+				return true;
 			}
 			else if (X>919 &&  X<956)
 			{
 				DevelopmentCard.playCard(type, game.getThisPlayer(), "grain");
 				cardState=CardMenu.NOTHING;
+				return true;
 			}
 			else if (X>956 &&  X<1007)
 			{
 				DevelopmentCard.playCard(type, game.getThisPlayer(), "ore");
 				cardState=CardMenu.NOTHING;
+				return true;
 			}
 			else if (X>1007 &&  X<1044)
 			{
 				DevelopmentCard.playCard(type, game.getThisPlayer(), "sheep");
 				cardState=CardMenu.NOTHING;
+				return true;
 			}
 			else if (X>1044&&  X<1088)
 			{
 				DevelopmentCard.playCard(type, game.getThisPlayer(), "wood");
 				cardState=CardMenu.NOTHING;
+				return true;
 			}
 			
 		}
 	}
+		return false;
 }
 
 
 
 
 
-private void buycardTouch(int X, int Y)
+private boolean buycardTouch(int X, int Y)
 {
 	if (X>330 && Y<153 && X<477 && Y>132 )
 	{
 		int wynik = game.getBoard().buyCard(game.getThisPlayer());
+		return true;
 	}
+	return false;
 }
 
 
 
-private void tradeTouch(int X, int Y)
+private boolean tradeTouch(int X, int Y)
 {
 
 	if (tradeState==TradeState.NOTHING)
@@ -885,6 +924,7 @@ private void tradeTouch(int X, int Y)
 		if (X>705 && Y<screensizeY-610 && X<780 && Y>screensizeY-635 )
 		{
 			tradeState=TradeState.MAKE_OFFER;
+			return true;
 		}
 	}
 	
@@ -895,6 +935,7 @@ private void tradeTouch(int X, int Y)
 			if (X>50+i*43 && Y<screensizeY-45 && X<65+i*43 && Y>screensizeY-65 )
 			{
 				tradeGoods[i]=tradeGoods[i]+1;
+				return true;
 			}
 		}
 		for(int i=5;i<10;i++)
@@ -902,6 +943,7 @@ private void tradeTouch(int X, int Y)
 			if (X>50+(i-5)*43 && Y<screensizeY-85 && X<65+(i-5)*43 && Y>screensizeY-105 )
 			{
 				tradeGoods[i]=tradeGoods[i]+1;
+				return true;
 			}
 		}
 		
@@ -914,6 +956,7 @@ private void tradeTouch(int X, int Y)
 				tradeGoods[i]=0;
 			}
 			tradeState=TradeState.NOTHING;
+			return true;
 		}
 		
 		if (X>210 && Y<screensizeY-111 && X<245 && Y>screensizeY-125 )
@@ -922,6 +965,7 @@ private void tradeTouch(int X, int Y)
 			tradeState=TradeState.CHOOSE_RESPONSE;
 			//wyslij wiadomosc do innych uzytkowników z ofert¹
 			//TODO
+			return true;
 		}
 	}
 	
@@ -931,6 +975,7 @@ private void tradeTouch(int X, int Y)
 		if (X>705 && Y<screensizeY-610 && X<780 && Y>screensizeY-635 )
 		{
 			tradeState=TradeState.MAKE_OFFER;
+			return true;
 		}
 	}
 	
@@ -940,14 +985,15 @@ private void tradeTouch(int X, int Y)
 		if (X>705 && Y<screensizeY-610 && X<780 && Y>screensizeY-635 )
 		{
 			tradeState=TradeState.MAKE_OFFER;
+			return true;
 		}
 	}
 	
 	
-	
+	return false;
 }
 
-private void buildingTouch(int x, int y)
+private boolean buildingTouch(int x, int y)
 {
 	
 	if(touchedBuildingID==null)
@@ -961,10 +1007,12 @@ private void buildingTouch(int x, int y)
 			if(Math.sqrt(Math.pow( Math.abs((double)(x-myX)),2)+Math.pow( Math.abs((double)(y-myY)),2))<=25)
 			{
 				touchedBuildingID=Integer.valueOf(i);
-				break;
+				return true;
 			}	
 		}
+		
 	}
+	return false;
 }
 
 
