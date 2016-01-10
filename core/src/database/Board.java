@@ -423,7 +423,7 @@ public class Board implements Serializable{
 
 
 	public void setWhoArmy(Player whoArmy) {
-		if(this.whoArmy.equals(null))
+		if(this.whoArmy==null)
 		{
 		this.whoArmy = whoArmy;
 		whoArmy.setBiggestArmy(true);
@@ -445,7 +445,7 @@ public class Board implements Serializable{
 
 
 	public void setWhoRoad(Player whoRoad) {
-		if(this.whoRoad.equals(null))
+		if(this.whoRoad==null)
 		{
 		this.whoRoad = whoRoad;
 		whoRoad.setBiggestArmy(true);
@@ -477,7 +477,43 @@ public class Board implements Serializable{
 	public static void main(String [ ] args) throws FileNotFoundException{
 		Board board = Board.getInstance();
 		
+		Player p=new Player(3);
+		System.out.println(p.getResources("clay"));
+		System.out.println(p.getResources("grain"));
+		System.out.println(p.getResources("sheep"));
+		System.out.println(p.getResources("ore"));
+		System.out.println(p.getResources("wood")+"------");
 
+		System.out.println("node 0  "+board.getNode(0).getBuilding());
+		for(Node nod:board.getNode(0).getNeighbours()){
+			System.out.println("\t"+nod.getNodeNumber()+" "+nod.getBuilding());
+		}
+		System.out.println("node 3  "+board.getNode(3).getBuilding());
+		for(Node nod:board.getNode(3).getNeighbours()){
+			System.out.println("\t"+nod.getNodeNumber()+" "+nod.getBuilding());
+		}
+		System.out.println("node 4 "+board.getNode(4).getBuilding());
+		for(Node nod:board.getNode(4).getNeighbours()){
+			System.out.println("\t"+nod.getNodeNumber()+" "+nod.getBuilding());
+		}
+		
+		Building.buildSettlement(p, board.getNode(0) );
+		Building.buildSettlement(p, board.getNode(3) );
+		Building.buildSettlement(p, board.getNode(4) );
+		
+		System.out.println("node 0  "+board.getNode(0).getBuilding());
+		for(Node nod:board.getNode(0).getNeighbours()){
+			System.out.println("\t"+nod.getNodeNumber()+" "+nod.getBuilding());
+		}
+		System.out.println("node 3  "+board.getNode(3).getBuilding()+board.getNode(3).neighboursHasBuildins());
+		for(Node nod:board.getNode(3).getNeighbours()){
+			System.out.println("\t"+nod.getNodeNumber()+" "+nod.getBuilding());
+		}
+		System.out.println("node 4 "+board.getNode(4).getBuilding());
+		for(Node nod:board.getNode(4).getNeighbours()){
+			System.out.println("\t"+nod.getNodeNumber()+" "+nod.getBuilding());
+		}
+		
 	/*
 		//test, wypisanie s¹siadów
 		for(int i=0;i<54;i++){

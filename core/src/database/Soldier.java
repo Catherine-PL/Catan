@@ -6,8 +6,9 @@ public class Soldier implements Card {
 	public void playCard(Player p,int to){
 		Board board=Board.getInstance();
 		p.addSoldier();		
-		if(board.getWhoArmy().equals(null) && p.getSoldierCount()>=5){
-			board.setWhoArmy(p);
+		if(board.getWhoArmy()==null ){
+			if(p.getSoldierCount()>=5)
+				board.setWhoArmy(p);
 		}
 		else
 		{

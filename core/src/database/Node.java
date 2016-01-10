@@ -28,6 +28,7 @@ public class Node extends Element {
 	public Node(int id){
 		nodeNumber = id;
 		port=portType.NORMAL;
+		building=0;
 	}
 	
 	
@@ -51,24 +52,41 @@ public class Node extends Element {
 	
 	//sprawdza czy s¹siednie nody s¹ zabudowane
 	public Boolean neighboursHasBuildins(){
-		
-		Boolean have=false;
-		
-		for(int i=0;i<neighbours.size();i++)
+		//System.out.println("sprowdzom");
+		Boolean have=false;		
+		for(Node nod:this.neighbours)
 		{
-			if(neighbours.get(i).getBuilding()>0){
-				have=true;
-				break;
+			//System.out.println("for1");
+			//if(nod.getBuilding()>0){
+			if(nod.getPlayer()!=null){
+				//System.out.println("\t\t sprawdzanie s¹siedztw "+nod.nodeNumber+" "+nod.getBuilding());
+				return true;				
+			}
+			else
+			{	//System.out.println("else");
+				//System.out.println("\t\t sprawdzanie s¹siedztw "+nod.nodeNumber+" "+nod.getBuilding());
+				have=false;
+			}
+		}
+		//System.out.println("koniec");
+		return have;
+		
+		/*
+		for(int i=0;i<this.neighbours.size();i++)
+		{
+			if(this.neighbours.get(i).getBuilding()>0){
+				return true;
+				
 			}
 			else
 				have=false;
 		}
 		return have;
-	
+	*/
 	}
 	//####buildings
 	public int getBuilding(){
-		return building;
+		return this.building;
 	}
 	public void setBuilding(int build){
 		this.building=build;

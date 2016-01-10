@@ -48,10 +48,14 @@ public class Road extends Element{
 						to2.addImprovedRoads(from2);
 						
 						//
+						
 						player.setLongestRoadDistance(player.getLongestRoadDistance()+1);
 						//dopisaæ tu sprawdzanie nad³u¿szej drogi
-						if(Board.getInstance().getWhoRoad().equals(null) && player.getLongestRoadDistance()>=5){
-							Board.getInstance().setWhoRoad(player);
+						
+						
+						if(Board.getInstance().getWhoRoad()==null){
+							if(player.getLongestRoadDistance()>=5 )
+								Board.getInstance().setWhoRoad(player);
 						}else{
 							if(Board.getInstance().getWhoRoad().getLongestRoadDistance()<player.getLongestRoadDistance())
 								Board.getInstance().setWhoRoad(player);
