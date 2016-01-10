@@ -141,8 +141,11 @@ public class Player {
 	//KARTY
 	//zwracanie kart na rêce
 
-	public ArrayList<Card> getCards() {
+/*	public ArrayList<Card> getCards() {
 		return cards;
+	}*/
+	public HashMap<DevelopType,Integer> getCards() {
+		return developCards;
 	}
 	//dodanie karty na rêke
 	public void addCard(Card card) {
@@ -246,4 +249,5 @@ public class Player {
 	public void addCard(DevelopType type) {
 		this.developCards.put(type,(developCards.get(type).intValue()+1));	
 	}
+	
 }
