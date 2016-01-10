@@ -22,6 +22,8 @@ public class Gameplay extends View implements InputProcessor
 {
 	public enum TradeState {
 	    MAKE_OFFER, RESPOND_OFFER, CHOOSE_RESPONSE ,NOTHING}
+	public enum CardMenu {
+	    TILE,MONOPOL,YEAR, NOTHING}
 	
 	public enum SelectedKey {
 	    Q,W,E,R,NOTHING}
@@ -104,14 +106,15 @@ public class Gameplay extends View implements InputProcessor
 
 	SelectedKey selected; //zapobiega kilkukrotnemu wcisnieciu Q lub W lub E
 	TradeState tradeState;
+	CardMenu cardState;
 	BitmapFont font;
-	
+	int tilenumber; //dla Soldiera
 	
 	public void init()
 	{
 		initRoadsTextures();
 		game=new Game();
-		
+		tilenumber=1;
 		
 		//karty
 		 cardyear=new Texture(Gdx.files.internal("gameplay/cards/year.png"));
@@ -130,6 +133,7 @@ public class Gameplay extends View implements InputProcessor
 		
 		selected=SelectedKey.NOTHING;
 		tradeState=TradeState.NOTHING;
+		cardState=CardMenu.NOTHING;
 		touchedBuildingRoads=null;
 		touchedBuildingID=null; //null gdy nic nie wcisniete
 		buildingsXY = new Coordinates[54];
@@ -315,6 +319,20 @@ public class Gameplay extends View implements InputProcessor
 		{
 			batch.draw(cardlongest,0,0);
 		}
+		
+		if(cardState==CardMenu.TILE)
+		{
+			batch.draw(menusoldier,0,0);
+			font.draw(batch,Integer.toString(tilenumber), 1150,198 );
+		}
+		if(cardState==CardMenu.MONOPOL ||cardState==CardMenu.YEAR )
+		{
+			batch.draw(menuresource,0,0);
+		}
+		
+		
+		
+		
 		
 		
 		ArrayList<DevelopType> cards= game.getThisPlayer().getCards();
@@ -760,7 +778,7 @@ public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
 private void cardsTouch(int X, int Y)
 {
-	if ( Y<screensizeY-623)
+	if ( Y<157)
 	{
 		ArrayList<DevelopType> cards=game.getThisPlayer().getCards();
 		if (cards.size()>0)
@@ -769,13 +787,11 @@ private void cardsTouch(int X, int Y)
 			if (X>771 &&  X<856 && cards.contains(DevelopType.POINT) )
 			{
 				DevelopmentCard.playCard(DevelopType.POINT, game.getThisPlayer(), "marcinniezda");
-				//Point.playCard(game.getThisPlayer());
 			}
 			//Year
 			else if (X>856 &&  X<940 && cards.contains(DevelopType.YEAR))
 			{
-				//TODO
-				//DevelopmentCard.playCard(DevelopType.POINT, game.getThisPlayer(), "marcinniezda");
+				cardState=CardMenu.YEAR;
 			}
 			//FreeRoads
 			else if (X>940 &&  X<1026 && cards.contains(DevelopType.ROAD))
@@ -785,18 +801,65 @@ private void cardsTouch(int X, int Y)
 			//Monopol
 			else if (X>1026 &&  X<1111 && cards.contains(DevelopType.MONOPOL))
 			{
-				//TODO
+				cardState=CardMenu.MONOPOL;
 			}
 			//Soldier
 			else if (X>1111 &&  X<1197 && cards.contains(DevelopType.SOLDIER))
 			{
-				//TODO
-				//DevelopmentCard.playCard(DevelopType.POINT, game.getThisPlayer(), tutajlcizba);
+				cardState=CardMenu.TILE;
 			}
+				
 		}
-		
-		
-		
+	
+	}
+	else if(cardState==CardMenu.TILE)
+	{
+		System.out.println("touched "+X +" "+ Y);
+		if (Y>199 &&  Y<216 && X>1142 && X<1172)
+		{
+			tilenumber=tilenumber+1;
+		}
+		if (Y>170 &&  Y<187 && X>1142 && X<1172)
+		{
+			DevelopmentCard.playCard(DevelopType.SOLDIER, game.getThisPlayer(), tilenumber);
+			cardState=CardMenu.NOTHING;
+			tilenumber=1;
+		}
+	}
+	else if(cardState==CardMenu.MONOPOL || cardState==CardMenu.YEAR)
+	{
+		DevelopType type=null;
+		if(cardState==CardMenu.MONOPOL)  type = DevelopType.MONOPOL;
+		if(cardState==CardMenu.YEAR)  type = DevelopType.YEAR;
+		if (Y>157 &&  Y<200)
+		{
+			if (X>870 &&  X<919)
+			{
+				DevelopmentCard.playCard(type, game.getThisPlayer(), "clay");
+				cardState=CardMenu.NOTHING;
+			}
+			else if (X>919 &&  X<956)
+			{
+				DevelopmentCard.playCard(type, game.getThisPlayer(), "grain");
+				cardState=CardMenu.NOTHING;
+			}
+			else if (X>956 &&  X<1007)
+			{
+				DevelopmentCard.playCard(type, game.getThisPlayer(), "ore");
+				cardState=CardMenu.NOTHING;
+			}
+			else if (X>1007 &&  X<1044)
+			{
+				DevelopmentCard.playCard(type, game.getThisPlayer(), "sheep");
+				cardState=CardMenu.NOTHING;
+			}
+			else if (X>1044&&  X<1088)
+			{
+				DevelopmentCard.playCard(type, game.getThisPlayer(), "wood");
+				cardState=CardMenu.NOTHING;
+			}
+			
+		}
 	}
 }
 
@@ -809,8 +872,6 @@ private void buycardTouch(int X, int Y)
 	if (X>330 && Y<153 && X<477 && Y>132 )
 	{
 		int wynik = game.getBoard().buyCard(game.getThisPlayer());
-		//TODO to do testów
-		System.out.println("zakupiono? "+ wynik);
 	}
 }
 
