@@ -168,7 +168,7 @@ public class Board implements Serializable{
 			tiles[i].setNumber(i);
 			//przypisanie z³odzieja do pustyni 
 			if(tiles[i].getType()=="Desert"){
-				tiles[0].changeThiefState();
+				//tiles[0].changeThiefState();
 				tiles[i].changeThiefState();				
 				thiefPosition=i;				
 			}
@@ -232,6 +232,28 @@ public class Board implements Serializable{
 				}
 			}
 		}
+		
+		//wgranie dodatkowych portów
+		// na posdstawie catan rules 5th 
+		nodes[0].setPort(portType.THREE);
+		nodes[3].setPort(portType.THREE);
+		nodes[26].setPort(portType.THREE);
+		nodes[32].setPort(portType.THREE);
+		nodes[52].setPort(portType.THREE);
+		nodes[49].setPort(portType.THREE);
+		nodes[47].setPort(portType.THREE);
+		nodes[51].setPort(portType.THREE);		
+		nodes[10].setPort(portType.ORE);
+		nodes[15].setPort(portType.ORE);
+		nodes[11].setPort(portType.WOOD);
+		nodes[16].setPort(portType.WOOD);		
+		nodes[33].setPort(portType.CLAY);
+		nodes[39].setPort(portType.CLAY);		
+		nodes[1].setPort(portType.GRAIN);
+		nodes[5].setPort(portType.GRAIN);
+		nodes[42].setPort(portType.SHEEP);
+		nodes[46].setPort(portType.SHEEP);
+
 	}
 	
 	private static class BoardHolder { 
@@ -347,7 +369,7 @@ public class Board implements Serializable{
 		{
 		from.changeThiefState();
 		to.changeThiefState();
-		
+		board.thiefPosition=to.getNumber;
 		steal(p,to);
 		
 		return 0;
