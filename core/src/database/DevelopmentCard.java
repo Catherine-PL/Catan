@@ -5,115 +5,69 @@ package database;
 
  */
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import database.*;
-import database.Road;
-public abstract class DevelopmentCard extends Card {
-
-	protected enum DevelopType{
-		YEAR,POINT,SOLDIER,ROAD,MONOPOL
-	}
-
-	
+public class DevelopmentCard{
+		
 	//TO DO interakcja okineka itp, w okienku wybieram co kradne, na planszy gdzie z³odzieja postawie, co z banku wezme, gdzie wybuduje drogi
 	
-	public void playCard(Player player,DevelopType which) {
+	public void playCard(DevelopType which,Player player, String resource) {
 		// TODO Auto-generated method stub
-		Tile to=null;
-		Player player2=null;
+		//Board board=Board.getInstance();
 		switch(which){
 		case YEAR:
-			//dodanie dwóch kart zasobu
-			chooseResources(player);
-			break;
-		case POINT:
-			//dodaje punkt po prostu
-			player.addPoints(1);
-			break;
-		case SOLDIER:
-			//przesuñ z³odzieja, ukradnij 1 kartê surowca innemu graczowi, dodaj 1 zo³nierza do puli
-			//interakcja wybranie gdzie go przeniesc
-			moveThief(to);
-			//interackja wybranie kogo okraœæ
-			steal(player,player2);//player2 ten od którego kradnê
-			player.addSoldier();
-			break;
-		case ROAD:
-			buildRoads(player);
+			player.changeResources(resource,2);
+			player.rmCard(DevelopType.YEAR);
 			break;
 		case MONOPOL:
-			chooseMonopol(player);
+			int sum=0,count=0;
+			for(Player p: Game.players){
+				count=p.getResources(resource);
+				p.changeResources(resource, -count);
+				sum=sum+count;
+			}
+			player.changeResources(resource,sum);
+			player.rmCard(DevelopType.MONOPOL);			
 			break;
+			
+			
+		case ROAD:
+			player.setFreeRoads(2);
+			player.rmCard(DevelopType.ROAD);
+			break;
+		case POINT:
+			player.addPoints(1);
+			player.rmCard(DevelopType.POINT);
+			break;	
 		}
-		
-		
 	}
-
-	private void chooseMonopol(Player player) {
-		// TODO Auto-generated method stub
-		ArrayList <ResourceCard> monopol = null;
-		String type;
-		Player thatPlayer;
-		//wybranie monopolu
-		
-		
-		
-		// dodanie kart wszystkich do vectora
-		
-		
-		
-		//
-		//przekazanie kart graczowi z wektora
-		while(!monopol.isEmpty()){
-			player.addCard(monopol.get(0));
-			monopol.remove(0);
+		public void playCard(DevelopType which,Player player, int where) {
+			// TODO Auto-generated method stub
+			Board board=Board.getInstance();
+				
+			if(which==DevelopType.SOLDIER){
+				player.addSoldier();		
+				if(board.getWhoArmy()==null ){
+					if(player.getSoldierCount()>=5)
+						board.setWhoArmy(player);
+				}
+				else
+				{
+					if(board.getWhoArmy().getSoldierCount()<player.getSoldierCount())
+						board.setWhoArmy(player);
+				}
+				board.moveThief(player,where);//podajê player'a który wywo³uje kartê, int to numer tile'a (z board.tiles)		
+				
+				player.rmCard(DevelopType.SOLDIER);
+			}
+			
+			
+			
+			
 		}
-		
-	}
-
-	private void chooseResources(Player player) {
-		// TODO interakcja wybranie kart
-		ResourceCard card1 = null,card2 = null;
-		
-		//wybranie kart
-		
-		
-		player.addCard(card1);
-		player.addCard(card2);
-	}
-
-	private void buildRoads(Player player) {
-		Node from = null,to = null;
-		Road r1=null,r2=null;
-		// TODO interakcja wybranie dróg na planszy
+				
 
 		
-		//wybranie dróg raz
-	//	r1.buildRoad(player, from, to, 1);
-		
-		
-		//wybranie dróg drugi raz
-		
-		//r2.buildRoad(player, from, to, 1);
-
-	}
-
-	//tu przekazujemy gracza od którego kradniemy
-	private void steal(Player player,Player player2) {
-		//
-		ResourceCard card = null;
-		ArrayList <Card> cardsToSteal=player2.getCards();//pobieramy jego karty, spokojnie do rysowania bêdzie zawsze max 7
-		int i=0;
-		
-		//tu po drodze trzeba wybraæ i
-		
-		card=(ResourceCard) cardsToSteal.get(i);
-		//
-		player.addCard(card);
-	}
-
-	//przekazuje gdzie ma przemieœciæ siê z³odziej, przy okazji sprawdzam czy gracz nie chce go daæ w to samo miejsce
-	
-	}
 
 }

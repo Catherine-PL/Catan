@@ -17,20 +17,19 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Board implements Serializable{
-	//private Map<Character ,Integer> letterToNumber = new HashMap<Character, Integer>();
 	public int thiefPosition=0;
 	private Player whoArmy=null;
 	private Player whoRoad=null;
 	private Node[] nodes = new Node[54];
-	//rivate int[][] adjencyMatrix=new int[54][54];
+	//private int[][] adjencyMatrix=new int[54][54];
+	//private int[][] tilesToNodes=new int[19[54];
 	private int[] letterToNumber=new int [] {5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11};//zamiast tego ca³ego ABCDEF
 	public int numbersLayout=0;
 	
-	//private int[][] numberToDice=new int[][] {{9,10,8,12,5,4,3,11,6,11,9,6,4,3,10,2,8,5},{5,2,6,8,10,9,3,3,11,4,8,4,6,5,10,11,12,9},{4,8,4,6,5,10,11,12,9,5,2,6,8,10,9,3,3,11},{11,12,9,5,2,6,8,10,9,3,3,11,4,8,4,6,5,10},{8,4,6,5,10,11,12,9,5,2,6,8,10,9,3,3,11,4}};
-	//private int [][] tileToDice=new int [19][2];
-	public  ArrayList <Road> boardRoads=new ArrayList<Road> ();
 	
-	private ArrayList <Card> developmentCards=new ArrayList <Card>();
+	public  ArrayList <Road> boardRoads=new ArrayList<Road> ();
+	private HashMap <DevelopType,Integer> BdevelopCards= new HashMap <DevelopType,Integer>();
+	
 	private int[][] adjencyMatrix=new int[][] {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -153,43 +152,27 @@ public class Board implements Serializable{
 	//instantiated
 	protected Board(){
 		
-		//tworzenie puli kart rozwoju
-		CardFactory cardFactory=new CardFactory();
 		
-		for(int i=0;i<14;i++)
-		developmentCards.add(cardFactory.getCard("soldier"));
-		for(int i=0;i<5;i++)
-		developmentCards.add(cardFactory.getCard("point"));
-
-		developmentCards.add(cardFactory.getCard("year"));
-		developmentCards.add(cardFactory.getCard("year"));
-		developmentCards.add(cardFactory.getCard("monopol"));
-		developmentCards.add(cardFactory.getCard("monopol"));
-		developmentCards.add(cardFactory.getCard("FreeRoads"));
-		developmentCards.add(cardFactory.getCard("FreeRoads"));
-		
-		//przemieszanie kart rozwoju
-		Collections.shuffle(developmentCards);
+		BdevelopCards.put(DevelopType.MONOPOL, 2);
+		BdevelopCards.put(DevelopType.POINT, 5);
+		BdevelopCards.put(DevelopType.ROAD, 2);
+		BdevelopCards.put(DevelopType.SOLDIER, 14);
+		BdevelopCards.put(DevelopType.YEAR, 2);
 		
 		//generowanie planszy
 		//przemieszanie kafli l¹du
 		Collections.shuffle(Arrays.asList(tiles));
 		
-	//int l=0;
+	
 		for(int i=0;i<19;i++){		
 			tiles[i].setNumber(i);
 			//przypisanie z³odzieja do pustyni 
 			if(tiles[i].getType()=="Desert"){
 				tiles[0].changeThiefState();
-				tiles[i].changeThiefState();
-				//tiles[i].setDiceNumber(0);
+				tiles[i].changeThiefState();				
 				thiefPosition=i;				
 			}
-			//else
-			//{
-		//		tiles[i].setDiceNumber(numberToDice[numbersLayout][l]);
-		//		l++;
-			//}
+			
 		}
 			
 		//numer koœci do tile
@@ -314,7 +297,24 @@ public class Board implements Serializable{
 				e.printStackTrace();
 			}	
 	}
-	
+	public void loadTileToNodeMatrix(){
+		 //wczytanie macierzy sasiedztwa
+			Scanner scanner;
+			try {
+				scanner = new Scanner(new File("src\\database\\TileToNode.txt"));
+				for(int i=0;i<19;i++){
+		    		for(int j=0;j<54;j++){
+		    			if(scanner.hasNextInt())
+		    				tilesToNodes[i][j] = scanner.nextInt();
+		    		}
+			    }
+				scanner.close();
+			}
+			catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+	}
 	public Tile getTile(int index){
 		return tiles[index];
 	}
@@ -459,21 +459,55 @@ public class Board implements Serializable{
 			whoRoad.addPoints(2);
 		}
 	}
+	/*
+	 * 0-uda³o siê
+	 * 2-nie masz surowców
+	 * 3-brak³o kart
+	 */
 	
-	public void buyCard(Player player){
+	public int buyCard(Player player){
 		Board board=Board.getInstance();
-		if(board.developmentCards.get(1)!=null){
-			Card card= board.developmentCards.get(0);
-			player.addCard(card);
-			board.developmentCards.remove(card);
-			
-			player.changeResources("grain", -1);
-			player.changeResources("ore", -1);
-			player.changeResources("sheep", -1);
+		ArrayList <DevelopType> types=new ArrayList<DevelopType>();
+		Random generator=new Random();
+		DevelopType type=null;
+		
+		types.add(DevelopType.MONOPOL);
+		types.add(DevelopType.POINT);
+		types.add(DevelopType.ROAD);
+		types.add(DevelopType.SOLDIER);
+		types.add(DevelopType.YEAR);
 
+			boolean gotCard=false;
+			while(!gotCard){
+				if(types.size()>0){
+					type=types.get(generator.nextInt(types.size()));
+					if(board.BdevelopCards.get(type)>0){
+						gotCard=true;
+					}
+					else
+						types.remove(type);
+				}
+				else{
+					return 3;
+				}	
+								
+			}
+			
+			if(player.getResources("grain")>=1 && player.getResources("ore")>=1 && player.getResources("sheep")>=1){
+				player.addCard(type);
+				board.BdevelopCards.put(type, board.BdevelopCards.get(type)-1);
+				player.changeResources("grain", -1);
+				player.changeResources("ore", -1);
+				player.changeResources("sheep", -1);
+			}
+			else
+				return 2;
+			
+			return 0;
 			
 		}
-	}
+	
+	
 	public static void main(String [ ] args) throws FileNotFoundException{
 		Board board = Board.getInstance();
 		
@@ -555,137 +589,6 @@ public class Board implements Serializable{
 	
 
 
-	public void testMarcin(){
-		
-		
-		
-
-		System.out.println(board.tilesToNodes[53][0]);
-		for(Tile t:board.tiles){
-			//System.out.println(t.getNumber()+" "+t.getType()+" "+t.getDiceNumber());
-			//System.out.print("\n"+t.getNumber()+" "+t.getType()+" "+t.getDiceNumber());
-				//for(Node n: t.getTileNodes())
-			//		System.out.print(n.getNodeNumber()+"  ");
-		}
-		Player p=new Player(3);
-		System.out.println(p.getResources("clay"));
-		System.out.println(p.getResources("grain"));
-		System.out.println(p.getResources("sheep"));
-		System.out.println(p.getResources("ore"));
-		System.out.println(p.getResources("wood")+"------");
-		
-		Building.buildSettlement(p, board.getNodes()[0]);
-		
-		board.resourceDistribution(board.getNodes()[0].getNearResources().get(0).getDiceNumber());
-		System.out.println(p.getResources("clay"));
-		System.out.println(p.getResources("grain"));
-		System.out.println(p.getResources("sheep"));
-		System.out.println(p.getResources("ore"));
-		System.out.println(p.getResources("wood"));
-	
-		
-		System.out.println(board.developmentCards.get(0));
-		board.buyCard(p);
-		System.out.println(p.getResources("clay"));
-		System.out.println(p.getResources("grain"));
-		System.out.println(p.getResources("sheep"));
-		System.out.println(p.getResources("ore"));
-		System.out.println(p.getResources("wood"));
-		System.out.println(board.developmentCards.get(0));
-		
-		//nie usuwajcie tego narazie dobra
-		//st¹d sobie kopiuje kod do testów, a nie chce wrzycaæ zasmieconego main'a
-		//System.out.println("\n jest "+board.boardRoads.size()+" drog \n ");//zwroci ile jest drog
-
-		//testowanie Marcin
-		Board board = Board.getInstance();
-		Player p1=new Player(3), p2=new Player(2);
-		
-		p1.changeResources("grain", 500);
-		p1.changeResources("sheep",500);
-		p1.changeResources("wood", 500);
-		p1.changeResources("clay", 500);		
-		/*
-		for(Node e: board.getNodes()){
-			System.out.print(e.getNodeNumber()+"przed"+e.getPlayerNumber());
-			Building.buildSettlement(p1, e);
-			System.out.println(e.getNodeNumber()+"po"+e.getPlayerNumber());
-		}*/
-		int i=0;
-		
-		/*for(Node n: board.nodes){
-			System.out.println(n.getNodeNumber()+" "+n.getRoadRoad().isEmpty());
-		}*/
-		//new Road(p1,board.nodes[0],board.nodes[3],0);
-		//new Road(p1,board.nodes[0],board.nodes[4],0);
-		//board.nodes[0].getRoadRoad().  buildRoad(p1,board.nodes[0],board.nodes[3],0);
-		
-		
-		board.nodes[0].buildRoadRoad(p1,board.nodes[0],board.nodes[3],1);
-		ArrayList <Integer> dr=new ArrayList <Integer>();
-		dr=board.nodes[0].getRoadsToImprove();
-		for(Integer a:dr){
-			System.out.println(" * "+a+" * ");
-		}
-		
-		
-		
-		System.out.println("----------------------");
-		for(Road r:board.nodes[0].getRoadRoad()){
-			System.out.println(r.getFrom().getNodeNumber()+"----"+r.getTo().getNodeNumber()+" state"+r.getState()+"owner:"+r.getOwnerID());
-		}
-		System.out.println(board.nodes[0].getPlayerNumber()+"--------");
-		System.out.println("X "+board.nodes[0].getRoadRoad().size());
-
-		board.nodes[0].buildRoadRoad(p1,board.nodes[0],board.nodes[3],1);
-		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
-		board.nodes[0].buildRoadRoad(p1,board.nodes[0],board.nodes[4],1);
-		
-		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-		System.out.println("X "+board.nodes[0].getRoadRoad().size());
-
-		System.out.println("----------------------");
-		for(Road r:board.nodes[0].getRoadRoad()){
-			System.out.println("********\n"+r.getFrom().getNodeNumber()+"----"+r.getTo().getNodeNumber()+"\n state: "+r.getState()+"owner: "+r.getOwnerID()+"\n*********");
-		}
-		
-		System.out.println("droga z 53");
-		for(Road r:board.nodes[16].getRoadRoad()){
-			System.out.println("********\n"+r.getFrom().getNodeNumber()+"----"+r.getTo().getNodeNumber()+"\n state: "+r.getState()+"owner: "+r.getOwnerID()+"\n*********");
-		}
-		board.nodes[16].buildRoadRoad(p1,board.nodes[16],board.nodes[21],1);
-		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-		System.out.println("----------------------");
-		for(Road r:board.nodes[16].getRoadRoad()){
-			System.out.println("********\n"+r.getFrom().getNodeNumber()+"----"+r.getTo().getNodeNumber()+"\n state: "+r.getState()+"owner: "+r.getOwnerID()+"\n*********");
-		}
-		
-		
-//		System.out.println("X "+board.nodes[0].getRoadRoad().size());
-		/*
-		System.out.println("----------------------");
-		
-		System.out.println(board.nodes[0].getRoadRoad().get(0).ID+" "+board.nodes[0].getRoadRoad().get(0).getFrom());
-		System.out.println(board.nodes[0].getRoadRoad().get(1).ID+" "+board.nodes[0].getRoadRoad().get(0).getFrom());
-		board.nodes[0].getRoadRoad().get(1).buildRoad(p1, board.nodes[4], board.nodes[0], 0);
-		board.nodes[0].getRoadRoad().get(1).buildRoad(p1, board.nodes[4], board.nodes[0], 0);
-		System.out.println("----------------------");
-		for(Road r:board.nodes[0].getRoadRoad()){
-			System.out.println(r.getFrom().getNodeNumber()+"----"+r.getTo().getNodeNumber()+" state"+r.getState()+"owner:"+r.getOwnerID());
-		}
-		System.out.println("----------------------");
-	
-		*/
-		/*
-		for(Node temp:board.nodes){
-			int [][]temp2=temp.getNodeRoadOwner2();
-			System.out.println("*****************\n"+temp.getNodeNumber());
-			for( int i=0;i<3;i++){
-				System.out.print("\ndo Noda numer"+temp2[i][0]+"\t stan boardRoads "+temp2[i][1]+" wlasciciel tej boardRoads "+temp2[i][2]+"\n");
-			}
-		}
-		*/
 	}
 
 

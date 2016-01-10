@@ -22,6 +22,7 @@ public class Player {
 	private String name=null;
 	private Texture avatar=null;
 	private	ArrayList<Card> cards=new ArrayList <Card>();			//metody add,rm,get
+	private HashMap <DevelopType,Integer> developCards= new HashMap <DevelopType,Integer>();
 	private	int points;						//metody get,set,check
 	private HashMap <String,Integer> resources=new HashMap <String,Integer>();	//get,change
 	private	ArrayList <SpecialCard> specialCards=new ArrayList <SpecialCard>();//add,rm,get
@@ -50,6 +51,13 @@ public class Player {
 		resources.put("ore", 10) ;
 		resources.put("sheep", 10) ;
 		resources.put("wood", 10) ;
+		developCards.put(DevelopType.MONOPOL, 0);
+		developCards.put(DevelopType.POINT, 0);
+		developCards.put(DevelopType.ROAD, 0);
+		developCards.put(DevelopType.SOLDIER, 0);
+		developCards.put(DevelopType.YEAR, 0);
+
+		
 		soldierCount=0;
 		longestRoadDistance=0;
 		points=0;
@@ -230,5 +238,12 @@ public class Player {
 	public void setLongestRoadDistance(int longestRoadDistance) {
 		this.longestRoadDistance = longestRoadDistance;
 	}
-	
+
+	public void rmCard(DevelopType type) {
+		// TODO Auto-generated method stub
+		this.developCards.put(type,(developCards.get(type).intValue()-1));		
+	}
+	public void addCard(DevelopType type) {
+		this.developCards.put(type,(developCards.get(type).intValue()+1));	
+	}
 }
