@@ -28,6 +28,10 @@ public class Gameplay extends View implements InputProcessor
 	public enum SelectedKey {
 	    Q,W,E,R,NOTHING}
 	
+	public enum TradePlayer {
+	    NOTHING,WAITING,REFUSED,ACCEPTED}
+	
+	
 	class Coordinates
 	{
 		private int x;
@@ -65,7 +69,9 @@ public class Gameplay extends View implements InputProcessor
 	private Texture makeoffer;
 	private Texture chooseoffer;
 	private Texture reviewoffer;
-	
+	private Texture offerwait;
+	private Texture offeraccepted;
+	private Texture offerrefused;
 	
 	private Texture citymenu;
 	private Texture nobuildingmenu;
@@ -94,7 +100,7 @@ public class Gameplay extends View implements InputProcessor
 	private Texture[] acColor = new Texture[4];
 	private Texture[] dice = new Texture[6];
 	private int[] tradeGoods=new int[10]; 
-	
+	public TradePlayer[] tradePlayers = new TradePlayer[4];
 	
 	//tekstury na wszystkie tile
 	private ArrayList<Texture> textures = new ArrayList<Texture>();
@@ -112,6 +118,13 @@ public class Gameplay extends View implements InputProcessor
 	
 	public void init()
 	{
+		//TODO chce miec statusy ludzi ktorzy sa w grze
+		tradePlayers[0]=TradePlayer.WAITING;
+		tradePlayers[1]=TradePlayer.WAITING;  
+		tradePlayers[2]=TradePlayer.WAITING;  
+		tradePlayers[3]=TradePlayer.WAITING;  
+		
+		
 		game=new Game();
 		initRoadsTextures();
 		tilenumber=0;
@@ -160,6 +173,11 @@ public class Gameplay extends View implements InputProcessor
 		makeoffer =new Texture(Gdx.files.internal("gameplay/trade/offer1.png"));
 		chooseoffer= new Texture(Gdx.files.internal("gameplay/trade/offer3.png"));
 		reviewoffer =new Texture(Gdx.files.internal("gameplay/trade/offer2.png"));
+		offerwait=new Texture(Gdx.files.internal("gameplay/trade/textwaiting.png"));;
+		offeraccepted=new Texture(Gdx.files.internal("gameplay/trade/textaccepted.png"));;
+		offerrefused=new Texture(Gdx.files.internal("gameplay/trade/textrefused.png"));;
+		
+		
 		
 		
 		city = new Texture(Gdx.files.internal("gameplay/buildings/city.png"));
@@ -375,12 +393,34 @@ public class Gameplay extends View implements InputProcessor
 		if (tradeState==TradeState.CHOOSE_RESPONSE)
 		{
 			//TODO
-			batch.draw(chooseoffer,0,screensizeY-197);
+			batch.draw(chooseoffer,0,screensizeY-231);
+			//TODO uwaga mog¹ byæ zmiany jak wejdzie network!
+		
+			font.getData().setScale(1.0f, 1.0f);
+			for(int i=0;i<game.getPlayers().length;i++)
+			{
+				if(game.getPlayers()[i]!=game.getActualPlayer())
+				{
+					font.draw(batch, game.getPlayers()[i].getName(), 10, screensizeY-130-20*i);
+					if(tradePlayers[i]==TradePlayer.WAITING) batch.draw(offerwait,0,screensizeY-150-20*i);
+					if(tradePlayers[i]==TradePlayer.ACCEPTED)
+					{
+						font.draw(batch, Integer.toString(i), 195, screensizeY-130-20*i);
+						batch.draw(offeraccepted,0,screensizeY-150-20*i);
+					}
+					if(tradePlayers[i]==TradePlayer.REFUSED) batch.draw(offerrefused,0,screensizeY-150-20*i);
+					
+					
+					
+					
+				}
+			}
+			font.getData().setScale(1.5f, 1.5f);
 		}
 		
 		if (tradeState==TradeState.RESPOND_OFFER)
 		{
-			//TODO
+			//TODO imie proponuj¹cego
 			batch.draw(reviewoffer,0,screensizeY-173);
 			
 			//wyswietlanie liczb
@@ -657,8 +697,87 @@ public class Gameplay extends View implements InputProcessor
 
 @Override
 public boolean keyDown(int keycode) {
+	//handel poza nasz¹ tur¹ - odebranie propozycji 
+	//rezygnacja
+	if(Gdx.input.isKeyPressed(Keys.Q) && tradeState==TradeState.RESPOND_OFFER) 
+	 {
+		//TODO refuse
+		tradeState=TradeState.NOTHING;
+		for(int i=0;i<10;i++)
+		{
+			tradeGoods[i]=0;
+		}
+	 }
+	
+	if(Gdx.input.isKeyPressed(Keys.A) && tradeState==TradeState.RESPOND_OFFER) 
+	{
+			//TODO accept
+			tradeState=TradeState.NOTHING;
+			for(int i=0;i<10;i++)
+			{
+				tradeGoods[i]=0;
+			}
+	}	
+	
+	//handel od strony wysy³aj¹cego
+	if(Gdx.input.isKeyPressed(Keys.Q) && tradeState==TradeState.CHOOSE_RESPONSE) 
+	 {
+		tradeState=TradeState.NOTHING;
+		for(int i=0;i<10;i++)
+		{
+			tradeGoods[i]=0;
+		}
+		
+		//TODO info ¿e zrezygnowaliœmy do graczy
+	 }
+	//numeryczne do trade'a
+	if(tradeState==TradeState.CHOOSE_RESPONSE)
+	{
+		 if(Gdx.input.isKeyPressed(Keys.NUM_0 ) && tradePlayers[0]==TradePlayer.ACCEPTED) 
+		 { 
+			//TODO akceptacja
+			 tradeState=TradeState.NOTHING;
+			 for(int i=0;i<4;i++)
+			 {
+				 tradePlayers[i]=TradePlayer.WAITING;
+			 }
+			 
+		 }
+		 if(Gdx.input.isKeyPressed(Keys.NUM_1 ) && tradePlayers[1]==TradePlayer.ACCEPTED) 
+		 {
+			//TODO akceptacja
+			 tradeState=TradeState.NOTHING;
+			 for(int i=0;i<4;i++)
+			 {
+				 tradePlayers[i]=TradePlayer.WAITING;
+			 }
+		 }
+		 if(Gdx.input.isKeyPressed(Keys.NUM_2 ) && tradePlayers[2]==TradePlayer.ACCEPTED)
+		 {
+			//TODO akceptacja
+			 tradeState=TradeState.NOTHING;
+			 for(int i=0;i<4;i++)
+			 {
+				 tradePlayers[i]=TradePlayer.WAITING;
+			 }
+		 }
+		 if(Gdx.input.isKeyPressed(Keys.NUM_3 ) && tradePlayers[3]==TradePlayer.ACCEPTED)
+		 {
+			//TODO akceptacja
+			 tradeState=TradeState.NOTHING;
+			 for(int i=0;i<4;i++)
+			 {
+				 tradePlayers[i]=TradePlayer.WAITING;
+			 }
+		 }
+
+	}
+	
+	
+	
+	
 	//wcisniecie QWER
-	if(touchedBuildingID!=null)
+	else if(touchedBuildingID!=null)
 	{
 		//to do wyboru drogi.
 		if(selected==SelectedKey.E)
@@ -690,6 +809,8 @@ public boolean keyDown(int keycode) {
 		{	
 			 if(Gdx.input.isKeyPressed(Keys.Q)) //build settlement
 			 {
+}
+				 
 				 int build=0;
 				 selected=SelectedKey.Q;
 				 build =Building.buildSettlement(game.getThisPlayer(), game.getBoard().getNode(touchedBuildingID));
@@ -750,7 +871,7 @@ public boolean keyDown(int keycode) {
 			 selected=SelectedKey.NOTHING;
 			 return true;
 		 }
-	}
+	
 
     return false;
 }
@@ -779,6 +900,8 @@ public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 			if (X>510 && Y<screensizeY-610 && X<670 && Y>screensizeY-635 )
 			{
 				//TODO
+				selected=SelectedKey.NOTHING;
+				touchedBuildingID=null;
 				game.endTurn();
 				return true;
 			}
@@ -903,7 +1026,7 @@ private boolean buycardTouch(int X, int Y)
 {
 	if (X>330 && Y<153 && X<477 && Y>132 )
 	{
-		int wynik = game.getBoard().buyCard(game.getThisPlayer());
+		game.getBoard().buyCard(game.getThisPlayer());
 		return true;
 	}
 	return false;
