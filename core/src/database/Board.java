@@ -168,7 +168,11 @@ public class Board implements Serializable{
 			tiles[i].setNumber(i);
 			//przypisanie z³odzieja do pustyni 
 			if(tiles[i].getType()=="Desert"){
+<<<<<<< HEAD
 				//tiles[0].changeThiefState();
+=======
+			//	tiles[0].changeThiefState();
+>>>>>>> 6cd9b16ce56a21286737bb512a0e3cf1d31782ed
 				tiles[i].changeThiefState();				
 				thiefPosition=i;				
 			}
