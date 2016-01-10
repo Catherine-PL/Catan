@@ -2,6 +2,7 @@ package representation;
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
@@ -57,6 +58,7 @@ public class Gameplay extends View implements InputProcessor
 	private Texture background;
 	private Texture trade;
 	private Texture endofturn;
+	private Texture buycard;
 	
 	private Texture makeoffer;
 	private Texture chooseoffer;
@@ -70,6 +72,20 @@ public class Gameplay extends View implements InputProcessor
 	private Texture city;
 	private Texture nobuilding;
 	private Texture village;
+	
+	//karty
+	private Texture cardyear;
+	private Texture cardpoint;
+	private Texture cardmonopol;
+	private Texture cardfree;
+	private Texture cardsoldier;
+	private Texture cardlongest;
+	private Texture cardbiggest;
+	//menu kart
+	private Texture menuresource;
+	private Texture menusoldier;
+	
+	
 	
 	private Texture[] roads = new Texture[12];
 	private Texture[] buildingColor = new Texture[4];
@@ -95,6 +111,23 @@ public class Gameplay extends View implements InputProcessor
 	{
 		initRoadsTextures();
 		game=new Game();
+		
+		
+		//karty
+		 cardyear=new Texture(Gdx.files.internal("gameplay/cards/year.png"));
+		  cardpoint=new Texture(Gdx.files.internal("gameplay/cards/point.png"));
+		  cardmonopol=new Texture(Gdx.files.internal("gameplay/cards/monopol.png"));
+		  cardfree=new Texture(Gdx.files.internal("gameplay/cards/freeroads.png"));
+		  cardsoldier=new Texture(Gdx.files.internal("gameplay/cards/soldier.png"));
+		  cardlongest=new Texture(Gdx.files.internal("gameplay/cards/longestroad.png"));
+		  cardbiggest=new Texture(Gdx.files.internal("gameplay/cards/biggestarmy.png"));
+		//menu kart
+		  menuresource=new Texture(Gdx.files.internal("gameplay/cards/menuresource.png"));
+		  menusoldier=new Texture(Gdx.files.internal("gameplay/cards/menusoldier.png"));
+		
+		
+
+		
 		selected=SelectedKey.NOTHING;
 		tradeState=TradeState.RESPOND_OFFER;
 		touchedBuildingRoads=null;
@@ -117,6 +150,7 @@ public class Gameplay extends View implements InputProcessor
 		gameplayMenu = new Texture(Gdx.files.internal("gameplay/menugameplay.png"));
 		trade = new Texture(Gdx.files.internal("gameplay/trade.png"));
 		endofturn = new Texture(Gdx.files.internal("gameplay/endofturn.png"));
+		buycard = new Texture(Gdx.files.internal("gameplay/buycard.png"));
 		
 		makeoffer =new Texture(Gdx.files.internal("gameplay/trade/offer1.png"));
 		chooseoffer= new Texture(Gdx.files.internal("gameplay/trade/offer3.png"));
@@ -151,6 +185,7 @@ public class Gameplay extends View implements InputProcessor
 		batchRoads();
 		batchBuildings();
 		batchTrade();
+		batchCards();
 		batch.end();
 		batchTouchedBuildingRoads();
 	}	
@@ -270,7 +305,48 @@ public class Gameplay extends View implements InputProcessor
 	}
 	
 	
-
+	private void batchCards()
+	{
+		if (game.getThisPlayer().getBiggestArmy()==true)
+		{
+			batch.draw(cardbiggest ,0,0);
+		}
+		if (game.getThisPlayer().getLongestRoad() ==true)
+		{
+			batch.draw(cardlongest,0,0);
+		}
+		
+		
+		ArrayList<Card> cards= game.getThisPlayer().getCards();
+		for (Card c : cards)
+		{
+			c.getType();
+			switch (c.getType())
+			{
+			case MONOPOL:
+				batch.draw(cardmonopol,0,0);
+				break;
+			case POINT:
+				batch.draw(cardpoint,0,0);
+				break;
+			case ROAD:
+				batch.draw(cardfree,0,0);
+				break;
+			case SOLDIER:
+				batch.draw(cardsoldier,0,0);
+				break;
+			case YEAR:
+				batch.draw(cardyear,0,0);
+				break;
+			default:
+				break;
+			}
+		}
+		batch.draw(makeoffer,0,screensizeY-150);
+	}
+	
+	
+	
 	private void batchTrade()
 	{
 		if (tradeState==TradeState.MAKE_OFFER)
@@ -519,7 +595,7 @@ public class Gameplay extends View implements InputProcessor
 		//ocean
 		batch.draw(background,0,0);		
 		//ten gracz
-		batch.draw(game.getActualPlayer().getAvatar(),0,0);
+		batch.draw(game.getThisPlayer().getAvatar(),0,0);
 		//wyswietlenie paska na zasoby, opcje,miasta,drogi i punkty
 		batch.draw(gameplayMenu,0,0);
 		//wyswietlenie postaci gracza który aktualnie gra
@@ -533,17 +609,19 @@ public class Gameplay extends View implements InputProcessor
 		font.draw(batch, " "+game.getActualPlayer().getName(), 1160,500);
 		//koniec kolejki
 		batch.draw(endofturn,screensizeX/2-180 ,110);
+		//kup karte
+		batch.draw(buycard,0,6);
 		//handluj
 		batch.draw(trade,screensizeX/2-30,110);
 		//liczby od surowców
 		int X=170;
 		int Y=82;
-		font.draw(batch, " "+game.getActualPlayer().getResources("clay"), X,Y);
-		font.draw(batch, " "+game.getActualPlayer().getResources("grain"), X+120,Y);
-		font.draw(batch, " "+game.getActualPlayer().getResources("ore"), X+2*120,Y);
-		font.draw(batch, " "+game.getActualPlayer().getResources("sheep"), X+3*118,Y);
-		font.draw(batch, " "+game.getActualPlayer().getResources("wood"), X+4*120,Y);
-		font.draw(batch, " "+game.getActualPlayer().getPoints(), X+4*120+65,Y);	
+		font.draw(batch, " "+game.getThisPlayer().getResources("clay"), X,Y);
+		font.draw(batch, " "+game.getThisPlayer().getResources("grain"), X+120,Y);
+		font.draw(batch, " "+game.getThisPlayer().getResources("ore"), X+2*120,Y);
+		font.draw(batch, " "+game.getThisPlayer().getResources("sheep"), X+3*118,Y);
+		font.draw(batch, " "+game.getThisPlayer().getResources("wood"), X+4*120,Y);
+		font.draw(batch, " "+game.getThisPlayer().getPoints(), X+4*120+65,Y);	
 		
 	}
 	
@@ -562,17 +640,17 @@ public boolean keyDown(int keycode) {
 			int noRoadsSize =(game.getBoard().getNode(touchedBuildingID)).getRoadsIdImprove().size();
 			 if(Gdx.input.isKeyPressed(Keys.NUM_1 ))
 			 {
-				 if(noRoadsSize>=1 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getActualPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
+				 if(noRoadsSize>=1 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
 				 selected=SelectedKey.E;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_2 ))
 			 {
-				 if(noRoadsSize>=2 ) game.getBoard().getNode(touchedBuildingID).buildRoad(game.getActualPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
+				 if(noRoadsSize>=2 ) game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
 				 selected=SelectedKey.E;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_3 ))
 			 {
-				 if(noRoadsSize>=3 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getActualPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
+				 if(noRoadsSize>=3 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
 				 selected=SelectedKey.E;
 			 }
 		}
@@ -585,7 +663,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 int build=0;
 				 selected=SelectedKey.Q;
-				 build =Building.buildSettlement(game.getActualPlayer(), game.getBoard().getNode(touchedBuildingID));
+				 build =Building.buildSettlement(game.getThisPlayer(), game.getBoard().getNode(touchedBuildingID));
 				 if(build>0) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingnocity.png"));}
 				 else 
 				 {
@@ -605,7 +683,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 int build=0;
 				 selected=SelectedKey.W;
-				 build =Building.buildCity(game.getActualPlayer(), game.getBoard().getNode(touchedBuildingID));
+				 build =Building.buildCity(game.getThisPlayer(), game.getBoard().getNode(touchedBuildingID));
 				 if(build>0) 
 				 { 
 					 if(game.getBoard().getNode(touchedBuildingID).getBuilding()==0) nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingnocity.png"));
@@ -661,6 +739,7 @@ public boolean keyTyped(char character) {
 @Override
 public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 	if(button == Buttons.LEFT){
+		//TODO dodaæ else if bo po co  ma siê sprawdzaæ wszystko jak ju¿ klikniêcie by³o
 		int X=screenX;
 		int Y=screensizeY - screenY;
 	
@@ -673,10 +752,61 @@ public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		}
 		//trade
 		tradeTouch(X,Y);
+		buycardTouch(X,Y);
+		cardsTouch(X,Y);
 		
 	}
     return false;
 }
+
+
+private void cardsTouch(int X, int Y)
+{
+	if ( Y<screensizeY-623)
+	{
+		//TODO nie umiem wywo³aæ metod kart
+		//Point
+		if (X>771 &&  X<856 )
+		{
+			//Point.playCard(game.getThisPlayer());
+		}
+		//Year
+		else if (X>856 &&  X<940 )
+		{
+			
+		}
+		//FreeRoads
+		else if (X>940 &&  X<1026 )
+		{
+			
+		}
+		//Monopol
+		else if (X>1026 &&  X<1111 )
+		{
+			
+		}
+		//Soldier
+		else if (X>1111 &&  X<1197 )
+		{
+			
+		}
+		
+	}
+}
+
+
+
+
+
+private void buycardTouch(int X, int Y)
+{
+	if (X>330 && Y<screensizeY-638 && X<477 && Y>screensizeY-664 )
+	{
+		//TODO odkomentowaæ jak bêdzie dzia³aæ 
+		//game.getBoard().buyCard(game.getThisPlayer());
+	}
+}
+
 
 
 private void tradeTouch(int X, int Y)
