@@ -318,8 +318,11 @@ public class Gameplay extends View implements InputProcessor
 		
 		
 		ArrayList<Card> cards= game.getThisPlayer().getCards();
+		//TODO testy to s¹
+		System.out.println("rozmiar kart to" + cards.size());
 		for (Card c : cards)
 		{
+			System.out.println("coœ mam" + c.toString());
 			c.getType();
 			switch (c.getType())
 			{
@@ -764,31 +767,33 @@ private void cardsTouch(int X, int Y)
 {
 	if ( Y<screensizeY-623)
 	{
-		//TODO nie umiem wywo³aæ metod kart
 		//Point
 		if (X>771 &&  X<856 )
 		{
+			DevelopmentCard.playCard(DevelopType.POINT, game.getThisPlayer(), "marcinniezda");
 			//Point.playCard(game.getThisPlayer());
 		}
 		//Year
 		else if (X>856 &&  X<940 )
 		{
-			
+			//TODO
+			//DevelopmentCard.playCard(DevelopType.POINT, game.getThisPlayer(), "marcinniezda");
 		}
 		//FreeRoads
 		else if (X>940 &&  X<1026 )
 		{
-			
+			DevelopmentCard.playCard(DevelopType.ROAD, game.getThisPlayer(), "marcinniezda");
 		}
 		//Monopol
 		else if (X>1026 &&  X<1111 )
 		{
-			
+			//TODO
 		}
 		//Soldier
 		else if (X>1111 &&  X<1197 )
 		{
-			
+			//TODO
+			//DevelopmentCard.playCard(DevelopType.POINT, game.getThisPlayer(), tutajlcizba);
 		}
 		
 	}
@@ -800,10 +805,11 @@ private void cardsTouch(int X, int Y)
 
 private void buycardTouch(int X, int Y)
 {
-	if (X>330 && Y<screensizeY-638 && X<477 && Y>screensizeY-664 )
+	if (X>330 && Y<153 && X<477 && Y>132 )
 	{
-		//TODO odkomentowaæ jak bêdzie dzia³aæ 
-		//game.getBoard().buyCard(game.getThisPlayer());
+		int wynik = game.getBoard().buyCard(game.getThisPlayer());
+		//TODO to do testów
+		System.out.println("zakupiono? "+ wynik);
 	}
 }
 
