@@ -129,7 +129,7 @@ public class Gameplay extends View implements InputProcessor
 
 		
 		selected=SelectedKey.NOTHING;
-		tradeState=TradeState.RESPOND_OFFER;
+		tradeState=TradeState.NOTHING;
 		touchedBuildingRoads=null;
 		touchedBuildingID=null; //null gdy nic nie wcisniete
 		buildingsXY = new Coordinates[54];
@@ -317,14 +317,10 @@ public class Gameplay extends View implements InputProcessor
 		}
 		
 		
-		ArrayList<Card> cards= game.getThisPlayer().getCards();
-		//TODO testy to s¹
-		System.out.println("rozmiar kart to" + cards.size());
-		for (Card c : cards)
+		ArrayList<DevelopType> cards= game.getThisPlayer().getCards();
+		for (DevelopType c : cards)
 		{
-			System.out.println("coœ mam" + c.toString());
-			c.getType();
-			switch (c.getType())
+			switch (c)
 			{
 			case MONOPOL:
 				batch.draw(cardmonopol,0,0);
@@ -345,7 +341,6 @@ public class Gameplay extends View implements InputProcessor
 				break;
 			}
 		}
-		batch.draw(makeoffer,0,screensizeY-150);
 	}
 	
 	
@@ -767,34 +762,40 @@ private void cardsTouch(int X, int Y)
 {
 	if ( Y<screensizeY-623)
 	{
-		//Point
-		if (X>771 &&  X<856 )
+		ArrayList<DevelopType> cards=game.getThisPlayer().getCards();
+		if (cards.size()>0)
 		{
-			DevelopmentCard.playCard(DevelopType.POINT, game.getThisPlayer(), "marcinniezda");
-			//Point.playCard(game.getThisPlayer());
+			//Point
+			if (X>771 &&  X<856 && cards.contains(DevelopType.POINT) )
+			{
+				DevelopmentCard.playCard(DevelopType.POINT, game.getThisPlayer(), "marcinniezda");
+				//Point.playCard(game.getThisPlayer());
+			}
+			//Year
+			else if (X>856 &&  X<940 && cards.contains(DevelopType.YEAR))
+			{
+				//TODO
+				//DevelopmentCard.playCard(DevelopType.POINT, game.getThisPlayer(), "marcinniezda");
+			}
+			//FreeRoads
+			else if (X>940 &&  X<1026 && cards.contains(DevelopType.ROAD))
+			{
+				DevelopmentCard.playCard(DevelopType.ROAD, game.getThisPlayer(), "marcinniezda");
+			}
+			//Monopol
+			else if (X>1026 &&  X<1111 && cards.contains(DevelopType.MONOPOL))
+			{
+				//TODO
+			}
+			//Soldier
+			else if (X>1111 &&  X<1197 && cards.contains(DevelopType.SOLDIER))
+			{
+				//TODO
+				//DevelopmentCard.playCard(DevelopType.POINT, game.getThisPlayer(), tutajlcizba);
+			}
 		}
-		//Year
-		else if (X>856 &&  X<940 )
-		{
-			//TODO
-			//DevelopmentCard.playCard(DevelopType.POINT, game.getThisPlayer(), "marcinniezda");
-		}
-		//FreeRoads
-		else if (X>940 &&  X<1026 )
-		{
-			DevelopmentCard.playCard(DevelopType.ROAD, game.getThisPlayer(), "marcinniezda");
-		}
-		//Monopol
-		else if (X>1026 &&  X<1111 )
-		{
-			//TODO
-		}
-		//Soldier
-		else if (X>1111 &&  X<1197 )
-		{
-			//TODO
-			//DevelopmentCard.playCard(DevelopType.POINT, game.getThisPlayer(), tutajlcizba);
-		}
+		
+		
 		
 	}
 }
