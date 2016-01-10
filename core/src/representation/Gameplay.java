@@ -114,7 +114,7 @@ public class Gameplay extends View implements InputProcessor
 	{
 		game=new Game();
 		initRoadsTextures();
-		tilenumber=1;
+		tilenumber=0;
 		
 		thief=new Texture(Gdx.files.internal("gameplay/thief.png"));
 		//karty
