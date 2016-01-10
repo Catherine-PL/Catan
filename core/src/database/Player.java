@@ -21,7 +21,7 @@ public class Player {
 	private	int id;							//metody set,get
 	private String name=null;
 	private Texture avatar=null;
-	private	ArrayList<Card> cards=new ArrayList <Card>();			//metody add,rm,get
+	//private	ArrayList<DevelopType> cards=new ArrayList <DevelopType>();			//metody add,rm,get
 	private HashMap <DevelopType,Integer> developCards= new HashMap <DevelopType,Integer>();
 	private	int points;						//metody get,set,check
 	private HashMap <String,Integer> resources=new HashMap <String,Integer>();	//get,change
@@ -36,8 +36,7 @@ public class Player {
 	private EnumSet<portType> ports=EnumSet.of(portType.NORMAL);//ka¿dy taki i tak ma, a jakoœ zainicjowaæ trzeba
 	
 	
-		//void restrictions; // to zrobiæ w tablicy?? 
-	//za³ó¿my mo¿e ¿e nie braknie tych 96 kart na razie
+
 	
 	
 	public Player(int _id){
@@ -108,22 +107,15 @@ public class Player {
 	public void checkPoints(Player player){
 		String text="WYGRA£ player "+ player.getId() ;//alternatywa "WYGRA£ player " + players.getPlayer(player.getId()) wyœwietla nick
 		//zmienne pomocnicze
-		int specialCardCount=specialCards.size();
-		Node itNode;
+		//int specialCardCount=specialCards.size();
+		//Node itNode;
 		
 		
 		//liczenie punktów zwyciêstwa
 		//ka¿da karta specialna daje 2 pubkty, vector zwraca ich iloœæ
-		player.addPoints(specialCardCount*2);
+		//player.addPoints(specialCardCount*2);
 				
-		///z³o Ÿle nie dobrze i szajs
-		//iteracja po wszystkich nodach, jeœli mój node to : dodaj wartosc pola building do moich punktów, osada 1, settlement 2
-		//for(int i=0; i<54;i++){
-		//	itNode= Board.getInstance().getNode(i);
-		//	if(itNode.getPlayerNumber()==player.getId()){
-		//		player.addPoints(itNode.getBuilding());
-		//	}
-		//}
+		
 		
 	    if(player.getPoints() >= 10) 
 	    {
@@ -141,19 +133,21 @@ public class Player {
 	//KARTY
 	//zwracanie kart na rêce
 
-/*	public ArrayList<Card> getCards() {
-		return cards;
-	}*/
-	public HashMap<DevelopType,Integer> getCards() {
-		return developCards;
-	}
-	//dodanie karty na rêke
-	public void addCard(Card card) {
-		this.cards.add(card);
-	}
-	//usuniêcie karty z rêki, potrzebne przy zagrywaniu
-	public void rmCard(Card card){
-		this.cards.remove(card);
+	public ArrayList<DevelopType> getCards() {
+		ArrayList <DevelopType> nowe=new ArrayList<DevelopType>();
+		if( this.developCards.get(DevelopType.MONOPOL)>0)
+			nowe.add(DevelopType.MONOPOL);
+		if( this.developCards.get(DevelopType.SOLDIER)>0)
+			nowe.add(DevelopType.SOLDIER);
+		if( this.developCards.get(DevelopType.YEAR)>0)
+			nowe.add(DevelopType.YEAR);
+		if( this.developCards.get(DevelopType.ROAD)>0)
+			nowe.add(DevelopType.ROAD);
+		if( this.developCards.get(DevelopType.POINT)>0)
+			nowe.add(DevelopType.POINT);
+		
+		return nowe;
+		
 	}
 	//zmiena mówi¹ca nam ile mamy ¿o³nierzy 
 	public int getSoldierCount(){
