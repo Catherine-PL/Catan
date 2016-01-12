@@ -809,7 +809,7 @@ public boolean keyDown(int keycode) {
 		{	
 			 if(Gdx.input.isKeyPressed(Keys.Q)) //build settlement
 			 {
-}
+
 				 
 				 int build=0;
 				 selected=SelectedKey.Q;
@@ -872,7 +872,7 @@ public boolean keyDown(int keycode) {
 			 return true;
 		 }
 	
-
+	}
     return false;
 }
 

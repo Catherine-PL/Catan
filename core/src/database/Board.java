@@ -268,8 +268,8 @@ public class Board implements Serializable{
 		for(int i=0;i<54;i++){
     		for(int j=0;j<54;j++){
     			if(adjencyMatrix[i][j] == 1){
-    				nodes[i].addNeighbour(nodes[j]);
-    				nodes[j].addNeighbour(nodes[i]);
+    				if(!nodes[i].getNeighbours().contains(nodes[j])) nodes[i].addNeighbour(nodes[j]);
+    				if(!nodes[j].getNeighbours().contains(nodes[i]))nodes[j].addNeighbour(nodes[i]);
     			}
     		}
 		}	
@@ -469,14 +469,14 @@ public class Board implements Serializable{
 		if(this.whoRoad==null)
 		{
 		this.whoRoad = whoRoad;
-		whoRoad.setBiggestArmy(true);
+		whoRoad.setLongestRoad(true);
 		whoRoad.addPoints(2);		
 		}
 		else{
-			this.whoRoad.setBiggestArmy(false);
+			this.whoRoad.setLongestRoad(false);
 			this.whoRoad.addPoints(-2);	
 			this.whoRoad = whoRoad;
-			whoRoad.setBiggestArmy(true);
+			whoRoad.setLongestRoad(true);
 			whoRoad.addPoints(2);
 		}
 	}
@@ -560,7 +560,7 @@ public class Board implements Serializable{
 		for(Node nod:board.getNode(0).getNeighbours()){
 			System.out.println("\t"+nod.getNodeNumber()+" "+nod.getBuilding());
 		}
-		System.out.println("node 3  "+board.getNode(3).getBuilding()+board.getNode(3).neighboursHasBuildins());
+		//System.out.println("node 3  "+board.getNode(3).getBuilding()+board.getNode(3).neighboursHasBuildins());// .twoSpaceRule3()
 		for(Node nod:board.getNode(3).getNeighbours()){
 			System.out.println("\t"+nod.getNodeNumber()+" "+nod.getBuilding());
 		}

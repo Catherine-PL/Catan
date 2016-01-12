@@ -29,6 +29,7 @@ public class Node extends Element {
 		nodeNumber = id;
 		port=portType.NORMAL;
 		building=0;
+		
 	}
 	
 	
@@ -51,24 +52,34 @@ public class Node extends Element {
 	}
 	
 	//sprawdza czy s¹siednie nody s¹ zabudowane
+	public boolean twoSpaceRule3(){
+		
+		for(Road r:this.roads){
+			if(r.getFrom().building!=0 && this.nodeNumber!=r.getFrom().nodeNumber || r.getTo().building!=0 && this.nodeNumber!=r.getTo().nodeNumber){
+				return false;
+			}
+		}
+		return true;
+		
+	}
+	/*
 	public Boolean neighboursHasBuildins(){
-		//System.out.println("sprowdzom");
+		
 		Boolean have=false;		
 		for(Node nod:this.neighbours)
 		{
 			//System.out.println("for1");
 			//if(nod.getBuilding()>0){
 			if(nod.getPlayer()!=null){
-				//System.out.println("\t\t sprawdzanie s¹siedztw "+nod.nodeNumber+" "+nod.getBuilding());
-				return true;				
+				have=true;
+				break;
 			}
 			else
-			{	//System.out.println("else");
-				//System.out.println("\t\t sprawdzanie s¹siedztw "+nod.nodeNumber+" "+nod.getBuilding());
+			{	
 				have=false;
 			}
 		}
-		//System.out.println("koniec");
+		
 		return have;
 		
 		/*
@@ -82,8 +93,8 @@ public class Node extends Element {
 				have=false;
 		}
 		return have;
-	*/
-	}
+	
+	}*/
 	//####buildings
 	public int getBuilding(){
 		return this.building;

@@ -27,7 +27,7 @@ public class Road extends Element{
 	}
 	
 	
-	public int buildRoad(Player player, Node from2, Node to2){//zmiena free jest potrzebna gdy zagrywamy karte rozwoju
+	public int buildRoad(Player player, Node from2, Node to2){
 		
 		if(from2.getPlayerNumber()==player.getId() || from2.nodeHasOwnedRoad(player)){
 			
@@ -46,8 +46,8 @@ public class Road extends Element{
 												
 						from2.addImprovedRoads(to2);
 						to2.addImprovedRoads(from2);
+					
 						
-						//
 						
 						player.setLongestRoadDistance(player.getLongestRoadDistance()+1);
 						//dopisaæ tu sprawdzanie nad³u¿szej drogi

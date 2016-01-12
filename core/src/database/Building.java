@@ -18,9 +18,10 @@ public class Building extends Element {
 	public static int buildSettlement(Player player,Node here)// player kto buduje, here gdzie
 	{
 		int state = -1;
-		if(here.nodeHasOwnedRoad(player) || player.getPoints()<2 ){
-			if(!here.neighboursHasBuildins()){
-				if(here.getBuilding()==0){
+		if(here.nodeHasOwnedRoad(player)  || player.getPoints()<2){
+			//if(!here.neighboursHasBuildins()){
+			if(here.twoSpaceRule3()){
+				if(here.getBuilding()==0 ){
 				//sprawdza czy pole jest puste(niczyje)
 						if(player.getResources("grain")>=1 && player.getResources("sheep")>=1 && player.getResources("wood")>=1 && player.getResources("clay")>=1 || player.getPoints()<2) {
 							here.setBuilding(1);
@@ -30,10 +31,10 @@ public class Building extends Element {
 							
 							//maj¹c powy¿ej 2 punktów, osiedla s¹ na pewno budpwane za surowce, wiêc tylko wtedy je pobieramy
 							if(player.getPoints()>=2){
-							player.changeResources("grain", -1);
-							player.changeResources("sheep", -1);
-							player.changeResources("wood", -1);
-							player.changeResources("clay", -1);
+								player.changeResources("grain", -1);
+								player.changeResources("sheep", -1);
+								player.changeResources("wood", -1);
+								player.changeResources("clay", -1);
 							}
 							else{
 								player.setFreeRoads(1);
@@ -42,9 +43,8 @@ public class Building extends Element {
 							player.addPort(here.getPort());
 							player.addPoints(1);
 							player.addPlayerNodes(here);
-							state = 0;
-							
-							
+							state = 0;							
+							//System.out.println("wybudowa³em wioske");
 						}
 						else
 							state = 1;
@@ -68,8 +68,11 @@ public class Building extends Element {
 	public static int buildCity(Player player, Node here)
 	{
 		int state = -1;
-		if(!here.neighboursHasBuildins()){
+		if(here.twoSpaceRule3()){
 			//sprawdza czy pole jest moje i ma osade czy jest puste(niczyje)
+			if(here.getBuilding()==2)
+				state = 4;
+			
 			if(here.getPlayerNumber()==player.getId() || here.getPlayerNumber()==0){
 				//
 				if(here.getBuilding()==1 && here.getPlayerNumber()==player.getId()){
@@ -82,12 +85,9 @@ public class Building extends Element {
 						state = 0;
 					}
 					state = 1;
-				}
+				}									
 				
-				if(here.getBuilding()==2)
-					state = 4;	
-				
-				if(here.getBuilding()==0){
+				if(here.getBuilding()==0 && here.twoSpaceRule3() && here.nodeHasOwnedRoad(player)){
 					if(player.getResources("grain")>=3 && player.getResources("sheep")>=1 && player.getResources("wood")>=1 && player.getResources("clay")>=1 && player.getResources("ore")>=3){
 						here.setBuilding(2);
 						here.setPlayerNumber(player.getId());

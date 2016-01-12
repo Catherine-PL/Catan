@@ -106,15 +106,7 @@ public class Player {
 	//Gracz sam sprawdza i liczy swoje punkty czy wygra³ i wysy³a o tym komunikat
 	public void checkPoints(Player player){
 		String text="WYGRA£ player "+ player.getId() ;//alternatywa "WYGRA£ player " + players.getPlayer(player.getId()) wyœwietla nick
-		//zmienne pomocnicze
-		//int specialCardCount=specialCards.size();
-		//Node itNode;
-		
-		
-		//liczenie punktów zwyciêstwa
-		//ka¿da karta specialna daje 2 pubkty, vector zwraca ich iloœæ
-		//player.addPoints(specialCardCount*2);
-				
+	
 		
 		
 	    if(player.getPoints() >= 10) 
