@@ -2,6 +2,8 @@ package catan.network;
 
 import java.util.Set;
 
+import representation.View;
+
 public class ObserverPeers extends Observer {
 
 	ObserverPeers(Communication sub)
@@ -18,7 +20,7 @@ public class ObserverPeers extends Observer {
 		System.out.print("-Observer: ");
 		System.out.println(connected);
 		// TODO Co zrobiæ, gdy peersy siê zmieni¹
-
+		
 	}
 
 	public Set<String> getPeersNames() {

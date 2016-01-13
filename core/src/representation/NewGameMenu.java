@@ -46,6 +46,7 @@ public class NewGameMenu  extends View implements InputProcessor
 	private Texture name;
 	private Texture invite;	
 	private Texture start;	
+	private Texture invitation;
 	
 	private ArrayList<Texture> textures = new ArrayList<Texture>();
 	private int avatarTextureID;
@@ -55,6 +56,9 @@ public class NewGameMenu  extends View implements InputProcessor
 	boolean inputname;
 	private Map<Integer,String> peers=new HashMap<Integer,String>();
 	private Map<Integer,String> guests=new HashMap<Integer,String>();
+	
+	
+	private boolean hasInvitation;
 	
 	
 	public void init()
@@ -71,6 +75,7 @@ public class NewGameMenu  extends View implements InputProcessor
 		arrowl = new Texture(Gdx.files.internal("arrowl.png"));
 		allusers=new Texture(Gdx.files.internal("alluserstext.png"));
 		guestlist=new Texture(Gdx.files.internal("guestlisttext.png"));
+		invitation=new Texture(Gdx.files.internal("invitation.png"));
 		name = new Texture(Gdx.files.internal("name.png"));
 		invite = new Texture(Gdx.files.internal("invite.png"));
 		initTextures();
@@ -111,6 +116,8 @@ public class NewGameMenu  extends View implements InputProcessor
 		{
 			batch.draw(allusers, 650, 650);
 			batch.draw(guestlist, 1010, 650);
+			
+			
 			if(invited==false) 
 			{
 				batch.draw(invite, 1080, 220);	
@@ -165,6 +172,7 @@ public class NewGameMenu  extends View implements InputProcessor
 					case WAIT:
 						font.setColor(Color.YELLOW);
 						font.draw(batch, s, 1060,peersStringY);	
+						font.setColor(Color.WHITE);
 						break;
 					case ACCEPTED:
 						font.setColor(Color.GREEN);
@@ -181,6 +189,24 @@ public class NewGameMenu  extends View implements InputProcessor
 					peersStringY=peersStringY-30;
 				}
 			}
+			
+			
+			
+			//obs³uga zaproszenia od kogoœ
+			//TODO jakoœ rozs¹dniej. Observator???????
+			if(hasInvitation==false) 
+			{
+				if (!View.invFrom.isEmpty()) hasInvitation=true; 
+			}
+			if(hasInvitation==true)
+			{
+				//TODO wyswietl okno
+				batch.draw(invitation, 0, 0);	
+				font.draw(batch, View.invFrom.get(0), 650,400);	
+				//od kogo zaproszenie i Q reject A accept
+				//i dodaæ klikanie do tego
+
+			}	
 			
 			
 		}
@@ -201,6 +227,36 @@ public class NewGameMenu  extends View implements InputProcessor
 	//overrides
     @Override
     public boolean keyDown(int keycode) {
+    	//bycie zaproszonym
+    	if(hasInvitation==true) 
+		{
+    		if(Gdx.input.isKeyPressed(Keys.Q))
+    		{
+    			getNetwork().sendInvitationAnswer(View.invFrom.get(0), SystemType.REJECT);
+    			
+    			//View.invFrom.remove(0);
+    			View.invFrom.remove(0);
+    			hasInvitation=false;
+    		}
+    		if(Gdx.input.isKeyPressed(Keys.A))
+    		{
+    			getNetwork().sendInvitationAnswer(View.invFrom.get(0), SystemType.ACCEPT);
+    			//View.invFrom.remove(0);
+    			View.invFrom.remove(0);
+    			hasInvitation=false;
+    		}
+			
+			
+			
+			
+			return false;
+		}
+    	
+    	
+    	
+    	
+    	
+    	
     	if(accepted==false)
     	{
     		if (inputname==true)
@@ -233,6 +289,7 @@ public class NewGameMenu  extends View implements InputProcessor
     
 	public boolean touchList(int X, int Y, int Xth, int Yth)
 	{
+
 		if(Xth==690) //click on peers
 		{
 			for(int i=0;i<peers.size();i++)
@@ -298,11 +355,12 @@ public class NewGameMenu  extends View implements InputProcessor
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
     	if(button == Buttons.LEFT){
-    		
-    		
-    		
+    		//jak sie jest zaproszonym to nie mo¿na nic klikaæ!
+			if(hasInvitation==true) return false;
+
     		int X= screenX;
 			int Y=screensizeY - screenY;
+
 			if ((touchList(X,Y,690,620)) || (touchList(X,Y,1060,620)) )
 			{
 				return true;
@@ -383,15 +441,15 @@ public class NewGameMenu  extends View implements InputProcessor
 					//TODO 
 					//obsluga Start Game
 					//TODO from GAme dice
-					Communication.sleep(1000);
-					getNetwork().sendInvitationAnswer("YOUR NAME", SystemType.ACCEPT);
+					//Communication.sleep(1000);
+					//getNetwork().sendInvitationAnswer("YOUR NAME", SystemType.ACCEPT);
 					
 					
 					
-					System.out.println(getNetwork().start(5));
+					//System.out.println(getNetwork().start(5));
 					//TODO tylko tymaczasowo pomi¿sze
 					
-				 	View.setView(Screen.GAMEPLAY);
+				 	//View.setView(Screen.GAMEPLAY);
 				}
 				else if ((X>1097) && (X<1195) &&(Y>screensizeY-612) && (Y<screensizeY-577))
 				{

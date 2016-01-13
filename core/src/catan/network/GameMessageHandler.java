@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import representation.View;
+
 
 import catan.network.GameCommunication.InvStatus;
 import catan.network.SystemMessage.SystemType;
@@ -122,7 +124,8 @@ public class GameMessageHandler extends MessageHandler implements Serializable{
 		
 		
 		System.out.println("Invitation to a game from: " +  this.nick);
-		
+		if(!View.invFrom.contains(this.nick))  View.invFrom.add(this.nick);
+		if (View.invFrom.size()>0)System.out.println("Added to View invList: " +  View.invFrom.get(0));
 		// TODO Wyswietlenie okienka z powiadomieniem i 2 guzikami		
 			
 	}

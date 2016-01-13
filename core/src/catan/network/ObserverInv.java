@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import catan.network.GameCommunication.InvStatus;
+import representation.View;
 
 public class ObserverInv extends Observer {
 
@@ -19,8 +20,9 @@ public class ObserverInv extends Observer {
 				
 		System.out.println("-ObserverInv: ");
 		System.out.println(invstatus);
-		// TODO Co zrobiæ, gdy peersy siê zmieni¹
-
+		//ObserverInv updatuje listê zaproszeñ w View z reprezentacji:
+		// TODO Gdy przyjdzie nowe zaproszenie, dodaj nazwy niewpisanych nadawców do listy nadawców w View
+		
 	}
 
 	public Map<String, InvStatus> getAllStatuses() {
