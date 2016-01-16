@@ -45,7 +45,7 @@ class SystemMessageFactory extends AbstractMessageFactory {
 			return new MsgReject();
 			
 		case START_GAME:
-			return new MsgStartGame((Set<String>) content);
+			return new MsgStartGame();
 			
 		case INV_LIST:
 			return new MsgInvList((Map<String, InvStatus>) content);

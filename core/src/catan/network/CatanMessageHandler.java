@@ -191,11 +191,19 @@ public class CatanMessageHandler extends GameMessageHandler {
 		
 		catanCom.queue.clear();
 		
+		System.out.println(ip);
+		System.out.println("PreOrder: " + catanCom.queue);
+		
 		for(String i : ip)
 		{
 			if(!i.equals("1.1.1.1"))
-			{				
-				if(!i.equals(this.peer.socketIn.getInetAddress().getHostAddress())) // rozny ode mnie
+			{	
+				System.out.println(this.peer.socketIn.getLocalAddress());
+				System.out.println(this.peer.socketIn.getInetAddress().getHostAddress());
+				System.out.println("/"+i);
+				System.out.println(("/"+i).toString().equals(this.peer.socketIn.getLocalAddress().toString()));						
+				
+				if(!(("/"+i).toString().equals(this.peer.socketIn.getLocalAddress().toString()))) // rozny ode mnie
 					catanCom.queue.add(catanCom.getNickFromIp(i));
 				else
 					catanCom.queue.add("Me"); //TODO

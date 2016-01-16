@@ -55,7 +55,7 @@ public class GameMessageHandler extends MessageHandler implements Serializable{
 				break;
 				
 			case START_GAME:
-				handleMsgStartGame((MsgStartGame)msg);
+				handleMsgStartGame();
 				break;
 				
 			case INV_LIST:
@@ -118,27 +118,11 @@ public class GameMessageHandler extends MessageHandler implements Serializable{
 		gameCom.putInv(nick, InvStatus.REJECTED);				
 		gameCom.sendInvList();
 	}
-	synchronized void handleMsgStartGame(MsgStartGame msg)				// dodac metode startu gry jako takiej, ustawiæ zmienna inGame czy cos
+	synchronized void handleMsgStartGame()				// dodac metode startu gry jako takiej, ustawiæ zmienna inGame czy cos
 	{		
 		inGame = true;
 		gameCom.setInRealGame(true);
-		System.out.println("~~	The game starting ...");		
-		System.out.println("Player's ip: " + msg.getContent());		// wszyscy gracze w grze sa w msg
-
-		gameCom.invPlayers.clear();					// usuniecie wszystkich zbednych					
-		for(String ip : msg.getContent())
-		{			
-			if(gameCom.invPlayers.containsKey(gameCom.getNickFromIp(ip)))	// jezeli mam go w invPlayers to aktualizuje
-				gameCom.putInv(gameCom.getNickFromIp(ip), InvStatus.WAIT);
-			else if(gameCom.getStatePeers().contains(gameCom.getNickFromIp(ip)))	// jezeli mam z nim polaczenie to zapisuje go do invplayers
-				gameCom.putInv(gameCom.getNickFromIp(ip), InvStatus.WAIT);
-			else
-				System.err.println("Cos zle pomyslane w handleMsgStartGame, GameMessageHandler");
-		
-		}
-		System.out.println("-All players have been set");
-		// TODO change view of game, adding new ips
-			
+		System.out.println("~~	The game starting ...");							
 	}
 	synchronized void handleMsgAbandon()				// 
 	{
@@ -151,18 +135,19 @@ public class GameMessageHandler extends MessageHandler implements Serializable{
 		// TODO
 				
 		Map<String, InvStatus> invPlayers = msg.getContent();
+		
+		gameCom.invPlayers.clear();
+		
 		for(String ip : invPlayers.keySet())
 		{
-			if(gameCom.invPlayers.containsKey(gameCom.getNickFromIp(ip)))	// jezeli mam go w invPlayers to aktualizuje
-					gameCom.putInv(gameCom.getNickFromIp(ip), invPlayers.get(ip));	
-			else if(gameCom.getStatePeers().contains(gameCom.getNickFromIp(ip)))	// jezeli mam z nim polaczenie to zapisuje go do invplayers
+			if(gameCom.getStatePeers().contains(gameCom.getNickFromIp(ip)))	// jezeli mam z nim polaczenie to zapisuje go do invplayers
 					gameCom.putInv(gameCom.getNickFromIp(ip), invPlayers.get(ip));
 			else																	// jezeli nie mam polaczenia to je nawiazuje			
-				if(!ip.equals(this.peer.socketIn.getLocalAddress()))
+				if(!ip.equals(this.peer.socketIn.getInetAddress().getHostAddress()))
 						gameCom.addNodeP2P(ip);							
 			
 		}
-		
+		System.err.println(this.peer.socketIn.getInetAddress().getHostAddress());
 				
 	}
 

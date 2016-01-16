@@ -144,6 +144,7 @@ public class CatanNetwork {
 	
 	public static void main(String[] args) throws IOException 
 	{
+		
 		CatanNetwork game = new CatanNetwork("Sebastian");
 		game.readAddresses();
 		game.initNetwork();

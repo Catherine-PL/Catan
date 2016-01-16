@@ -172,30 +172,14 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 		if(!this.checkNumberOfPlayers(minnumber, maxnumber))
 			return false;
 		
-		Set<String> names = invPlayers.keySet();
-		Set<String> addresses = new HashSet<String>();
-		
-		for(String n : names)
-			addresses.add(this.decoratedP2P.getIpFromNick(n));
-			
+				
+		// addresses -- all IP except mine
 		
 		it = entrySet.iterator();
-		while(it.hasNext())
+		while(it.hasNext())								// dla kazdego z invPlayers
 		{
 			e = it.next();
-			if(e.getValue() == InvStatus.ACCEPTED)
-			{
-				try {
-					sendTo(e.getKey(), system.getSystemMessage(SystemType.START_GAME, addresses));
-				} catch (ContentException e1) {					
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					System.err.println("Utracono polaczenie z: " + e.getKey());
-					disconnected(e.getKey());
-					invPlayers.remove(e.getKey());
-				}
-			}
-			else if(e.getValue() == InvStatus.WAIT)
+			if(e.getValue() == InvStatus.WAIT)
 			{
 				try {
 					sendTo(e.getKey(), system.getSystemMessage(SystemType.ABANDON, null));
@@ -206,12 +190,32 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 					System.err.println("Utracono polaczenie z: " + e.getKey());
 					disconnected(e.getKey());					
 				}
-			}else	toRemove.add(e.getKey());
+			}else if(e.getValue() == InvStatus.REJECTED)
+				toRemove.add(e.getKey());
 				
 		}
 		
 		for(String nick : toRemove)
 			invPlayers.remove(nick);
+		
+		// Only accepted players
+		
+		Message msg=null;
+		try {
+			msg = system.getSystemMessage(SystemType.START_GAME, null);
+		} catch (ContentException e1) {
+			e1.printStackTrace();
+		}		
+		
+		
+		this.sendToAll(msg);
+		
+		
+		for(String name : invPlayers.keySet())
+			this.putInv(name, InvStatus.WAIT);
+		
+		
+		sendInvList();
 		
 		this.setInRealGame(true);
 		return true;
