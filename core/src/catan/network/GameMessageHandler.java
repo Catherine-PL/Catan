@@ -142,12 +142,11 @@ public class GameMessageHandler extends MessageHandler implements Serializable{
 		{
 			if(gameCom.getStatePeers().contains(gameCom.getNickFromIp(ip)))	// jezeli mam z nim polaczenie to zapisuje go do invplayers
 					gameCom.putInv(gameCom.getNickFromIp(ip), invPlayers.get(ip));
-			else																	// jezeli nie mam polaczenia to je nawiazuje			
-				if(!ip.equals(this.peer.socketIn.getInetAddress().getHostAddress()))
-						gameCom.addNodeP2P(ip);							
+			else																	// jezeli nie mam polaczenia to je nawiazuje					
+				gameCom.addNodeP2P(ip);							
 			
 		}
-		System.err.println(this.peer.socketIn.getInetAddress().getHostAddress());
+		
 				
 	}
 
