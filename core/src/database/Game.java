@@ -23,11 +23,19 @@ public class Game {
 		
 				
 		
-		thisPlayer = new Player(name);
+		//thisPlayer = new Player(name);
 		
 		for(int i=0;i<4;i++){
-			colors.put(players[i].getId(), i);
+			//colors.put(players[i].getId(), i);
 		}
+	}
+	public Game()
+	{
+		board = Board.getInstance();
+		dice = Dice.getInstance();
+		dice.throwDice();
+		
+		
 	}
 	
 

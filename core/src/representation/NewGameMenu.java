@@ -209,8 +209,7 @@ public class NewGameMenu  extends View implements InputProcessor
 
 			}	
 			
-			
-			
+						
 			if(((ObserverStart)getNetwork().invObservers.get(1)).getStateGame())
 			{
 				//TODO

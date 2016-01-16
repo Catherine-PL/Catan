@@ -24,6 +24,7 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 		WAIT, ACCEPTED, REJECTED;
 	}
 	
+		
 	// game == groupe
 	public GameCommunication(P2P decoratedP2P, String myName, Collection<String> rememberedNodes, MessageHandler msgHandler) throws IOException {
 		super(decoratedP2P);		
@@ -31,6 +32,7 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 		this.initCommunication(myName, rememberedNodes, msgHandler);
 	}
 	
+	public boolean					inRealGame;
 	private boolean					inGame=false;					// my value		
 	protected Map<String, InvStatus>invPlayers = new HashMap<String, InvStatus>();				// <-- W grze: przechowuje nicki graczy bedacych ze mna w grze, ich TradeStatus																
 	AbstractMessageFactory			system = FactoryProducer.getFactory(FactoryType.SYSTEM);   // 	Przed gra: przechowuje niki peerow i ich odpowiedzi na moje zaproszenie
@@ -211,6 +213,7 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 		for(String nick : toRemove)
 			invPlayers.remove(nick);
 		
+		this.inRealGame=true;
 		return true;
 		
 		

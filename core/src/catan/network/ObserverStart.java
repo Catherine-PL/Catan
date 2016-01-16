@@ -15,7 +15,8 @@ public class ObserverStart extends Observer {
 
 	@Override
 	void update() {
-		inGame = true;
+		if(((GameCommunication)this.sub).inRealGame)
+			inGame = true;
 	}
 
 	
