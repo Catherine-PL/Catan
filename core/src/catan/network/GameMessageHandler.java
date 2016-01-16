@@ -141,11 +141,12 @@ public class GameMessageHandler extends MessageHandler implements Serializable{
 		for(String ip : invPlayers.keySet())
 		{
 			if(gameCom.getStatePeers().contains(gameCom.getNickFromIp(ip)))	// jezeli mam z nim polaczenie to zapisuje go do invplayers
-					gameCom.putInv(gameCom.getNickFromIp(ip), invPlayers.get(ip));
-			else																	// jezeli nie mam polaczenia to je nawiazuje					
-				gameCom.addNodeP2P(ip);							
-			
+				gameCom.putInv(gameCom.getNickFromIp(ip), invPlayers.get(ip));
+			else if(!(("/"+ip).toString().equals(this.peer.socketIn.getLocalAddress().toString()))) 	// jezeli rozny ode mnie
+				gameCom.addNodeP2P(ip);										
 		}
+		// dodanie osoby, ktora mi przeslala invliste
+		gameCom.putInv(this.gameCom.getNickFromIp((this.peer.socketOut.getInetAddress().getHostAddress())), InvStatus.WAIT);
 		
 				
 	}
