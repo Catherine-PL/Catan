@@ -1,6 +1,8 @@
 package catan.network;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import catan.network.SystemMessage.SystemType;
 import catan.network.TradeMessage.TradeType;
@@ -48,6 +50,12 @@ class UpdateMessageFactory extends AbstractMessageFactory {
 
 		case END_TURN:
 			return new MsgEndTurn();
+			
+		case ORDER:			
+			if (content.getClass()!=LinkedList.class)
+				throw new ContentException();
+			else
+				return new MsgOrder((List)content);
 
 			
 		default:

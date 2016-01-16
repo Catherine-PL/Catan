@@ -2,8 +2,13 @@ package catan.network;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -25,6 +30,8 @@ public class CatanCommunication extends GameCommunication{
 	public int inQueue = 0;			// ilosc ludzi przede mna w grze, (kolejnosc)
 	public int myNumber = 0;
 	
+	List<String> queue = new LinkedList<String>();
+	
 	public CatanCommunication(P2P decoratedP2P, String myName, Collection<String> rememberedNodes, MessageHandler msgHandler) throws IOException {
 		super(decoratedP2P, myName, rememberedNodes, msgHandler);
 	}
@@ -37,17 +44,33 @@ public class CatanCommunication extends GameCommunication{
 	 * Number says which is our place, but when number is equal 0 that means,
 	 * not everyone has sent me a result and it was impossible to create sequence. 
 	 */
-	public void setOrder(int dice)
-	{		
-		System.out.println("Sending result of my dice (creating a chain, sequence)");		
-		// TODO myNumber has to be random
+	public void setOrder()
+	{				
+		System.out.println("Creating a sequence of Players");				
+		Set<String> names = this.invPlayers.keySet();
+		List<String> ip = new LinkedList<String>();
+		for(String n : names)
+		{
+			ip.add(this.getIpFromNick(n));
+		}
+		
+		ip.add("1.1.1.1");
+						
+		Collections.shuffle(ip);		
+		
+		Message msg = null;
 		try {
-			Message ms = update.getUpdateMessage(UpdateType.DICE, dice);
-			sendToAll(ms);
-		} catch (ContentException e) { 
+			msg = this.update.getUpdateMessage(UpdateType.ORDER, ip);
+		} catch (ContentException e) {
 			e.printStackTrace();
 		}
 		
+		
+		
+		//TODO
+		
+		
+		this.sendToAll(msg);
 	}	
 	public int getPlace()																// zwraca 0 jezeli jeszcze nie ustalono kolejnosci
 	{

@@ -5,13 +5,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import catan.network.FactoryProducer.FactoryType;
+import catan.network.GameCommunication.InvStatus;
 import catan.network.SystemMessage.SystemType;
 
 public class GameCommunication extends CommunicationDecorator implements Subject {
@@ -240,6 +243,35 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 		inGame = false;
 		invPlayers.clear();
 		System.out.println("Gra porzucona ...");
+	}
+
+	
+	void sendInvList()
+	{		
+		Map<String, InvStatus> invPlayersSend = new HashMap<String, InvStatus>();
+		for(String name : invPlayers.keySet())
+		{
+			invPlayersSend.put(getIpFromNick(name),invPlayers.get(name));
+		}
+		
+		
+		Message msg = null;
+		try {
+			msg = system.getSystemMessage(SystemType.INV_LIST, invPlayersSend);
+		} catch (ContentException e) { 
+			e.printStackTrace();
+		}
+		
+		for(String name : invPlayers.keySet())
+		{
+			if(this.invPlayers.get(name)==InvStatus.ACCEPTED)
+				try {
+					sendTo(name, msg);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
+		
 	}
 	
 	

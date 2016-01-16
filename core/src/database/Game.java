@@ -14,16 +14,17 @@ public class Game {
 	private Player actualPlayer=thisPlayer;
 	private HashMap <Integer,Integer> colors=new HashMap<Integer,Integer>();
 	
-	public Game(){
+	public Game(List<String> pl, String name){		
 		board = Board.getInstance();
 		dice = Dice.getInstance();
 		dice.throwDice();
 		
 		//TODO thisPlayer na tym miejscu tylko tymaczasowo do testów! Potem bêdzie ustawianie wed³ug kostki
-		players[0] = thisPlayer;
-		for(int i=1;i<4;i++){
-			players[i] = new Player(i);
-		}
+		
+				
+		
+		thisPlayer = new Player(name);
+		
 		for(int i=0;i<4;i++){
 			colors.put(players[i].getId(), i);
 		}

@@ -157,7 +157,7 @@ public class NewGameMenu  extends View implements InputProcessor
 				
 			}
 			
-			Map<String, InvStatus> invitedmap = getNetwork().invObservers.get(0).getAllStatuses();
+			Map<String, InvStatus> invitedmap = ((ObserverInv)getNetwork().invObservers.get(0)).getAllStatuses();			
 			if (invitedmap.size()>0)
 			{
 				guests.clear();
@@ -192,6 +192,7 @@ public class NewGameMenu  extends View implements InputProcessor
 			
 			
 			
+			
 			//obs³uga zaproszenia od kogoœ
 			//TODO jakoœ rozs¹dniej. Observator???????
 			if(hasInvitation==false) 
@@ -208,6 +209,16 @@ public class NewGameMenu  extends View implements InputProcessor
 
 			}	
 			
+			
+			
+			if(((ObserverStart)getNetwork().invObservers.get(1)).getStateGame())
+			{
+				//TODO
+				game = new Game(getNetwork().getQueue(),namestring);
+				View.setView(Screen.GAMEPLAY);
+				
+				
+			}
 			
 		}
 		batch.end();
@@ -430,6 +441,7 @@ public class NewGameMenu  extends View implements InputProcessor
 					}
 					if(toinvite.size()>0) getNetwork().invite(toinvite);						
 					invited=true;
+					return true;					
 				}				
 			}
 			
@@ -438,6 +450,12 @@ public class NewGameMenu  extends View implements InputProcessor
 			{
 				if ((X>1000) && (X<1195) &&(Y>235) && (Y<270))
 				{
+					// Rzucamy koscia, wynik do start, jezeli jest ok ludi to start return true.
+					Dice.getInstance().throwDice();
+					if(getNetwork().start())
+						View.setView(Screen.GAMEPLAY);
+					
+					
 					//TODO 
 					//obsluga Start Game
 					//TODO from GAme dice

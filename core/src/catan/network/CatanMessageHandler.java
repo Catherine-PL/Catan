@@ -2,6 +2,7 @@ package catan.network;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import catan.network.GameCommunication.InvStatus;
@@ -16,10 +17,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 	private HashMap<String, Integer> give;
 	private HashMap<String, Integer> get;
 
-	private static int msgdice = 0;			// how many msgDice
-	
-	
-	
+		
 	@Override
 	public void setting() 
 	{
@@ -84,13 +82,17 @@ public class CatanMessageHandler extends GameMessageHandler {
 			case END_GAME:
 				handleMsgEndGame();
 				break;
+			
+			case ORDER:
+				handleMsgOrder((MsgOrder)msg);
+				break;
 										
 			default:
 				System.err.println("Otrzymana wiadomosc jest bledna");
 				break;					
 		}
 		
-	}
+	}	
 	protected void handleMessage(TradeMessage msg)
 	{
 		switch (msg.getSubType())
@@ -137,22 +139,6 @@ public class CatanMessageHandler extends GameMessageHandler {
 		System.out.print("From: " + nick);
 		System.out.println(" -- Dice result:" + msg.getContent());
 		
-		if(msgdice < this.gameCom.getStateInv().size())									// tylko do ustalenia kolejnosci
-		{
-			msgdice++;			
-			gameCom.putInv(nick, InvStatus.WAIT);							// jezeli wszyscy sa wait, to kolejnosc ustalona
-			
-			if(msg.getContent() > catanCom.myNumber)
-			{
-				catanCom.inQueue++;
-			}else if(msg.getContent() == catanCom.myNumber)
-			{
-				if(this.comDecorator.getNickname().compareToIgnoreCase(nick) > 0)
-				{
-					catanCom.inQueue++;
-				}
-			}
-		}
 	}
 	synchronized void handleMsgBoard(MsgBoard msg)			// podmienic board tam gdzie jest ona przechowywana
 	{
@@ -194,11 +180,32 @@ public class CatanMessageHandler extends GameMessageHandler {
 		System.out.println("It is a wood ....");
 		this.catanCom.sendUpdate(nick, "wood");
 	}
-	
 	synchronized void handleMsgThiefLoot(MsgThiefLoot msg) {
 		// TODO 
 		String resource = msg.getContent();
 		System.out.println("I stole a " + resource + " from: " + this.nick);
+	}
+	synchronized void handleMsgOrder(MsgOrder msg) 
+	{
+		List<String> ip = msg.getContent();
+		
+		catanCom.queue.clear();
+		
+		for(String i : ip)
+		{
+			if(!i.equals("1.1.1.1"))
+			{				
+				if(!i.equals(this.peer.socketIn.getInetAddress().getHostAddress())) // rozny ode mnie
+					catanCom.queue.add(catanCom.getNickFromIp(i));
+				else
+					catanCom.queue.add("Me"); //TODO
+			}
+			else
+				catanCom.queue.add(catanCom.getNickFromIp(this.peer.socketOut.getInetAddress().getHostAddress()));
+				
+		}
+		
+		System.out.println("Order: " + catanCom.queue);
 	}
 	
 	

@@ -583,7 +583,7 @@ public class Communication implements Runnable, P2P, Subject{
 
 		com.sleep(3000);
 		
-		game.setOrder(5);
+		game.setOrder();
 		
 		com.sleep(3000);
 		System.out.println("Place: " + game.getPlace());									// numer w kolejce graczy 1-4

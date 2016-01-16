@@ -21,7 +21,7 @@ public class CatanNetwork {
 	private CatanCommunication game;
 	
 	public List<ObserverPeers> peersObservers = new LinkedList<ObserverPeers>();						// They observe Communication
-	public List<ObserverInv> invObservers = new LinkedList<ObserverInv>();								// They observe GameCommunication
+	public List<Observer> invObservers = new LinkedList<Observer>();								// They observe GameCommunication
 		
 	public CatanNetwork(String nickname)
 	{
@@ -41,6 +41,8 @@ public class CatanNetwork {
 		MessageHandler mh = new CatanMessageHandler();				
 		game = new CatanCommunication(com, nickname, addresses, mh);
 		invObservers.add(new ObserverInv(game));
+		invObservers.add(new ObserverStart(game));
+		
 		
 	}
 	public void 	invite(List<String> invited)
@@ -56,15 +58,15 @@ public class CatanNetwork {
 		this.game.sendInvitationAnswer(nick, answer);
 	}
 	
-	public boolean 	start(int dice)
+	public boolean 	start()
 	{
 		boolean gameState = game.startGame(1,4);														// start gry
 		if(gameState == true)																	// jak sie nie uda to nie usuwa liste zaproszonych
 		{
 			System.out.println();
-			System.out.println("Welcome in Catan world!");
+			System.out.println(" in Catan Welcomeworld!");
 			System.out.println();
-			game.setOrder(dice);
+			game.setOrder();
 		}			
 		else
 			System.out.println("Starting game failed!");
@@ -82,6 +84,11 @@ public class CatanNetwork {
 	public void		endGame()
 	{
 		game.sendEnd(UpdateType.END_GAME);
+	}
+	
+	public List<String>	getQueue()
+	{
+		return game.queue;
 	}
 	
 	public void 	updateBoard(Board board)
@@ -154,11 +161,10 @@ public class CatanNetwork {
 		Communication.sleep(2000);		
 		game.sendInvitationAnswer("Sebastian", SystemType.ACCEPT);		
 		Communication.sleep(2000);
+				
+		game.start();
 		
-		int dice = 5;
-		game.start(dice);
-		
-		Communication.sleep(2000);
+		Communication.sleep(200000);
 		
 		System.out.println();
 		System.out.println("My place: " + game.getPlace());

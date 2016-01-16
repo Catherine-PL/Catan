@@ -16,6 +16,10 @@ public class GameMessageHandler extends MessageHandler implements Serializable{
 	
 	GameCommunication gameCom;
 	
+	
+	private boolean inGame;
+	
+	
 	@Override
 	public void setting() 
 	{
@@ -70,34 +74,6 @@ public class GameMessageHandler extends MessageHandler implements Serializable{
 		
 	}
 	
-	private void sendInvList()
-	{
-		Set<String> invPlayers = gameCom.invPlayers.keySet();
-		Map<String, InvStatus> invPlayersSend = new HashMap<String, InvStatus>();
-		for(String name : invPlayers)
-		{
-			invPlayersSend.put(gameCom.getIpFromNick(name),gameCom.invPlayers.get(name));
-		}
-		
-		
-		Message msg = null;
-		try {
-			msg = gameCom.system.getSystemMessage(SystemType.INV_LIST, invPlayersSend);
-		} catch (ContentException e) { 
-			e.printStackTrace();
-		}
-		
-		for(String name : invPlayers)
-		{
-			if(gameCom.invPlayers.get(name)==InvStatus.ACCEPTED)
-				try {
-					gameCom.sendTo(name, msg);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		}
-		
-	}
 	
 	/*System messeges*/
 	synchronized void handleMsgInvitation()													// trzeba to jakos zgrac, wybor:  accept, reject 
@@ -134,16 +110,18 @@ public class GameMessageHandler extends MessageHandler implements Serializable{
 		
 		System.out.println("Player: " +  nick + " - Accepted");				
 		gameCom.putInv(nick, InvStatus.ACCEPTED);				
-		this.sendInvList();
+		gameCom.sendInvList();
 	}
 	synchronized void handleMsgReject()
 	{		
 		System.out.println("Player: " +  nick + " - Rejected");				
 		gameCom.putInv(nick, InvStatus.REJECTED);				
-		this.sendInvList();
+		gameCom.sendInvList();
 	}
 	synchronized void handleMsgStartGame(MsgStartGame msg)				// dodac metode startu gry jako takiej, ustawiæ zmienna inGame czy cos
 	{		
+		inGame = true;
+		gameCom.notifyObservers();
 		System.out.println("~~	The game starting ...");		
 		System.out.println("Player's ip: " + msg.getContent());		// wszyscy gracze w grze sa w msg
 
@@ -180,7 +158,8 @@ public class GameMessageHandler extends MessageHandler implements Serializable{
 			else if(gameCom.getStatePeers().contains(gameCom.getNickFromIp(ip)))	// jezeli mam z nim polaczenie to zapisuje go do invplayers
 					gameCom.putInv(gameCom.getNickFromIp(ip), invPlayers.get(ip));
 			else																	// jezeli nie mam polaczenia to je nawiazuje			
-				gameCom.addNodeP2P(ip);							
+				if(!ip.equals(this.peer.socketIn.getLocalAddress()))
+						gameCom.addNodeP2P(ip);							
 			
 		}
 		
