@@ -121,7 +121,7 @@ public class GameMessageHandler extends MessageHandler implements Serializable{
 	synchronized void handleMsgStartGame(MsgStartGame msg)				// dodac metode startu gry jako takiej, ustawiæ zmienna inGame czy cos
 	{		
 		inGame = true;
-		gameCom.notifyObservers();
+		gameCom.setInRealGame(true);
 		System.out.println("~~	The game starting ...");		
 		System.out.println("Player's ip: " + msg.getContent());		// wszyscy gracze w grze sa w msg
 

@@ -32,7 +32,7 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 		this.initCommunication(myName, rememberedNodes, msgHandler);
 	}
 	
-	public boolean					inRealGame;
+	private boolean					inRealGame;
 	private boolean					inGame=false;					// my value		
 	protected Map<String, InvStatus>invPlayers = new HashMap<String, InvStatus>();				// <-- W grze: przechowuje nicki graczy bedacych ze mna w grze, ich TradeStatus																
 	AbstractMessageFactory			system = FactoryProducer.getFactory(FactoryType.SYSTEM);   // 	Przed gra: przechowuje niki peerow i ich odpowiedzi na moje zaproszenie
@@ -213,7 +213,7 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 		for(String nick : toRemove)
 			invPlayers.remove(nick);
 		
-		this.inRealGame=true;
+		this.setInRealGame(true);
 		return true;
 		
 		
@@ -311,6 +311,13 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 	{
 		super.disconnected(nick);
 		this.invPlayers.remove(nick);
+	}
+	public boolean isInRealGame() {
+		return inRealGame;
+	}
+	public void setInRealGame(boolean inRealGame) {
+		this.inRealGame = inRealGame;
+		this.notifyObservers();
 	}
 	
 	
