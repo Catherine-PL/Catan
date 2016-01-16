@@ -472,7 +472,7 @@ public class NewGameMenu  extends View implements InputProcessor
 				{
 					//TODO 
 					//obsluga Abort
-					//getNetwork().
+					getNetwork().abandon();
 				}
 			}
 			

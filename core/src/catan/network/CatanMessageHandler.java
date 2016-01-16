@@ -191,7 +191,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 		
 		catanCom.queue.clear();
 		
-		System.out.println(ip);		
+		System.out.println("Received ip, Order: " + ip);		
 		
 		for(String i : ip)
 		{

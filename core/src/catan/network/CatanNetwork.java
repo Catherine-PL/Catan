@@ -74,10 +74,10 @@ public class CatanNetwork {
 		return gameState;
 		
 	}
-	public int		getPlace()
+	public void		abandon()
 	{
-		return this.game.getPlace();
-	}
+		this.game.abandonGame();
+	}	
 	public void		endTurn()
 	{
 		game.sendEnd(UpdateType.END_TURN);
@@ -166,10 +166,8 @@ public class CatanNetwork {
 				
 		game.start();
 		
-		Communication.sleep(200000);
-		
-		System.out.println();
-		System.out.println("My place: " + game.getPlace());
+		Communication.sleep(2000);
+				
 		
 		System.out.println();
 		System.out.println("----Testing Update Messages----");

@@ -215,7 +215,28 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 			this.putInv(name, InvStatus.WAIT);
 		
 		
-		sendInvList();
+		
+		
+		
+		Map<String, InvStatus> invPlayersSend = new HashMap<String, InvStatus>();
+		for(String name : invPlayers.keySet())
+		{
+			invPlayersSend.put(getIpFromNick(name),invPlayers.get(name));
+		}
+		
+		
+		Message msg2 = null;
+		try {
+			msg2 = system.getSystemMessage(SystemType.INV_LIST, invPlayersSend);
+		} catch (ContentException e2) { 
+			e2.printStackTrace();
+		}
+		
+		this.sendToAll(msg2);
+		
+		
+		
+		
 		
 		this.setInRealGame(true);
 		return true;

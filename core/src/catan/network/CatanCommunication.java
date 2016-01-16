@@ -63,31 +63,10 @@ public class CatanCommunication extends GameCommunication{
 			msg = this.update.getUpdateMessage(UpdateType.ORDER, ip);
 		} catch (ContentException e) {
 			e.printStackTrace();
-		}
-		
-		
-		
-		//TODO
-		
+		}				
 		
 		this.sendToAll(msg);
-	}	
-	public int getPlace()																// zwraca 0 jezeli jeszcze nie ustalono kolejnosci
-	{
-		Set<String> s = invPlayers.keySet();
-		int i = 0;
-		for(String nick : s)
-		{
-			if(invPlayers.get(nick) == InvStatus.WAIT)
-				i++;
-		}
-		if(invPlayers.size() == i)								// wszyscy WAIT -> znam kolejnosc
-			return (inQueue + 1);
-		else
-			return -1;
-	}
-	
-	
+	}		
 	/**
 	 * It should be a first message for a host of this game.
 	 * This method propagate our board to all players.
