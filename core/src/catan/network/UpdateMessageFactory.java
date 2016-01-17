@@ -28,7 +28,12 @@ class UpdateMessageFactory extends AbstractMessageFactory {
 			if (content.getClass()!=Board.class)
 				throw new ContentException();
 			else
-				return new MsgBoard((Board) content);					
+				return new MsgBoard((Board) content);
+		case ROAD:
+			if (content.getClass()!=Integer.class)
+				throw new ContentException();
+			else
+				return new MsgRoad((Integer) content);
 			
 		case RESOURCES:
 			if (content.getClass()!=Integer.class)

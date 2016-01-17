@@ -75,7 +75,6 @@ public class Game implements Serializable{
 	}
 	
 	public void endTurn(){		
-		System.out.println("I have finished turn");
 		int nextId = actualPlayer.getId()+1;
 		if(nextId>Game.players.length-1)
 			nextId = 0;

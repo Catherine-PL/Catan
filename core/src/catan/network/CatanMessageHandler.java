@@ -72,6 +72,10 @@ public class CatanMessageHandler extends GameMessageHandler {
 				handleMsgNode((MsgNode)msg);
 				break;
 				
+			case ROAD:
+				handleMsgRoad((MsgRoad)msg);
+				break;
+				
 			case RESOURCES:
 				handleMsgResources((MsgResources)msg);
 				break;
@@ -158,13 +162,21 @@ public class CatanMessageHandler extends GameMessageHandler {
 	synchronized void handleMsgNode(MsgNode msg)			// problem z aktualizacja
 	{
 		System.out.println("Node actualization ...");
-		
+				
 		Boolean city = msg.getContent();			
 		int i = msg.getIndex();
+		
 		if(!city)
 			Building.buildSettlement(game.getActualPlayer(), game.getBoard().getNode(i));
 		else
 			Building.buildCity(game.getActualPlayer(), game.getBoard().getNode(i));
+	}
+	private void handleMsgRoad(MsgRoad msg) 
+	{
+		System.out.println("Road actualization ...");		
+		Integer idRoad = msg.getContent();			
+		
+		game.getBoard().getNode(13).buildRoad(game.getThisPlayer(),idRoad);
 	}
 	synchronized void handleMsgTile(MsgTile msg)
 	{

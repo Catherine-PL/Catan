@@ -128,6 +128,16 @@ public class CatanCommunication extends GameCommunication{
 		}		
 		sendToAll(msg);	
 	}
+	public void sendUpdate(int road)
+	{
+		Message msg = null;
+		try {			
+			msg = this.update.getUpdateMessage(UpdateType.ROAD, road);
+		} catch (ContentException e) {
+			e.printStackTrace();
+		}		
+		sendToAll(msg);			
+	}
 	/**
 	 * Everyone has to know how many resource card i have. (Thief) 
 	 * @param what It might be DICE or RESOURCE

@@ -835,14 +835,14 @@ public boolean keyDown(int keycode) {
 				 int build=0;
 				 selected=SelectedKey.W;
 				 build =Building.buildCity(game.getThisPlayer(), game.getBoard().getNode(touchedBuildingID));
+				 getNetwork().updateNode(true, touchedBuildingID);
 				 if(build>0) 
 				 { 
 					 if(game.getBoard().getNode(touchedBuildingID).getBuilding()==0) nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingnocity.png"));
 					 if(game.getBoard().getNode(touchedBuildingID).getBuilding()==1) villagemenu = new Texture(Gdx.files.internal("gameplay/buildings/villagenocity.png"));
 				 }
 				 else 
-				{
-					 getNetwork().updateNode(true, touchedBuildingID);
+				{					 
 					 citymenu = new Texture(Gdx.files.internal("gameplay/buildings/citymenu.png"));
 					 nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingmenu.png"));
 					 villagemenu = new Texture(Gdx.files.internal("gameplay/buildings/villagemenu.png"));
