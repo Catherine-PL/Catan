@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -397,14 +398,17 @@ public class Communication implements Runnable, P2P, Subject{
 	public synchronized void 	addNodeP2P(String address)
 	{	
 		System.out.println("Adding node P2P, ip: " + address);
-		Iterator<String> it = addresses.iterator();
-		while(it.hasNext())
+		Set<String> nicks = this.peers.keySet();
+		Set<String> ips = new HashSet<String>();
+		for(String n : nicks)
 		{
-			if(it.next().equals(address))
-			{
-				System.out.println("PlayerIP exists");
-				return;
-			}
+			ips.add(this.getIpFromNick(n));
+		}
+				
+		if(ips.contains(address))
+		{
+			System.out.println("PlayerIP exists");
+			return;
 		}
 		
 		try
