@@ -901,6 +901,7 @@ public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 				selected=SelectedKey.NOTHING;
 				touchedBuildingID=null;
 				game.endTurn();
+				getNetwork().endTurn();
 				return true;
 			}
 			if (buildingTouch(X,Y)==true) return true;;

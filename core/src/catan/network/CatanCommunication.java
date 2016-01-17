@@ -65,6 +65,21 @@ public class CatanCommunication extends GameCommunication{
 			e.printStackTrace();
 		}				
 		
+		
+		
+//		
+		for(String i : ip)
+		{
+			if(i.equals("1.1.1.1"))
+				queue.add("Me");
+			else
+				queue.add(this.getNickFromIp(i));						
+		}
+		
+		System.out.println("Order: " + queue);
+		
+		
+		
 		this.sendToAll(msg);
 	}		
 	/**

@@ -74,10 +74,10 @@ public class Game {
 	
 	public void endTurn(){
 		int nextId = actualPlayer.getId()+1;
-		if(nextId>3)
+		if(nextId>this.players.length-1)
 			nextId = 0;
 		
-		for(int i=0;i<4;i++){
+		for(int i=0;i<players.length;i++){
 			if(players[i].getId() == nextId){
 				actualPlayer = players[i];
 			}
