@@ -1,6 +1,6 @@
 package database;
 
-public interface Card {
+public interface Card{
 	
 	
 	void playCard(Player p);

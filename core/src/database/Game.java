@@ -1,11 +1,12 @@
 package database;
 
+import java.io.Serializable;
 import java.util.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 
-public class Game {
+public class Game implements Serializable{
 	private Player thisPlayer = new Player(0);
 	static Player[] players;
 	private Board board;

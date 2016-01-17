@@ -3,6 +3,7 @@ package database;
 
 import database.Node.portType;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -17,10 +18,10 @@ import com.badlogic.gdx.graphics.Texture;
 //import network.*;
 import database.Players;
 
-public class Player {
+public class Player implements Serializable{
 	private	int id;							//metody set,get
 	private String name=null;
-	private Texture avatar=null;
+	private transient Texture avatar=null;
 	//private	ArrayList<DevelopType> cards=new ArrayList <DevelopType>();			//metody add,rm,get
 	private HashMap <DevelopType,Integer> developCards= new HashMap <DevelopType,Integer>();
 	private	int points;						//metody get,set,check
