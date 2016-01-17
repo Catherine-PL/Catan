@@ -36,6 +36,31 @@ public class Player {
 	private EnumSet<portType> ports=EnumSet.of(portType.NORMAL);//ka¿dy taki i tak ma, a jakoœ zainicjowaæ trzeba
 	
 	
+	
+	public Player(String name, Texture avatar, int _id)
+	{
+
+		id=_id;
+		setName(name);
+		setAvatar(avatar);
+		resources.put("clay", 10) ; 
+		resources.put("grain", 10) ;
+		resources.put("ore", 10) ;
+		resources.put("sheep", 10) ;
+		resources.put("wood", 10) ;
+		developCards.put(DevelopType.MONOPOL, 0);
+		developCards.put(DevelopType.POINT, 0);
+		developCards.put(DevelopType.ROAD, 0);
+		developCards.put(DevelopType.SOLDIER, 0);
+		developCards.put(DevelopType.YEAR, 0);
+
+		
+		soldierCount=0;
+		longestRoadDistance=0;
+		points=0;
+		freeRoads=0;
+		
+	}
 
 	
 	

@@ -7,23 +7,32 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class Game {
 	private Player thisPlayer = new Player(0);
-	static Player[] players = new Player[4];
+	static Player[] players;
 	private Board board;
 	private Dice dice;
-	//TODO aktualny gracz mo¿e byæ inaczej - to tylko teraz dla testów tekstur
-	private Player actualPlayer=thisPlayer;
+	private Player actualPlayer;
 	private HashMap <Integer,Integer> colors=new HashMap<Integer,Integer>();
 	
-	public Game(List<String> pl, String name){		
+	public Game(List<String> pl, String name, Texture avatar){		
 		board = Board.getInstance();
 		dice = Dice.getInstance();
 		dice.throwDice();
-		
-		//TODO thisPlayer na tym miejscu tylko tymaczasowo do testów! Potem bêdzie ustawianie wed³ug kostki
-		
-				
-		
-		//thisPlayer = new Player(name);
+		players=new Player[pl.size()];
+
+		thisPlayer=new Player(name,avatar,0);
+		for(int i=0;i<pl.size();i++){
+			if(!pl.get(i).equals("Me"))
+			{
+				players[i]=new Player(pl.get(i),new Texture(Gdx.files.internal("avatars/playeravatar3.png")),i);
+
+			}
+			else
+			{
+				thisPlayer.setId(i);
+				players[i]=thisPlayer;
+			}
+		}
+		actualPlayer=players[0];
 		
 		for(int i=0;i<4;i++){
 			//colors.put(players[i].getId(), i);

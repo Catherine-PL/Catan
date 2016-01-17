@@ -18,6 +18,13 @@ public class CatanNetwork {
 
 	private String nickname;
 	private LinkedList<String> addresses = new LinkedList<String>();									// nick i ip z hamachi
+	
+
+
+	public void addAddress(String address) {
+		addresses.add(address);
+	}
+
 	private CatanCommunication game;
 	
 	public List<ObserverPeers> peersObservers = new LinkedList<ObserverPeers>();						// They observe Communication
@@ -31,8 +38,8 @@ public class CatanNetwork {
 	public void 	readAddresses()
 	{
 		// TODO read addresses from a file, and saving to a file?
-		//addresses.add("127.0.0.1");
-		addresses.add("25.50.105.234");
+		addresses.add("127.0.0.1");
+		//addresses.add("25.50.105.234");
 	}
 	public void 	initNetwork() throws IOException
 	{
