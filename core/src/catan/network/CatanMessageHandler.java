@@ -8,6 +8,7 @@ import java.util.Set;
 import catan.network.GameCommunication.InvStatus;
 import catan.network.TradeMessage.TradeType;
 import database.Board;
+import database.Building;
 import database.Game;
 
 public class CatanMessageHandler extends GameMessageHandler {
@@ -15,7 +16,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 	CatanCommunication catanCom;
 	
 	private Board board;
-	private Game game;
+	static transient Game game;
 	
 	private HashMap<String, Integer> give;
 	private HashMap<String, Integer> get;
@@ -23,7 +24,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 		
 	CatanMessageHandler(Game game)
 	{
-		this.game = game;
+		CatanMessageHandler.game = game;
 	}
 	
 	@Override
@@ -136,7 +137,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 
 	synchronized void handleMsgEndTurn()
 	{				
-		System.out.println("Player: " + nick + " has finished turn.");
+		System.out.println("Player: " + nick + " has finished turn.");		
 		game.endTurn();
 	}
 	synchronized void handleMsgEndGame()
@@ -158,12 +159,12 @@ public class CatanMessageHandler extends GameMessageHandler {
 	{
 		System.out.println("Node actualization ...");
 		
-	//	Node n = msg.getContent();			
-	//	int i = msg.getIndex();
-	//	System.out.println("Node: " + n + " on index: " + i);
-	//	board.setNode(n, i);
-	//	System.out.println(n.getNodeNumber() + ", " + board.getNode(i));
-		
+		Boolean city = msg.getContent();			
+		int i = msg.getIndex();
+		if(!city)
+			Building.buildSettlement(game.getActualPlayer(), game.getBoard().getNode(i));
+		else
+			Building.buildCity(game.getActualPlayer(), game.getBoard().getNode(i));
 	}
 	synchronized void handleMsgTile(MsgTile msg)
 	{

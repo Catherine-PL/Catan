@@ -108,9 +108,9 @@ public class CatanNetwork {
 	{
 		game.sendUpdate(tile, index);
 	}
-	public void 	updateNode(Node node, int index)
+	public void 	updateNode(Boolean city,int index)
 	{
-		game.sendUpdate(node, index);
+		game.sendUpdate(city, index);
 	}
 	public void 	updateDice(int number)
 	{

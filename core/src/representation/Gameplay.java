@@ -815,6 +815,8 @@ public boolean keyDown(int keycode) {
 				 if(build>0) { nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingnocity.png"));}
 				 else 
 				 {
+					 //TODO
+					 getNetwork().updateNode(false, touchedBuildingID);
 					 citymenu = new Texture(Gdx.files.internal("gameplay/buildings/citymenu.png"));
 					 nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingmenu.png"));
 					 villagemenu = new Texture(Gdx.files.internal("gameplay/buildings/villagemenu.png"));
@@ -840,6 +842,7 @@ public boolean keyDown(int keycode) {
 				 }
 				 else 
 				{
+					 getNetwork().updateNode(true, touchedBuildingID);
 					 citymenu = new Texture(Gdx.files.internal("gameplay/buildings/citymenu.png"));
 					 nobuildingmenu = new Texture(Gdx.files.internal("gameplay/buildings/nobuildingmenu.png"));
 					 villagemenu = new Texture(Gdx.files.internal("gameplay/buildings/villagemenu.png"));

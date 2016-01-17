@@ -210,7 +210,7 @@ public class NewGameMenu  extends View implements InputProcessor
 						
 			if(((ObserverStart)getNetwork().invObservers.get(1)).getStateGame())
 			{
-				game = new Game(getNetwork().getQueue(),namestring,avatar);
+				game.initGame(getNetwork().getQueue(),namestring,avatar);
 				View.setView(Screen.GAMEPLAY);
 				
 				
@@ -460,7 +460,7 @@ public class NewGameMenu  extends View implements InputProcessor
 
 					if(getNetwork().start())
 					{
-						game = new Game(getNetwork().getQueue(),namestring,avatar);
+						game.initGame(getNetwork().getQueue(),namestring,avatar);
 						View.setView(Screen.GAMEPLAY);
 					}
 						

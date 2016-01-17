@@ -118,11 +118,11 @@ public class CatanCommunication extends GameCommunication{
 	 * @param node Node object which has been modified.
 	 * @param index Index of this node in our board.
 	 */
-	public void sendUpdate(Node node, int index) 
+	public void sendUpdate(Boolean city, int index) 
 	{
 		Message msg = null;
 		try {			
-			msg = this.update.getUpdateMessage(UpdateType.NODE, node, index);
+			msg = this.update.getUpdateMessage(UpdateType.NODE, city , index);
 		} catch (ContentException e) {
 			e.printStackTrace();
 		}		

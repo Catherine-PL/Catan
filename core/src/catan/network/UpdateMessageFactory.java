@@ -77,10 +77,10 @@ class UpdateMessageFactory extends AbstractMessageFactory {
 				return new MsgTile((Tile) content, index);
 			
 		case NODE:
-			if (content.getClass()!=Node.class)
+			if (content.getClass()!=Boolean.class)
 				throw new ContentException();
 			else
-				return new MsgNode((Node) content, index);
+				return new MsgNode((Boolean) content, index);
 		
 		default:
 			System.err.println("Podany zosta³ niepoprawny typ wiadomosci");

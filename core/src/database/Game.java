@@ -8,13 +8,13 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class Game implements Serializable{
 	private Player thisPlayer = new Player(0);
-	static Player[] players;
+	static Player[] players = null;
 	private Board board;
 	private Dice dice;
 	private Player actualPlayer;
 	private HashMap <Integer,Integer> colors=new HashMap<Integer,Integer>();
 	
-	public Game(List<String> pl, String name, Texture avatar){		
+	public void initGame(List<String> pl, String name, Texture avatar){		
 		board = Board.getInstance();
 		dice = Dice.getInstance();
 		dice.throwDice();
@@ -33,11 +33,12 @@ public class Game implements Serializable{
 				players[i]=thisPlayer;
 			}
 		}
-		actualPlayer=players[0];
+		actualPlayer=players[0];				
 		
 		for(int i=0;i<pl.size();i++){
 			colors.put(players[i].getId(), i);
 		}
+		
 	}
 	public Game()
 	{
@@ -73,9 +74,10 @@ public class Game implements Serializable{
 		return colors;
 	}
 	
-	public void endTurn(){
+	public void endTurn(){		
+		System.out.println("I have finished turn");
 		int nextId = actualPlayer.getId()+1;
-		if(nextId>this.players.length-1)
+		if(nextId>Game.players.length-1)
 			nextId = 0;
 		
 		for(int i=0;i<players.length;i++){

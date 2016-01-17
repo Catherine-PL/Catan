@@ -4,16 +4,16 @@ import database.Node;
 
 class MsgNode extends UpdateMessage
 {
-	private Node content = null;
+	private Boolean content = null;
 	private int index;
 	
-	MsgNode(Node node, int index) {
+	MsgNode(Boolean city, int index) {
 		super(UpdateMessage.UpdateType.NODE);
-		this.content = node;
+		this.content = city;
 		this.index = index;
 	}
 	
-	Node getContent()
+	Boolean getContent()
 	{
 		return content;
 	}
