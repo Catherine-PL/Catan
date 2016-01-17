@@ -395,7 +395,8 @@ public class Communication implements Runnable, P2P, Subject{
 	}
 	
 	public synchronized void 	addNodeP2P(String address)
-	{		
+	{	
+		System.out.println("Adding node P2P, ip: " + address);
 		Iterator<String> it = addresses.iterator();
 		while(it.hasNext())
 		{
@@ -408,14 +409,14 @@ public class Communication implements Runnable, P2P, Subject{
 		
 		try
 		{
-						
-			this.addresses.add(address);	
+										
 			String nick = updateNickname(Integer.toString(0));
 			
 			// na wypadek, gdyby dodanie bylo wczesniej niz ich inicjalizacja
 			// jesli tak to dodaj tylko do playersIP a initPeers zrobi reszte
 			if((peers.size()!=0 && addresses.size()>1) || (addresses.size()==1))
-				this.putPeer(nick , new Peer(nickname, address, servport));		// proba polaczenia i wyslania wiadomosci z nickiem			
+				this.putPeer(nick , new Peer(nickname, address, servport));		// proba polaczenia i wyslania wiadomosci z nickiem
+			this.addresses.add(address);
 			System.out.println("Adding new player finished");
 			
 		}
@@ -585,8 +586,7 @@ public class Communication implements Runnable, P2P, Subject{
 		
 		game.setOrder();
 		
-		com.sleep(3000);
-		System.out.println("Place: " + game.getPlace());									// numer w kolejce graczy 1-4
+		com.sleep(3000);		
 		//System.out.println(game.getStateInv());
 		
 		

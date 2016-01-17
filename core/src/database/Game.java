@@ -34,8 +34,8 @@ public class Game {
 		}
 		actualPlayer=players[0];
 		
-		for(int i=0;i<4;i++){
-			//colors.put(players[i].getId(), i);
+		for(int i=0;i<pl.size();i++){
+			colors.put(players[i].getId(), i);
 		}
 	}
 	public Game()

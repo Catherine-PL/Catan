@@ -452,7 +452,7 @@ public class NewGameMenu  extends View implements InputProcessor
 			}
 			
 			
-		    if (invited==true)
+			else if (invited==true)
 			{
 		    	//start game
 				if ((X>1000) && (X<1195) &&(Y>235) && (Y<270))
