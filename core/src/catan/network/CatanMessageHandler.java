@@ -8,16 +8,24 @@ import java.util.Set;
 import catan.network.GameCommunication.InvStatus;
 import catan.network.TradeMessage.TradeType;
 import database.Board;
+import database.Game;
 
 public class CatanMessageHandler extends GameMessageHandler {
 
 	CatanCommunication catanCom;
 	
 	private Board board;
+	private Game game;
+	
 	private HashMap<String, Integer> give;
 	private HashMap<String, Integer> get;
 
 		
+	CatanMessageHandler(Game game)
+	{
+		this.game = game;
+	}
+	
 	@Override
 	public void setting() 
 	{
@@ -129,6 +137,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 	synchronized void handleMsgEndTurn()
 	{				
 		System.out.println("Player: " + nick + " has finished turn.");
+		game.endTurn();
 	}
 	synchronized void handleMsgEndGame()
 	{	

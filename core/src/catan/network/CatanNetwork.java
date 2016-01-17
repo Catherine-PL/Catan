@@ -11,6 +11,7 @@ import catan.network.SystemMessage.SystemType;
 import catan.network.TradeMessage.TradeType;
 import catan.network.UpdateMessage.UpdateType;
 import database.Board;
+import database.Game;
 import database.Node;
 import database.Tile;
 
@@ -41,15 +42,15 @@ public class CatanNetwork {
 		//addresses.add("127.0.0.1");
 		addresses.add("25.50.105.234");
 	}
-	public void 	initNetwork() throws IOException
+	public void 	initNetwork(Game game) throws IOException
 	{
 		Communication com = Communication.getInstance();									// tworzenie komunikacji						
 		peersObservers.add(new ObserverPeers(com));			
 				
-		MessageHandler mh = new CatanMessageHandler();				
-		game = new CatanCommunication(com, nickname, addresses, mh);
-		invObservers.add(new ObserverInv(game));
-		invObservers.add(new ObserverStart(game));
+		MessageHandler mh = new CatanMessageHandler(game);				
+		this.game = new CatanCommunication(com, nickname, addresses, mh);
+		invObservers.add(new ObserverInv(this.game));
+		invObservers.add(new ObserverStart(this.game));
 		
 		
 	}

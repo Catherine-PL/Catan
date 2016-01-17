@@ -426,7 +426,7 @@ public class NewGameMenu  extends View implements InputProcessor
 					setNetwork(new CatanNetwork(namestring));
 					getNetwork().readAddresses();
 					try {
-						getNetwork().initNetwork();
+						getNetwork().initNetwork(View.game);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block - IO exception - b³¹d przy tworzeniu serverportu
 						e.printStackTrace();

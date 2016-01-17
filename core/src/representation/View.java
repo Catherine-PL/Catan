@@ -15,7 +15,7 @@ public abstract class View {
 	private static Screen view = Screen.MAINMENU;
 	final static int screensizeX=1366; 
 	final static int screensizeY=768; 
-	private CatanNetwork network;
+	private static CatanNetwork network;
 	public static Game game;
 	
 	public static List<String> invFrom = new LinkedList<String>();
@@ -35,7 +35,7 @@ public abstract class View {
 	{
 		return view;
 	}
-	public CatanNetwork getNetwork() {
+	public static CatanNetwork getNetwork() {
 		return network;
 	}
 	public void setNetwork(CatanNetwork network) {
