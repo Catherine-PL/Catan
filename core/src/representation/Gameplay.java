@@ -113,6 +113,7 @@ public class Gameplay extends View implements InputProcessor
 	CardMenu cardState;
 	BitmapFont font;
 	int tilenumber; //dla Soldiera
+	private boolean tilesInit;
 	
 	public void init()
 	{
@@ -197,6 +198,13 @@ public class Gameplay extends View implements InputProcessor
 	
 	public void batch()
 	{
+		if(!tilesInit)
+		{
+			initTiles();
+			tilesInit=true;
+		}
+		
+		
 		Gdx.input.setInputProcessor(this);
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -212,7 +220,7 @@ public class Gameplay extends View implements InputProcessor
 		batchTouchedBuildingRoads();
 	}	
 	
-
+//TODO
 	private void initTiles()
 	{
 		for (int k =0; k<19; k++)
@@ -783,9 +791,12 @@ public boolean keyDown(int keycode) {
 			int noRoadsSize =(game.getBoard().getNode(touchedBuildingID)).getRoadsIdImprove().size();
 			 if(Gdx.input.isKeyPressed(Keys.NUM_1 ))
 			 {
-				 if(noRoadsSize>=1 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
+				 if(noRoadsSize>=1 ) 
+				{
+					 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
+					 game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
+				}
 				 selected=SelectedKey.E;
-				 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
 				 System.out.println("idNode: " + touchedBuildingID);
 				 System.out.println("idRoad: " + game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
 				 System.out.println("idRoad: " + game.getBoard().boardRoads);
@@ -793,9 +804,14 @@ public boolean keyDown(int keycode) {
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_2 ))
 			 {
-				 if(noRoadsSize>=2 ) game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
+				 if(noRoadsSize>=2 )
+				 {
+					 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
+					 game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
+				 }
+					 
 				 selected=SelectedKey.E;
-				 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
+				
 				 System.out.println("idNode: " + touchedBuildingID);
 				 System.out.println("idRoad: " + game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
 				 System.out.println("idRoad: " + game.getBoard().boardRoads);
@@ -803,9 +819,13 @@ public boolean keyDown(int keycode) {
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_3 ))
 			 {
-				 if(noRoadsSize>=3 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
+				 if(noRoadsSize>=3 )  
+				 {
+					 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
+					 game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
+				 }
+				 
 				 selected=SelectedKey.E;
-				 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
 				 System.out.println("idNode: " + touchedBuildingID);
 				 System.out.println("idRoad: " + game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
 				 System.out.println("idRoad: " + game.getBoard().boardRoads);
