@@ -91,6 +91,7 @@ public class MainMenu extends View implements InputProcessor
 		    	//new game
 			    	if (Y>(originY+184))
 			    	{
+			    		
 			    		setView(Screen.NEWGAMEMENU);
 			    		return false;
 			    	}

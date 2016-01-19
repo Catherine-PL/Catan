@@ -217,6 +217,7 @@ public class NewGameMenu  extends View implements InputProcessor
 			}
 			
 		}
+		batch.end();
 	}	
 	
 	private void initTextures()
