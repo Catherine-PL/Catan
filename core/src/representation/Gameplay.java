@@ -198,13 +198,7 @@ public class Gameplay extends View implements InputProcessor
 	
 	public void batch()
 	{
-		if(!tilesInit)
-		{
-			initTiles();
-			tilesInit=true;
-		}
-		
-		
+
 		Gdx.input.setInputProcessor(this);
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -793,42 +787,44 @@ public boolean keyDown(int keycode) {
 			 {
 				 if(noRoadsSize>=1 ) 
 				{
+					 System.out.println("idNode: " + touchedBuildingID);
+					 System.out.println("idRoad: " + game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
+					 System.out.println("idRoad: " + game.getBoard().boardRoads);
 					 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
 					 game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
 				}
 				 selected=SelectedKey.E;
-				 System.out.println("idNode: " + touchedBuildingID);
-				 System.out.println("idRoad: " + game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
-				 System.out.println("idRoad: " + game.getBoard().boardRoads);
 				 return true;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_2 ))
 			 {
 				 if(noRoadsSize>=2 )
 				 {
+
+					 System.out.println("idNode: " + touchedBuildingID);
+					 System.out.println("idRoad: " + game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
+					 System.out.println("idRoad: " + game.getBoard().boardRoads);
 					 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
 					 game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
 				 }
 					 
 				 selected=SelectedKey.E;
-				
-				 System.out.println("idNode: " + touchedBuildingID);
-				 System.out.println("idRoad: " + game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
-				 System.out.println("idRoad: " + game.getBoard().boardRoads);
+		
 				 return true;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_3 ))
 			 {
 				 if(noRoadsSize>=3 )  
 				 {
+					 System.out.println("idNode: " + touchedBuildingID);
+					 System.out.println("idRoad: " + game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
+					 System.out.println("idRoad: " + game.getBoard().boardRoads);
 					 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
 					 game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
 				 }
 				 
 				 selected=SelectedKey.E;
-				 System.out.println("idNode: " + touchedBuildingID);
-				 System.out.println("idRoad: " + game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
-				 System.out.println("idRoad: " + game.getBoard().boardRoads);
+				
 				 return true;
 			 }
 		}
@@ -926,6 +922,14 @@ public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		int X=screenX;
 		int Y=screensizeY - screenY;
 	
+		//TODO zaladowanie Tile jeszcze raz bo przeslano boarda
+		if(!tilesInit)
+		{
+			initTiles();
+			tilesInit=true;
+		}
+		
+		
 		//rzeczy do robienia podczas kolejki
 		if(game.getActualPlayer()==game.getThisPlayer())
 		{
