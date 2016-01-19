@@ -17,12 +17,12 @@ public class Node extends Element {
 	private int nodeNumber;//numer ID noda
 	private portType port;
 	private ArrayList <Node> neighbours=new ArrayList<Node>();//referencja do s1siednich Node
-	private ArrayList <Tile> nearResources=new ArrayList<Tile>(); //referencja do  kafli, potrzebne do surowców
+	private ArrayList <Tile> nearResources=new ArrayList<Tile>(); //referencja do  kafli, potrzebne do surowcï¿½w
 	private ArrayList <Road> roads=new ArrayList<Road> ();
 	
-	private HashMap <Integer,Tile> intResources=new HashMap<Integer,Tile>();//zastanowiæ siê czy to w ogóle potrzebne	
-	private ArrayList <Node> improvedRoads=new ArrayList <Node>();//zastanowiæ siê czy to w ogóle potrzebne
-	private ArrayList <Node> noRoads=new ArrayList <Node>(); //zastanowiæ siê czy to w ogóle potrzebne
+	private HashMap <Integer,Tile> intResources=new HashMap<Integer,Tile>();//zastanowiï¿½ siï¿½ czy to w ogï¿½le potrzebne	
+	private ArrayList <Node> improvedRoads=new ArrayList <Node>();//zastanowiï¿½ siï¿½ czy to w ogï¿½le potrzebne
+	private ArrayList <Node> noRoads=new ArrayList <Node>(); //zastanowiï¿½ siï¿½ czy to w ogï¿½le potrzebne
 	
 	//konstruktor
 	public Node(int id){
@@ -51,7 +51,7 @@ public class Node extends Element {
 		neighbours.add(node);
 	}
 	
-	//sprawdza czy s¹siednie nody s¹ zabudowane
+	//sprawdza czy sï¿½siednie nody sï¿½ zabudowane
 	public boolean twoSpaceRule3(){
 		
 		for(Road r:this.roads){
@@ -158,13 +158,13 @@ public class Node extends Element {
 		this.noRoads.add(to);
 	}
 
-//pocz1tkowo nie ma dróg do s1siadów, wiec moge je skopiowaa z tamt1d?/
+//pocz1tkowo nie ma drï¿½g do s1siadï¿½w, wiec moge je skopiowaa z tamt1d?/
 	public void setNoRoads(ArrayList <Node> noRoads) {
 		this.noRoads=noRoads;
 	}
 
 /*
-	//zwraca nam, Tile z którego bêdziemy chcieli pobraæ surowiec
+	//zwraca nam, Tile z ktï¿½rego bï¿½dziemy chcieli pobraï¿½ surowiec
 	public Tile getIntResource(int number) {
 		return intResources.get(number);
 	}
@@ -198,7 +198,7 @@ public class Node extends Element {
 		}
 		return withoutRoad;
 	}
-	///przemyœleæ czy potrzebne
+	///przemyï¿½leï¿½ czy potrzebne
 	public ArrayList<Integer> getNodesFromRoadsImprove(){
 		ArrayList<Integer> withoutRoad=new ArrayList<Integer>();
 		
@@ -250,8 +250,8 @@ public class Node extends Element {
 		
 		return null;
 	}
-	//wywo³anie node.nodeHasOwnedRoad(gracz)
-	//i to sprawdzi czy do tego Noda wchodz¹ jakieœ drogi podanego gracza
+	//wywoï¿½anie node.nodeHasOwnedRoad(gracz)
+	//i to sprawdzi czy do tego Noda wchodzï¿½ jakieï¿½ drogi podanego gracza
 	public Boolean nodeHasOwnedRoad(Player player){
 		for(Road r:this.roads){
 			if(r.getOwnerID()==player.getId()){
@@ -262,28 +262,31 @@ public class Node extends Element {
 		return false;
 	}
 	
-	/* Wartoœci zwracane przy budowaniu:
-	 * 0 - uda³o siê 
-	 * 1 - Masz za ma³o surowców
-	 * 2 - Droga ju¿ istnieje
-	 * 3 - nie mo¿esz tu budowaæ
+	/* Wartoï¿½ci zwracane przy budowaniu:
+	 * 0 - udaï¿½o siï¿½ 
+	 * 1 - Masz za maï¿½o surowcï¿½w
+	 * 2 - Droga juï¿½ istnieje
+	 * 3 - nie moï¿½esz tu budowaï¿½
 	 * 4 - Node FROM nie nalezy do ciebie
 	 * 5 - Nie ma drogi z From2 do To2
-	 * 6	- Nie wykona³ siê zaden if 
+	 * 6	- Nie wykonaï¿½ siï¿½ zaden if 
 	 * 10- nie ma takiej drogi przy tym node
 	 */
 	
 	public int buildRoad(Player player, int id){
+		System.out.println("Node.buildRoad trying to build a road");
 		Road r=Board.getInstance().boardRoads.get(id);
 		if(this.getRoads().contains(r))
 		{
 			r.buildRoad(player,r.getTo(),r.getFrom());
 			r.buildRoad(player,r.getFrom(),r.getTo());
+			System.out.println("Road r updated");
 			return 0;
 			//return r.buildRoad(player,r.getFrom(),r.getTo());
 		}
 		//return r.buildRoad(player,r.getFrom(),r.getTo());
 		else
+			System.out.println("Road not updated");
 			return 10;		
 	}
 	
