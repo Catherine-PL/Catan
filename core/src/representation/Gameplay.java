@@ -786,6 +786,9 @@ public boolean keyDown(int keycode) {
 				 if(noRoadsSize>=1 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
 				 selected=SelectedKey.E;
 				 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
+				 System.out.println("idNode: " + touchedBuildingID);
+				 System.out.println("idRoad: " + game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
+				 System.out.println("idRoad: " + game.getBoard().boardRoads);
 				 return true;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_2 ))
@@ -793,6 +796,9 @@ public boolean keyDown(int keycode) {
 				 if(noRoadsSize>=2 ) game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
 				 selected=SelectedKey.E;
 				 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
+				 System.out.println("idNode: " + touchedBuildingID);
+				 System.out.println("idRoad: " + game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
+				 System.out.println("idRoad: " + game.getBoard().boardRoads);
 				 return true;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_3 ))
@@ -800,6 +806,9 @@ public boolean keyDown(int keycode) {
 				 if(noRoadsSize>=3 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
 				 selected=SelectedKey.E;
 				 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
+				 System.out.println("idNode: " + touchedBuildingID);
+				 System.out.println("idRoad: " + game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
+				 System.out.println("idRoad: " + game.getBoard().boardRoads);
 				 return true;
 			 }
 		}

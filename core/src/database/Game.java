@@ -18,6 +18,7 @@ public class Game implements Serializable{
 		board = Board.getInstance();
 		dice = Dice.getInstance();
 		dice.throwDice();
+		System.out.println("initGame: " + pl);
 		players=new Player[pl.size()];
 
 		thisPlayer=new Player(name,avatar,0);
