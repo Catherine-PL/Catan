@@ -157,7 +157,8 @@ public class CatanMessageHandler extends GameMessageHandler {
 	synchronized void handleMsgBoard(MsgBoard msg)			// podmienic board tam gdzie jest ona przechowywana
 	{
 		System.out.println("Board actualization ...");
-		//this.board = msg.getContent();
+		Board board = msg.getContent();
+		game.setBoard(board);
 	}	
 	synchronized void handleMsgNode(MsgNode msg)			// problem z aktualizacja
 	{

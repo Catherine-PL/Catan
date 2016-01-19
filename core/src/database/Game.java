@@ -59,6 +59,11 @@ public class Game implements Serializable{
 	{
 		return board;
 	}
+	public void setBoard(Board board)
+	{
+		this.board = board;
+	}
+			
 	
 	public Dice getDice()
 	{

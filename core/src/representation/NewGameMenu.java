@@ -217,7 +217,6 @@ public class NewGameMenu  extends View implements InputProcessor
 			}
 			
 		}
-		batch.end();
 	}	
 	
 	private void initTextures()
@@ -460,7 +459,8 @@ public class NewGameMenu  extends View implements InputProcessor
 
 					if(getNetwork().start())
 					{
-						game.initGame(getNetwork().getQueue(),namestring,avatar);
+						game.initGame(getNetwork().getQueue(),namestring,avatar);	
+						getNetwork().updateBoard(game.getBoard());
 						View.setView(Screen.GAMEPLAY);
 					}
 						
