@@ -29,12 +29,8 @@ class UpdateMessageFactory extends AbstractMessageFactory {
 				throw new ContentException();
 			else
 				return new MsgBoard((Board) content);
-		case ROAD:
-			if (content.getClass()!=Integer.class)
-				throw new ContentException();
-			else
-				return new MsgRoad((Integer) content);
-			
+		
+					
 		case RESOURCES:
 			if (content.getClass()!=Integer.class)
 				throw new ContentException();
@@ -62,7 +58,7 @@ class UpdateMessageFactory extends AbstractMessageFactory {
 			else
 				return new MsgOrder((List)content);
 
-			
+					
 		default:
 			System.err.println("Podany zosta³ niepoprawny typ wiadomosci");
 			return null;
@@ -87,6 +83,12 @@ class UpdateMessageFactory extends AbstractMessageFactory {
 			else
 				return new MsgNode((Boolean) content, index);
 		
+		case ROAD:
+			if (content.getClass()!=Integer.class)
+				throw new ContentException();
+			else
+				return new MsgRoad((Integer) content, index);
+			
 		default:
 			System.err.println("Podany zosta³ niepoprawny typ wiadomosci");
 			return null;

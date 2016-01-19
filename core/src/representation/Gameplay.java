@@ -785,18 +785,21 @@ public boolean keyDown(int keycode) {
 			 {
 				 if(noRoadsSize>=1 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
 				 selected=SelectedKey.E;
+				 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(0));
 				 return true;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_2 ))
 			 {
 				 if(noRoadsSize>=2 ) game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
 				 selected=SelectedKey.E;
+				 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(1));
 				 return true;
 			 }
 			 if(Gdx.input.isKeyPressed(Keys.NUM_3 ))
 			 {
 				 if(noRoadsSize>=3 )  game.getBoard().getNode(touchedBuildingID).buildRoad(game.getThisPlayer(),game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
 				 selected=SelectedKey.E;
+				 getNetwork().updateRoad(touchedBuildingID, game.getBoard().getNode(touchedBuildingID).getRoadsIdImprove().get(2));
 				 return true;
 			 }
 		}

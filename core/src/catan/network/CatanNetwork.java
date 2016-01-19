@@ -114,9 +114,9 @@ public class CatanNetwork {
 	{
 		game.sendUpdate(city, index);
 	}
-	public void		updateRoad(int idRoad)
+	public void		updateRoad(Integer idNode, int idRoad)
 	{
-		game.sendUpdate(idRoad);
+		game.sendUpdate(idNode, idRoad);
 	}
 	public void 	updateDice(int number)
 	{

@@ -171,12 +171,13 @@ public class CatanMessageHandler extends GameMessageHandler {
 		else
 			Building.buildCity(game.getActualPlayer(), game.getBoard().getNode(i));
 	}
-	private void handleMsgRoad(MsgRoad msg) 
+	synchronized void handleMsgRoad(MsgRoad msg) 
 	{
 		System.out.println("Road actualization ...");		
-		Integer idRoad = msg.getContent();			
+		Integer idNode = msg.getContent();
+		int idRoad = msg.getContent2();		
 		
-		game.getBoard().getNode(13).buildRoad(game.getThisPlayer(),idRoad);
+		game.getBoard().getNode(idNode).buildRoad(game.getThisPlayer(),idRoad);
 	}
 	synchronized void handleMsgTile(MsgTile msg)
 	{

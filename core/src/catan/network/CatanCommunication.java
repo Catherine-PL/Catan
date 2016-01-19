@@ -128,11 +128,11 @@ public class CatanCommunication extends GameCommunication{
 		}		
 		sendToAll(msg);	
 	}
-	public void sendUpdate(int road)
+	public void sendUpdate(Integer idNode,int road)
 	{
 		Message msg = null;
 		try {			
-			msg = this.update.getUpdateMessage(UpdateType.ROAD, road);
+			msg = this.update.getUpdateMessage(UpdateType.ROAD, idNode, road);
 		} catch (ContentException e) {
 			e.printStackTrace();
 		}		
