@@ -210,6 +210,7 @@ public class NewGameMenu  extends View implements InputProcessor
 						
 			if(((ObserverStart)getNetwork().invObservers.get(1)).getStateGame())
 			{
+				Communication.sleep(2000);
 				game.initGame(getNetwork().getQueue(),namestring,avatar);
 				View.setView(Screen.GAMEPLAY);
 				

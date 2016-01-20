@@ -925,6 +925,7 @@ public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		//TODO zaladowanie Tile jeszcze raz bo przeslano boarda
 		if(!tilesInit)
 		{
+			System.out.println("TILEINIT");
 			initTiles();
 			tilesInit=true;
 		}

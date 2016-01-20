@@ -163,6 +163,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 		game.getBoard().setNeighbours();
 		game.getBoard().setRoadsy();
 		game.getBoard().setNoRoads();
+		
 	}	
 	synchronized void handleMsgNode(MsgNode msg)			// problem z aktualizacja
 	{

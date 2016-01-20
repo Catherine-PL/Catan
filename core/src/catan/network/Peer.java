@@ -19,7 +19,7 @@ class Peer{
 	Peer(String nick, String ip, int port) throws IOException {		
 		SocketAddress sockaddr = new InetSocketAddress(ip, port);
 		socketOut = new Socket();
-		socketOut.connect(sockaddr, 5*1000);													// 5 sekund na pol¹czenie
+		socketOut.connect(sockaddr);													// 5 sekund na pol¹czenie
 		
 		System.out.println("New peer on port: " + socketOut.getLocalPort());
 		System.out.println("Sending him hello message ...");
