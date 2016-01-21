@@ -1,10 +1,10 @@
 package catan.network;
 
-class TradeMessage extends Message 
+public class TradeMessage extends Message 
 {
 
 
-	enum TradeType		
+	public enum TradeType		
 	{
 		OFFERT, YES, NO, CONTR, DEAL, END_TRADE;
 	}

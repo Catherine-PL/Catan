@@ -15,7 +15,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Input.Keys;
 
 import database.*;
-
+import catan.network.*;
+import catan.network.TradeMessage.TradeType;
 
 
 public class Gameplay extends View implements InputProcessor
@@ -214,6 +215,15 @@ public class Gameplay extends View implements InputProcessor
 		//batchThief();
 		batch.end();
 		batchTouchedBuildingRoads();
+		
+		TradeMessage.TradeType tt = ((ObserverTrade)getNetwork().invObservers.get(2)).getStateGame();
+		if(tt!=null)
+		{
+			if(tt==TradeType.OFFERT)
+			{
+				tradeState = TradeState.RESPOND_OFFER;
+			}
+		}
 	}	
 	
 //TODO

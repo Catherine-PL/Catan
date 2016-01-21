@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import catan.network.FactoryProducer.FactoryType;
 import catan.network.GameCommunication.InvStatus;
 import catan.network.SystemMessage.SystemType;
+import catan.network.TradeMessage.TradeType;
 
 public class GameCommunication extends CommunicationDecorator implements Subject {
 	
@@ -32,6 +33,7 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 		this.initCommunication(myName, rememberedNodes, msgHandler);
 	}
 	
+	private TradeType				msgType=null;
 	private boolean					inRealGame;
 	private boolean					inGame=false;					// my value		
 	protected Map<String, InvStatus>invPlayers = new HashMap<String, InvStatus>();				// <-- W grze: przechowuje nicki graczy bedacych ze mna w grze, ich TradeStatus																
@@ -300,6 +302,15 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 				}
 		}
 		
+	}
+	void setTradeState(TradeType type)
+	{
+		msgType=type;
+		this.notifyObservers();
+	}
+	TradeType getTradeState()
+	{
+		return this.msgType;
 	}
 	
 	

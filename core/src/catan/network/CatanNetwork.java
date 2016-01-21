@@ -53,7 +53,7 @@ public class CatanNetwork {
 		this.game = new CatanCommunication(com, nickname, addresses, mh);
 		invObservers.add(new ObserverInv(this.game));
 		invObservers.add(new ObserverStart(this.game));
-		
+		invObservers.add(new ObserverTrade(this.game));		
 		
 	}
 	public void 	invite(List<String> invited)
