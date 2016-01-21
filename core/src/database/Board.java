@@ -17,20 +17,21 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Board implements Serializable{
+	public static Board instance;
 	public int thiefPosition=0;
-	public Player whoArmy=null;
-	public Player whoRoad=null;
-	public Node[] nodes = new Node[54];
-	//public int[][] adjencyMatrix=new int[54][54];
-	//public int[][] tilesToNodes=new int[19[54];
-	public int[] letterToNumber=new int [] {5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11};//zamiast tego ca³ego ABCDEF
+	private Player whoArmy=null;
+	private Player whoRoad=null;
+	private Node[] nodes = new Node[54];
+	//private int[][] adjencyMatrix=new int[54][54];
+	//private int[][] tilesToNodes=new int[19[54];
+	private int[] letterToNumber=new int [] {5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11};//zamiast tego ca³ego ABCDEF
 	public int numbersLayout=0;
 	
 	
 	public  ArrayList <Road> boardRoads=new ArrayList<Road> ();
-	public HashMap <DevelopType,Integer> BdevelopCards= new HashMap <DevelopType,Integer>();
+	private HashMap <DevelopType,Integer> BdevelopCards= new HashMap <DevelopType,Integer>();
 	
-	public int[][] adjencyMatrix=new int[][] {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	private int[][] adjencyMatrix=new int[][] {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -85,7 +86,7 @@ public class Board implements Serializable{
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0}};
 		
-	public int[][] tilesToNodes={{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	private int[][] tilesToNodes={{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 			{0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 			{0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 			{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -140,7 +141,7 @@ public class Board implements Serializable{
 			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
 			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1}};
 	
-	public Tile tiles[]={new Tile.Builder("Forest").build(),new Tile.Builder("Forest").build(),new Tile.Builder("Forest").build(),
+	private Tile tiles[]={new Tile.Builder("Forest").build(),new Tile.Builder("Forest").build(),new Tile.Builder("Forest").build(),
 			new Tile.Builder("Forest").build(),new Tile.Builder("Desert").build(),new Tile.Builder("Mountains").build(),
 			new Tile.Builder("Mountains").build(),new Tile.Builder("Mountains").build(),new Tile.Builder("Fields").build(),
 			new Tile.Builder("Fields").build(),new Tile.Builder("Fields").build(),new Tile.Builder("Fields").build(),new Tile.Builder("Pasture").build(),
@@ -148,11 +149,10 @@ public class Board implements Serializable{
 			new Tile.Builder("Hills").build(),new Tile.Builder("Hills").build(),new Tile.Builder("Hills").build()};
 	
 	
-	//make the constructor public so that this class cannot be
-	//instantiated
-	protected Board(){
+
+	public Board(){
 		
-		
+		instance=new Board();
 		BdevelopCards.put(DevelopType.MONOPOL, 2);
 		BdevelopCards.put(DevelopType.POINT, 5);
 		BdevelopCards.put(DevelopType.ROAD, 2);
@@ -255,15 +255,16 @@ public class Board implements Serializable{
 
 	}
 	
-	public static class BoardHolder { 
-	    public static final Board instance = new Board();
-	}
-
 	public static Board getInstance() {
-		return BoardHolder.instance;
+		return instance;
 	}
-
-	 
+	
+	public static void setInstance(Board board) {
+		instance=board;
+	}
+	
+	
+	
 	public void setNeighbours(){
 		for(int i=0;i<54;i++){
     		for(int j=0;j<54;j++){

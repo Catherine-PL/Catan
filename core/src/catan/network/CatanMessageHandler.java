@@ -158,11 +158,12 @@ public class CatanMessageHandler extends GameMessageHandler {
 	{
 		System.out.println("Board actualization ...");
 		Board board = msg.getContent();
-		game.setBoard(board);
+		Board.setInstance(board);
+		//game.setBoard(board);
 		//TODO nie wiem czy to dobrze zadzia³a
-		game.getBoard().setNeighbours();
-		game.getBoard().setRoadsy();
-		game.getBoard().setNoRoads();
+		//game.getBoard().setNeighbours();
+		//game.getBoard().setRoadsy();
+		//game.getBoard().setNoRoads();
 		
 	}	
 	synchronized void handleMsgNode(MsgNode msg)			// problem z aktualizacja
