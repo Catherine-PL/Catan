@@ -17,7 +17,6 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Board implements Serializable{
-	public static Board instance;
 	public int thiefPosition=0;
 	private Player whoArmy=null;
 	private Player whoRoad=null;
@@ -149,10 +148,11 @@ public class Board implements Serializable{
 			new Tile.Builder("Hills").build(),new Tile.Builder("Hills").build(),new Tile.Builder("Hills").build()};
 	
 	
-
-	public Board(){
+	//make the constructor private so that this class cannot be
+	//instantiated
+	protected Board(){
 		
-		instance=new Board();
+		
 		BdevelopCards.put(DevelopType.MONOPOL, 2);
 		BdevelopCards.put(DevelopType.POINT, 5);
 		BdevelopCards.put(DevelopType.ROAD, 2);
@@ -255,16 +255,22 @@ public class Board implements Serializable{
 
 	}
 	
+	private static class BoardHolder { 
+	    private static Board instance = new Board();
+	}
+
 	public static Board getInstance() {
-		return instance;
+		return BoardHolder.instance;
 	}
 	
-	public static void setInstance(Board board) {
-		instance=board;
+	public static void setInstance(Board board)
+	{
+		BoardHolder.instance = board;
 	}
 	
 	
-	
+
+	 
 	public void setNeighbours(){
 		for(int i=0;i<54;i++){
     		for(int j=0;j<54;j++){
@@ -533,6 +539,11 @@ public class Board implements Serializable{
 	public static void main(String [ ] args) throws FileNotFoundException{
 		Board board = Board.getInstance();
 		
+		for(Road r:board.boardRoads){
+			System.out.print("Droga "+r.getID()+" od "+r.getFrom().getNodeNumber()+" do "+r.getTo().getNodeNumber()+"\n");
+		}
+		
+		/*
 		Player p=new Player(3);
 		System.out.println(p.getResources("clay"));
 		System.out.println(p.getResources("grain"));
@@ -569,7 +580,7 @@ public class Board implements Serializable{
 		for(Node nod:board.getNode(4).getNeighbours()){
 			System.out.println("\t"+nod.getNodeNumber()+" "+nod.getBuilding());
 		}
-		
+		*/
 	/*
 		//test, wypisanie s¹siadów
 		for(int i=0;i<54;i++){
