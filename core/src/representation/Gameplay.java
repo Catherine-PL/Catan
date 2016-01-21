@@ -2,6 +2,8 @@ package representation;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -217,6 +219,7 @@ public class Gameplay extends View implements InputProcessor
 //TODO
 	private void initTiles()
 	{
+		textures.clear();
 		for (int k =0; k<19; k++)
 		{
 			Tile t = game.getBoard().getTile(k);
@@ -1115,13 +1118,26 @@ private boolean tradeTouch(int X, int Y)
 			tradeState=TradeState.NOTHING;
 			return true;
 		}
-		
+		//wysylanie oferty
 		if (X>210 && Y<screensizeY-111 && X<245 && Y>screensizeY-125 )
 		{
 			//przejdz do menu oczekiwania na oferty
 			tradeState=TradeState.CHOOSE_RESPONSE;
 			//wyslij wiadomosc do innych uzytkowników z ofert¹
 			//TODO
+			HashMap<String,Integer> give = new HashMap<String,Integer> ();
+			give.put("clay", tradeGoods[0]);
+			give.put("grain", tradeGoods[1]);
+			give.put("ore", tradeGoods[2]);
+			give.put("sheep", tradeGoods[3]);
+			give.put("wood", tradeGoods[4]);
+			HashMap<String,Integer> get = new HashMap<String,Integer> ();
+			get.put("clay", tradeGoods[5]);
+			get.put("grain", tradeGoods[6]);
+			get.put("ore", tradeGoods[7]);
+			get.put("sheep", tradeGoods[8]);
+			get.put("wood", tradeGoods[9]);
+			getNetwork().tradeOffert(give, get);
 			return true;
 		}
 	}

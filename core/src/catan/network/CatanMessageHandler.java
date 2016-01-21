@@ -257,6 +257,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 		System.out.println("What i would get: " + get);
 		System.out.println();
 		
+		
 		// TODO wybor czy sie zgadzamy czy nie na ta propozycje
 		// Sprawdzenie czy mogê siê zgodziæ. Jeœli nie to wysy³am od razu no ?			
 		
