@@ -222,28 +222,17 @@ public class Gameplay extends View implements InputProcessor
 		if(tt!=null)
 		{
 			
-			System.out.println("I received something!!!! "+ tt);
 			if(tt==TradeType.DEAL && done==false)
 			{
 				
-				System.out.println("donesdsd "+ done);
 				done=true;
-				System.out.println("done? "+ done);
-				game.getThisPlayer().changeResources("clay", -tradeGoods[0]);
-				System.out.println("0 "+  (-tradeGoods[0]));
-				System.out.println("0t "+ tradeGoods[0]);
-				game.getThisPlayer().changeResources("grain",-tradeGoods[1]);
-				game.getThisPlayer().changeResources("ore", -tradeGoods[2]);
-				game.getThisPlayer().changeResources("sheep",-tradeGoods[3]);
-				game.getThisPlayer().changeResources("wood", -tradeGoods[4]);
+				game.getThisPlayer().changeResources("clay", tradeGoods[5]-tradeGoods[0]);
+				game.getThisPlayer().changeResources("grain",tradeGoods[6]-tradeGoods[1]);
+				game.getThisPlayer().changeResources("ore", tradeGoods[7]-tradeGoods[2]);
+				game.getThisPlayer().changeResources("sheep",tradeGoods[8]-tradeGoods[3]);
+				game.getThisPlayer().changeResources("wood", tradeGoods[9]-tradeGoods[4]);
 				
-				game.getThisPlayer().changeResources("clay", tradeGoods[5]);
-				game.getThisPlayer().changeResources("grain", tradeGoods[6]);
-				game.getThisPlayer().changeResources("ore", tradeGoods[7]);
-				game.getThisPlayer().changeResources("sheep", tradeGoods[8]);
-				game.getThisPlayer().changeResources("wood",tradeGoods[9]);
-				
-	
+					
 			}
 			
 			
