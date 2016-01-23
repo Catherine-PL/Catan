@@ -220,6 +220,39 @@ public class Gameplay extends View implements InputProcessor
 		TradeMessage.TradeType tt = ((ObserverTrade)getNetwork().invObservers.get(2)).getStateGame();
 		if(tt!=null)
 		{
+			if(tt==TradeType.DEAL)
+			{
+				game.getThisPlayer().changeResources("clay", game.getThisPlayer().getResources("clay")-tradeGoods[0]);
+				game.getThisPlayer().changeResources("grain", game.getThisPlayer().getResources("grain")-tradeGoods[1]);
+				game.getThisPlayer().changeResources("ore", game.getThisPlayer().getResources("ore")-tradeGoods[2]);
+				game.getThisPlayer().changeResources("sheep", game.getThisPlayer().getResources("sheep")-tradeGoods[3]);
+				game.getThisPlayer().changeResources("wood", game.getThisPlayer().getResources("wood")-tradeGoods[4]);
+				
+				game.getThisPlayer().changeResources("clay", game.getThisPlayer().getResources("clay")+tradeGoods[5]);
+				game.getThisPlayer().changeResources("grain", game.getThisPlayer().getResources("grain")+tradeGoods[6]);
+				game.getThisPlayer().changeResources("ore", game.getThisPlayer().getResources("ore")+tradeGoods[7]);
+				game.getThisPlayer().changeResources("sheep", game.getThisPlayer().getResources("sheep")+tradeGoods[8]);
+				game.getThisPlayer().changeResources("wood", game.getThisPlayer().getResources("wood")+tradeGoods[9]);
+	
+			}
+			
+			
+			if(tt==TradeType.END_TRADE)
+			{
+				for(int i=0;i<4;i++)
+				 {
+					 tradePlayers[i]=TradePlayer.WAITING;
+				 }
+				for(int i=0;i<10;i++)
+				 {
+					 tradeGoods[i]=0;
+				 }
+				
+				tradeState = TradeState.NOTHING;
+			}
+			
+			
+			
 			if(tt==TradeType.OFFERT)
 			{
 				tradeState = TradeState.RESPOND_OFFER;
@@ -431,6 +464,11 @@ public class Gameplay extends View implements InputProcessor
 	
 	private void batchTrade()
 	{
+		
+		
+		
+		
+		
 		Map<String, InvStatus> invitedmap = ((ObserverInv)getNetwork().invObservers.get(0)).getAllStatuses();			
 		if (invitedmap.size()>0)
 		{
@@ -438,7 +476,7 @@ public class Gameplay extends View implements InputProcessor
 			{
 				//TODO Adapter/Bridge
 				//przepisywanie to tradePlayers
-				for(int i=0;i<4;i++)
+				for(int i=0;i<game.getPlayers().length;i++)
 				{
 					if (game.getPlayers()[i].getName().equals(s))
 					{
@@ -807,6 +845,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 tradePlayers[i]=TradePlayer.WAITING;
 			 }
+			 setResources();
 			 getNetwork().tradeDeal(game.getPlayers()[0].getName());
 		 }
 		 if(Gdx.input.isKeyPressed(Keys.NUM_1 ) && tradePlayers[1]==TradePlayer.ACCEPTED) 
@@ -817,6 +856,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 tradePlayers[i]=TradePlayer.WAITING;
 			 }
+			 setResources();
 			 getNetwork().tradeDeal(game.getPlayers()[1].getName());
 		 }
 		 if(Gdx.input.isKeyPressed(Keys.NUM_2 ) && tradePlayers[2]==TradePlayer.ACCEPTED)
@@ -827,6 +867,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 tradePlayers[i]=TradePlayer.WAITING;
 			 }
+			 setResources();
 			 getNetwork().tradeDeal(game.getPlayers()[2].getName());
 		 }
 		 if(Gdx.input.isKeyPressed(Keys.NUM_3 ) && tradePlayers[3]==TradePlayer.ACCEPTED)
@@ -837,10 +878,13 @@ public boolean keyDown(int keycode) {
 			 {
 				 tradePlayers[i]=TradePlayer.WAITING;
 			 }
+			 setResources();
 			 getNetwork().tradeDeal(game.getPlayers()[3].getName());
 		 }
 
 	}
+	
+	
 	
 	
 	
@@ -1254,6 +1298,21 @@ private boolean buildingTouch(int x, int y)
 	return false;
 }
 
+
+private void setResources()
+{
+	game.getThisPlayer().changeResources("clay", game.getThisPlayer().getResources("clay")+tradeGoods[0]);
+	game.getThisPlayer().changeResources("grain", game.getThisPlayer().getResources("grain")+tradeGoods[1]);
+	game.getThisPlayer().changeResources("ore", game.getThisPlayer().getResources("ore")+tradeGoods[2]);
+	game.getThisPlayer().changeResources("sheep", game.getThisPlayer().getResources("sheep")+tradeGoods[3]);
+	game.getThisPlayer().changeResources("wood", game.getThisPlayer().getResources("wood")+tradeGoods[4]);
+	
+	game.getThisPlayer().changeResources("clay", game.getThisPlayer().getResources("clay")-tradeGoods[5]);
+	game.getThisPlayer().changeResources("grain", game.getThisPlayer().getResources("grain")-tradeGoods[6]);
+	game.getThisPlayer().changeResources("ore", game.getThisPlayer().getResources("ore")-tradeGoods[7]);
+	game.getThisPlayer().changeResources("sheep", game.getThisPlayer().getResources("sheep")-tradeGoods[8]);
+	game.getThisPlayer().changeResources("wood", game.getThisPlayer().getResources("wood")-tradeGoods[9]);
+}
 
 
 @Override
