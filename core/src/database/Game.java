@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.sun.javafx.runtime.SystemProperties;
 
 public class Game implements Serializable{
 	private Player thisPlayer = new Player(0);
@@ -92,7 +93,7 @@ public class Game implements Serializable{
 		}
 				
 		if((dice.getFirst()+dice.getSecond())!=7){
-			for(Player player:players){
+			Player player=this.thisPlayer;{
 				System.out.println("Player: " + player.getName());
 				for(Node node: player.getPlayerNodes()){
 					System.out.println("--Node: " + node.getNodeNumber());
@@ -100,17 +101,20 @@ public class Game implements Serializable{
 						System.out.println("----tile: " + tile.getNumber());
 						System.out.println(tile.getDiceNumber()==(dice.getFirst()+dice.getSecond()));
 						if(tile.getDiceNumber()==(dice.getFirst()+dice.getSecond())){
-							//jesli osada zwiekszy o 1, jesli miasto zwiekszy zasob o 2
-							if(tile.getType()=="Forest")
+							//jesli osada zwiekszy o 1, jesli miasto zwiekszy zasob o 2							
+							System.out.println(tile.getType());
+							
+							if(tile.getType().equals("Forest"))
 								player.changeResources("wood", node.getBuilding());
-							if(tile.getType()=="Hills")
+							if(tile.getType().equals("Hills"))
 								player.changeResources("clay", node.getBuilding());
-							if(tile.getType()=="Pasture")
+							if(tile.getType().equals("Pasture"))
 								player.changeResources("sheep", node.getBuilding());
-							if(tile.getType()=="Fields")
+							if(tile.getType().equals("Fields"))
 								player.changeResources("grain", node.getBuilding());
-							if(tile.getType()=="Mountains")
+							if(tile.getType().equals("Mountains"))
 								player.changeResources("ore", node.getBuilding());
+							
 						}
 					}
 				}

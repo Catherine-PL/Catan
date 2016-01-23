@@ -1047,6 +1047,7 @@ public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 				touchedBuildingID=null;
 				game.getDice().throwDice();
 				getNetwork().endTurn(game.getDice().getFirst(),game.getDice().getSecond());
+				System.out.println("endTurn in Gameplay");
 				game.endTurn();				
 				return true;
 			}

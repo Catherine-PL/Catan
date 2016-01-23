@@ -181,7 +181,6 @@ public class Player implements Serializable{
 	}
 	//zmienia wartosc danego surowca o amount. 
 	public void changeResources(String name, int amount) {
-		int i=0;
 		resources.put(name, (resources.get(name).intValue()+amount));
 	
 	}
