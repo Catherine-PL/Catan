@@ -17,11 +17,16 @@ public class ObserverTrade extends Observer {
 
 	@Override
 	void update() {
+		
 		if(((GameCommunication)this.sub).getTradeState()!=null)
 		{
 			msgType = ((GameCommunication)this.sub).getTradeState();
 			this.get=((GameCommunication)this.sub).get;
 			this.give=((GameCommunication)this.sub).give;
+		}
+		else
+		{
+			msgType=null;
 		}
 	}
 

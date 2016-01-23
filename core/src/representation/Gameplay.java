@@ -223,6 +223,8 @@ public class Gameplay extends View implements InputProcessor
 			if(tt==TradeType.DEAL)
 			{
 				game.getThisPlayer().changeResources("clay", game.getThisPlayer().getResources("clay")-tradeGoods[0]);
+				System.out.println("0 "+  (game.getThisPlayer().getResources("clay")-tradeGoods[0]));
+				System.out.println("0t "+ tradeGoods[0]);
 				game.getThisPlayer().changeResources("grain", game.getThisPlayer().getResources("grain")-tradeGoods[1]);
 				game.getThisPlayer().changeResources("ore", game.getThisPlayer().getResources("ore")-tradeGoods[2]);
 				game.getThisPlayer().changeResources("sheep", game.getThisPlayer().getResources("sheep")-tradeGoods[3]);
@@ -837,53 +839,49 @@ public boolean keyDown(int keycode) {
 		 if(Gdx.input.isKeyPressed(Keys.NUM_0 ) && tradePlayers[0]==TradePlayer.ACCEPTED) 
 		 { 
 			//TODO akceptacja
+			 getNetwork().tradeDeal(game.getPlayers()[0].getName());
 			 tradeState=TradeState.NOTHING;
 			 for(int i=0;i<4;i++)
 			 {
 				 tradePlayers[i]=TradePlayer.WAITING;
 			 }
 			 setResources();
-			 getNetwork().tradeDeal(game.getPlayers()[0].getName());
 		 }
 		 if(Gdx.input.isKeyPressed(Keys.NUM_1 ) && tradePlayers[1]==TradePlayer.ACCEPTED) 
 		 {
 			//TODO akceptacja
+			 getNetwork().tradeDeal(game.getPlayers()[1].getName());
 			 tradeState=TradeState.NOTHING;
 			 for(int i=0;i<4;i++)
 			 {
 				 tradePlayers[i]=TradePlayer.WAITING;
 			 }
 			 setResources();
-			 getNetwork().tradeDeal(game.getPlayers()[1].getName());
 		 }
 		 if(Gdx.input.isKeyPressed(Keys.NUM_2 ) && tradePlayers[2]==TradePlayer.ACCEPTED)
 		 {
 			//TODO akceptacja
+			 getNetwork().tradeDeal(game.getPlayers()[2].getName());
 			 tradeState=TradeState.NOTHING;
 			 for(int i=0;i<4;i++)
 			 {
 				 tradePlayers[i]=TradePlayer.WAITING;
 			 }
 			 setResources();
-			 getNetwork().tradeDeal(game.getPlayers()[2].getName());
 		 }
 		 if(Gdx.input.isKeyPressed(Keys.NUM_3 ) && tradePlayers[3]==TradePlayer.ACCEPTED)
 		 {
 			//TODO akceptacja
+			 getNetwork().tradeDeal(game.getPlayers()[3].getName());
 			 tradeState=TradeState.NOTHING;
 			 for(int i=0;i<4;i++)
 			 {
 				 tradePlayers[i]=TradePlayer.WAITING;
 			 }
 			 setResources();
-			 getNetwork().tradeDeal(game.getPlayers()[3].getName());
 		 }
 
 	}
-	
-	
-	
-	
 	
 	
 	//wcisniecie QWER
