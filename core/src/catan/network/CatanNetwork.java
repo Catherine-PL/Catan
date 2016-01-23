@@ -150,7 +150,6 @@ public class CatanNetwork {
 	public void		tradeDeal(String nick)
 	{
 		game.sendTrade(nick);
-		Communication.sleep(100);
 		game.sendTrade();
 	}
 	public void		tradeCancel()

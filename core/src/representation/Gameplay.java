@@ -118,6 +118,7 @@ public class Gameplay extends View implements InputProcessor
 	BitmapFont font;
 	int tilenumber; //dla Soldiera
 	private boolean tilesInit;
+	private boolean done;
 	
 	public void init()
 	{
@@ -127,7 +128,7 @@ public class Gameplay extends View implements InputProcessor
 		tradePlayers[2]=TradePlayer.WAITING;  
 		tradePlayers[3]=TradePlayer.WAITING;  
 		
-		
+		done=false;
 		game=new Game();
 		initRoadsTextures();
 		tilenumber=0;
@@ -222,8 +223,12 @@ public class Gameplay extends View implements InputProcessor
 		{
 			
 			System.out.println("I received something!!!! "+ tt);
-			if(tt==TradeType.DEAL)
+			if(tt==TradeType.DEAL && done==false)
 			{
+				
+				System.out.println("donesdsd "+ done);
+				done=true;
+				System.out.println("done? "+ done);
 				game.getThisPlayer().changeResources("clay", -tradeGoods[0]);
 				System.out.println("0 "+  (-tradeGoods[0]));
 				System.out.println("0t "+ tradeGoods[0]);
@@ -253,6 +258,7 @@ public class Gameplay extends View implements InputProcessor
 					 tradeGoods[i]=0;
 				 }
 				tradeState = TradeState.NOTHING;
+				done=false;
 				System.out.println("edn trade" + tradeState);
 			}
 			

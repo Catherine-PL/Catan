@@ -271,6 +271,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 	{			
 		System.out.println("Deal with: " + nick);	
 		((GameCommunication)this.catanCom).setTradeState(TradeMessage.TradeType.DEAL);
+		Communication.sleep(100);
 		//	TODO aktualizacja surowcow gracza. Dodajac surowce z get, Odejmujac surowce z give	
 	}
 	synchronized void handleMsgEndTrade(MsgEndTrade msg)
