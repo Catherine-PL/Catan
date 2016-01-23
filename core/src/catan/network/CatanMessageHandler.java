@@ -3,6 +3,7 @@ package catan.network;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import catan.network.GameCommunication.InvStatus;
@@ -15,13 +16,9 @@ public class CatanMessageHandler extends GameMessageHandler {
 
 	CatanCommunication catanCom;
 	
-	private Board board;
 	static transient Game game;
 	
-	private HashMap<String, Integer> give;
-	private HashMap<String, Integer> get;
-
-		
+			
 	CatanMessageHandler(Game game)
 	{
 		CatanMessageHandler.game = game;
@@ -250,18 +247,14 @@ public class CatanMessageHandler extends GameMessageHandler {
 		System.out.println();
 		System.out.println("--Offert from: " + nick);
 		
-		get = msg.getGive();
-		give = msg.getGet();
+		Map get = msg.getGive();
+		Map give = msg.getGet();
 		
 		System.out.println("What he wants: " + give);
 		System.out.println("What i would get: " + get);
 		System.out.println();
 		
-		((GameCommunication)this.catanCom).setTradeState(TradeMessage.TradeType.OFFERT);
-		
-		
-		// TODO wybor czy sie zgadzamy czy nie na ta propozycje
-		// Sprawdzenie czy mogê siê zgodziæ. Jeœli nie to wysy³am od razu no ?			
+		((GameCommunication)this.catanCom).setTradeState(TradeMessage.TradeType.OFFERT,get,give);					
 		
 	}
 	synchronized void handleMsgYes(MsgYes msg)
@@ -277,7 +270,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 	synchronized void handleMsgDeal(MsgDeal msg)
 	{			
 		System.out.println("Deal with: " + nick);	
-		
+		((GameCommunication)this.catanCom).setTradeState(TradeMessage.TradeType.DEAL);
 		//	TODO aktualizacja surowcow gracza. Dodajac surowce z get, Odejmujac surowce z give	
 	}
 	synchronized void handleMsgEndTrade(MsgEndTrade msg)
@@ -288,6 +281,8 @@ public class CatanMessageHandler extends GameMessageHandler {
 		{			
 			catanCom.putInv(nick, InvStatus.WAIT);
 		}
+		((GameCommunication)this.catanCom).setTradeState(null);
+		
 	}
 	
 						

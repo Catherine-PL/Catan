@@ -34,6 +34,9 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 	}
 	
 	private TradeType				msgType=null;
+	HashMap<String, Integer>get = new HashMap<String,Integer>();
+	HashMap<String, Integer>give = new HashMap<String,Integer>();
+	
 	private boolean					inRealGame;
 	private boolean					inGame=false;					// my value		
 	protected Map<String, InvStatus>invPlayers = new HashMap<String, InvStatus>();				// <-- W grze: przechowuje nicki graczy bedacych ze mna w grze, ich TradeStatus																
@@ -306,6 +309,13 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 	void setTradeState(TradeType type)
 	{
 		msgType=type;
+		this.notifyObservers();
+	}
+	void setTradeState(TradeType type, Map<String, Integer> get, Map<String, Integer> give)
+	{
+		msgType=type;
+		this.get = (HashMap<String, Integer>) get;
+		this.give = (HashMap<String, Integer>) give;
 		this.notifyObservers();
 	}
 	TradeType getTradeState()
