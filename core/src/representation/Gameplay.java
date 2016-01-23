@@ -233,6 +233,7 @@ public class Gameplay extends View implements InputProcessor
 				game.getThisPlayer().changeResources("ore", game.getThisPlayer().getResources("ore")+tradeGoods[7]);
 				game.getThisPlayer().changeResources("sheep", game.getThisPlayer().getResources("sheep")+tradeGoods[8]);
 				game.getThisPlayer().changeResources("wood", game.getThisPlayer().getResources("wood")+tradeGoods[9]);
+				
 	
 			}
 			
@@ -247,8 +248,8 @@ public class Gameplay extends View implements InputProcessor
 				 {
 					 tradeGoods[i]=0;
 				 }
-				
 				tradeState = TradeState.NOTHING;
+				System.out.println("edn trade" + tradeState);
 			}
 			
 			
@@ -464,9 +465,6 @@ public class Gameplay extends View implements InputProcessor
 	
 	private void batchTrade()
 	{
-		
-		
-		
 		
 		
 		Map<String, InvStatus> invitedmap = ((ObserverInv)getNetwork().invObservers.get(0)).getAllStatuses();			
@@ -832,7 +830,6 @@ public boolean keyDown(int keycode) {
 			tradeGoods[i]=0;
 		}
 		getNetwork().tradeCancel();
-		//TODO info ¿e zrezygnowaliœmy do graczy
 	 }
 	//numeryczne do trade'a
 	if(tradeState==TradeState.CHOOSE_RESPONSE)
