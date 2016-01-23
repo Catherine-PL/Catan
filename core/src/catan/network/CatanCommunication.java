@@ -143,14 +143,14 @@ public class CatanCommunication extends GameCommunication{
 	 * @param what It might be DICE or RESOURCE
 	 * @param quantity Number of what parameter.
 	 */
-	public void sendUpdate(NumberOf what, int quantity)			// DICE, RESOURCE 
+	public void sendUpdate(NumberOf what, Integer first, Integer second)			// DICE, RESOURCE 
 	{
 		Message msg = null;
 		try {			
 			if(what.toString().equals(UpdateType.DICE.toString()))
-				msg = this.update.getUpdateMessage(UpdateType.DICE, quantity);
+				msg = this.update.getUpdateMessage(UpdateType.DICE, first, second);
 			else
-				msg = this.update.getUpdateMessage(UpdateType.RESOURCES, quantity);
+				msg = this.update.getUpdateMessage(UpdateType.RESOURCES, first);
 		} catch (ContentException e) {
 			e.printStackTrace();
 		}		

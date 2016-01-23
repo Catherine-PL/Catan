@@ -40,8 +40,8 @@ public class CatanNetwork {
 	{
 		// TODO read addresses from a file, and saving to a file?
 		//addresses.add("127.0.0.1");
-		addresses.add("25.111.151.148");
-		//addresses.add("25.50.105.234");
+		//addresses.add("25.111.151.148");
+		addresses.add("25.50.105.234");
 		
 	}
 	public void 	initNetwork(Game game) throws IOException
@@ -88,9 +88,10 @@ public class CatanNetwork {
 	{
 		this.game.abandonGame();
 	}	
-	public void		endTurn()
+	public void		endTurn(Integer first, Integer second)
 	{
 		game.sendEnd(UpdateType.END_TURN);
+		game.sendUpdate(NumberOf.DICE, first, second);
 	}
 	public void		endGame()
 	{

@@ -17,20 +17,6 @@ public class Dice implements Serializable{
 	}
 
 	Random generator = new Random();
-	//int result=0;
-	/*int throDice(){
-<<<<<<< HEAD
-		//rzut dwoma ko��mi
-=======
-		//rzut dwoma ko��mi
->>>>>>> origin/developMarcin
-		return generator.nextInt(11)+1;
-		//result=generator.nextInt(5)+1+generator.nextInt(5)+1;
-		//return result;
-		//					0-11+1=1-12
-<<<<<<< HEAD
-		//return generator.nextInt(11)+1; alternatywa kr�tsza
-	}*/
 	
 	public void throwDice(){
 		firstValue = generator.nextInt(5)+1;
@@ -50,5 +36,13 @@ public class Dice implements Serializable{
 	
 	public int getSecond(){
 		return secondValue;
+	}
+	public void setFirst(int value)
+	{
+		this.firstValue=value;
+	}
+	public void setSecond(int value)
+	{
+		this.secondValue=value;
 	}
 }

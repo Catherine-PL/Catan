@@ -37,6 +37,8 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 	HashMap<String, Integer>get = new HashMap<String,Integer>();
 	HashMap<String, Integer>give = new HashMap<String,Integer>();
 	
+	private Integer					first;
+	private Integer					second;
 	private boolean					inRealGame;
 	private boolean					inGame=false;					// my value		
 	protected Map<String, InvStatus>invPlayers = new HashMap<String, InvStatus>();				// <-- W grze: przechowuje nicki graczy bedacych ze mna w grze, ich TradeStatus																
@@ -56,6 +58,19 @@ public class GameCommunication extends CommunicationDecorator implements Subject
 		this.notifyObservers();
 	}
 	
+	public void setDice(Integer f, Integer s)
+	{
+		this.first = f;
+		this.second = s;
+	}
+	public Integer getDiceFirst()
+	{
+		return first;
+	}
+	public Integer getDiceSecond()
+	{
+		return second;
+	}
 	public void setInGame(boolean state)
 	{
 		this.inGame = state;

@@ -17,13 +17,7 @@ class UpdateMessageFactory extends AbstractMessageFactory {
 	UpdateMessage getUpdateMessage(UpdateType type, Object content) throws ContentException {
 		switch(type)
 		{
-		
-		case DICE:
-			if (content.getClass()!=Integer.class)
-				throw new ContentException();
-			else
-				return new MsgDice((Integer) content);
-			
+					
 		case BOARD:
 			if (content.getClass()!=Board.class)
 				throw new ContentException();
@@ -70,6 +64,13 @@ class UpdateMessageFactory extends AbstractMessageFactory {
 		
 		switch(type)
 		{
+		
+		case DICE:
+			if (content.getClass()!=Integer.class)
+				throw new ContentException();
+			else
+				return new MsgDice((Integer) content, index);
+		
 		
 		case TILE:
 			if (content.getClass()!=Tile.class)

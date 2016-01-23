@@ -140,6 +140,8 @@ public class CatanMessageHandler extends GameMessageHandler {
 	{				
 		System.out.println("Player: " + nick + " has finished turn.");		
 		game.endTurn();
+		game.getDice().setFirst(catanCom.getDiceFirst());
+		game.getDice().setFirst(catanCom.getDiceSecond());
 	}
 	synchronized void handleMsgEndGame()
 	{	
@@ -148,19 +150,15 @@ public class CatanMessageHandler extends GameMessageHandler {
 	synchronized void handleMsgDice(MsgDice msg)
 	{					
 		System.out.print("From: " + nick);
-		System.out.println(" -- Dice result:" + msg.getContent());
-		
+		System.out.println(" -- Dice result, first:" + msg.getFirst());
+		System.out.println(" -- Dice result, second:" + msg.getSecond());
+		catanCom.setDice(msg.getFirst(), msg.getSecond());
 	}
 	synchronized void handleMsgBoard(MsgBoard msg)			// podmienic board tam gdzie jest ona przechowywana
 	{
 		System.out.println("Board actualization ...");
 		Board board = msg.getContent();
 		Board.setInstance(board);
-		//game.setBoard(board);
-		//TODO nie wiem czy to dobrze zadzia³a
-		//game.getBoard().setNeighbours();
-		//game.getBoard().setRoadsy();
-		//game.getBoard().setNoRoads();
 		
 	}	
 	synchronized void handleMsgNode(MsgNode msg)			// problem z aktualizacja

@@ -3,16 +3,22 @@ package catan.network;
 class MsgDice extends UpdateMessage 
 {
 	
-	private Integer content = null;
+	private Integer first = null;
+	private Integer second = null;
 	
-	MsgDice(Integer result) {
+	MsgDice(Integer first, Integer second) {
 		super(UpdateMessage.UpdateType.DICE);
-		this.content = result;
+		this.first = first;
+		this.second = second;
 	}
 	
-	public Integer getContent()
+	public Integer getFirst()
 	{
-		return content;
+		return first;
+	}
+	public Integer getSecond()
+	{
+		return second;
 	}
 	
 }
