@@ -16,13 +16,14 @@ import com.badlogic.gdx.Input.Keys;
 
 import database.*;
 import catan.network.*;
+import catan.network.GameCommunication.InvStatus;
 import catan.network.TradeMessage.TradeType;
 
 
 public class Gameplay extends View implements InputProcessor
 {
 	public enum TradeState {
-	    MAKE_OFFER, RESPOND_OFFER, CHOOSE_RESPONSE ,NOTHING}
+	    MAKE_OFFER, RESPOND_OFFER,RESPOND_WAIT, CHOOSE_RESPONSE ,NOTHING}
 	public enum CardMenu {
 	    TILE,MONOPOL,YEAR, NOTHING}
 	
@@ -223,7 +224,7 @@ public class Gameplay extends View implements InputProcessor
 			{
 				tradeState = TradeState.RESPOND_OFFER;
 				HashMap<String,Integer> get = ((ObserverTrade)getNetwork().invObservers.get(2)).get;
-				HashMap<String,Integer> give = ((ObserverTrade)getNetwork().invObservers.get(2)).get;
+				HashMap<String,Integer> give = ((ObserverTrade)getNetwork().invObservers.get(2)).give;
 				for(String s : get.keySet())
 				{
 					if(s.equals("clay"))
@@ -430,6 +431,25 @@ public class Gameplay extends View implements InputProcessor
 	
 	private void batchTrade()
 	{
+		Map<String, InvStatus> invitedmap = ((ObserverInv)getNetwork().invObservers.get(0)).getAllStatuses();			
+		if (invitedmap.size()>0)
+		{
+			for(String s: invitedmap.keySet())
+			{
+				//TODO Adapter/Bridge
+				//przepisywanie to tradePlayers
+				for(int i=0;i<4;i++)
+				{
+					if (game.getPlayers()[i].getName().equals(s))
+					{
+						if(invitedmap.get(s)==InvStatus.ACCEPTED) tradePlayers[i]=TradePlayer.ACCEPTED;
+						if(invitedmap.get(s)==InvStatus.REJECTED) tradePlayers[i]=TradePlayer.REFUSED;
+						if(invitedmap.get(s)==InvStatus.WAIT) tradePlayers[i]=TradePlayer.WAITING;
+					}
+				}	
+			}
+		}
+
 		if (tradeState==TradeState.MAKE_OFFER)
 		{
 			batch.draw(makeoffer,0,screensizeY-150);
@@ -453,11 +473,7 @@ public class Gameplay extends View implements InputProcessor
 						font.draw(batch, Integer.toString(i), 195, screensizeY-130-20*i);
 						batch.draw(offeraccepted,0,screensizeY-150-20*i);
 					}
-					if(tradePlayers[i]==TradePlayer.REFUSED) batch.draw(offerrefused,0,screensizeY-150-20*i);
-					
-					
-					
-					
+					if(tradePlayers[i]==TradePlayer.REFUSED) batch.draw(offerrefused,0,screensizeY-150-20*i);	
 				}
 			}
 			font.getData().setScale(1.5f, 1.5f);
@@ -753,27 +769,31 @@ public boolean keyDown(int keycode) {
 		{
 			tradeGoods[i]=0;
 		}
+		getNetwork().tradeAnswer(game.getActualPlayer().getName(), TradeType.NO);
+		
 	 }
 	
 	if(Gdx.input.isKeyPressed(Keys.A) && tradeState==TradeState.RESPOND_OFFER) 
 	{
 			//TODO accept
-			tradeState=TradeState.NOTHING;
-			for(int i=0;i<10;i++)
-			{
-				tradeGoods[i]=0;
-			}
+			tradeState=TradeState.RESPOND_WAIT;
+			getNetwork().tradeAnswer(game.getActualPlayer().getName(), TradeType.YES);
+			
 	}	
 	
 	//handel od strony wysy³aj¹cego
 	if(Gdx.input.isKeyPressed(Keys.Q) && tradeState==TradeState.CHOOSE_RESPONSE) 
 	 {
 		tradeState=TradeState.NOTHING;
+		for(int i=0;i<4;i++)
+		 {
+			 tradePlayers[i]=TradePlayer.WAITING;
+		 }
 		for(int i=0;i<10;i++)
 		{
 			tradeGoods[i]=0;
 		}
-		
+		getNetwork().tradeCancel();
 		//TODO info ¿e zrezygnowaliœmy do graczy
 	 }
 	//numeryczne do trade'a
@@ -787,7 +807,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 tradePlayers[i]=TradePlayer.WAITING;
 			 }
-			 
+			 getNetwork().tradeDeal(game.getPlayers()[0].getName());
 		 }
 		 if(Gdx.input.isKeyPressed(Keys.NUM_1 ) && tradePlayers[1]==TradePlayer.ACCEPTED) 
 		 {
@@ -797,6 +817,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 tradePlayers[i]=TradePlayer.WAITING;
 			 }
+			 getNetwork().tradeDeal(game.getPlayers()[1].getName());
 		 }
 		 if(Gdx.input.isKeyPressed(Keys.NUM_2 ) && tradePlayers[2]==TradePlayer.ACCEPTED)
 		 {
@@ -806,6 +827,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 tradePlayers[i]=TradePlayer.WAITING;
 			 }
+			 getNetwork().tradeDeal(game.getPlayers()[2].getName());
 		 }
 		 if(Gdx.input.isKeyPressed(Keys.NUM_3 ) && tradePlayers[3]==TradePlayer.ACCEPTED)
 		 {
@@ -815,6 +837,7 @@ public boolean keyDown(int keycode) {
 			 {
 				 tradePlayers[i]=TradePlayer.WAITING;
 			 }
+			 getNetwork().tradeDeal(game.getPlayers()[3].getName());
 		 }
 
 	}
