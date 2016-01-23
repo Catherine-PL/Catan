@@ -1304,17 +1304,12 @@ private boolean buildingTouch(int x, int y)
 
 private void setResources()
 {
-	game.getThisPlayer().changeResources("clay",tradeGoods[0]);
-	game.getThisPlayer().changeResources("grain", tradeGoods[1]);
-	game.getThisPlayer().changeResources("ore", tradeGoods[2]);
-	game.getThisPlayer().changeResources("sheep",tradeGoods[3]);
-	game.getThisPlayer().changeResources("wood",tradeGoods[4]);
-	
-	game.getThisPlayer().changeResources("clay", tradeGoods[5]);
-	game.getThisPlayer().changeResources("grain",tradeGoods[6]);
-	game.getThisPlayer().changeResources("ore",tradeGoods[7]);
-	game.getThisPlayer().changeResources("sheep", tradeGoods[8]);
-	game.getThisPlayer().changeResources("wood",tradeGoods[9]);
+	game.getThisPlayer().changeResources("clay",tradeGoods[0]-tradeGoods[5]);
+	game.getThisPlayer().changeResources("grain", tradeGoods[1]-tradeGoods[6]);
+	game.getThisPlayer().changeResources("ore", tradeGoods[2]-tradeGoods[7]);
+	game.getThisPlayer().changeResources("sheep",tradeGoods[3]-tradeGoods[8]);
+	game.getThisPlayer().changeResources("wood",tradeGoods[4]-tradeGoods[9]);
+
 }
 
 
