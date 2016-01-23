@@ -90,8 +90,8 @@ public class CatanNetwork {
 	}	
 	public void		endTurn(Integer first, Integer second)
 	{
-		game.sendEnd(UpdateType.END_TURN);
 		game.sendUpdate(NumberOf.DICE, first, second);
+		game.sendEnd(UpdateType.END_TURN);		
 	}
 	public void		endGame()
 	{
@@ -119,17 +119,17 @@ public class CatanNetwork {
 	{
 		game.sendUpdate(idNode, idRoad);
 	}
-	public void 	updateDice(int number)
+	public void 	updateDice(Integer first, Integer second)
 	{
-		game.sendUpdate(NumberOf.DICE, number);
+		game.sendUpdate(NumberOf.DICE, first,second);
 	}
 	public void		updateResources(int quantity)
 	{
-		game.sendUpdate(NumberOf.RESOURCES, quantity);
+		game.sendUpdate(NumberOf.RESOURCES, quantity, null);
 	}
 	public void		updateCardsNumber(int number)
 	{
-		game.sendUpdate(NumberOf.RESOURCES, number);
+		game.sendUpdate(NumberOf.RESOURCES, number, null);
 	}
 	public void		updateGiveThiefLoot(String nick, String resource)
 	{

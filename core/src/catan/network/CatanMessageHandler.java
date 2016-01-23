@@ -138,10 +138,10 @@ public class CatanMessageHandler extends GameMessageHandler {
 
 	synchronized void handleMsgEndTurn()
 	{				
-		System.out.println("Player: " + nick + " has finished turn.");		
-		game.endTurn();
+		System.out.println("Player: " + nick + " has finished turn.");				
 		game.getDice().setFirst(catanCom.getDiceFirst());
-		game.getDice().setFirst(catanCom.getDiceSecond());
+		game.getDice().setSecond(catanCom.getDiceSecond());
+		game.endTurn();
 	}
 	synchronized void handleMsgEndGame()
 	{	

@@ -90,8 +90,7 @@ public class Game implements Serializable{
 				actualPlayer = players[i];
 			}
 		}
-		dice.throwDice();
-		
+				
 		if((dice.getFirst()+dice.getSecond())!=7){
 			for(Player player:players){
 				for(Node node: player.getPlayerNodes()){

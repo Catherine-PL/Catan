@@ -1056,7 +1056,8 @@ public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 				//TODO
 				selected=SelectedKey.NOTHING;
 				touchedBuildingID=null;
-				getNetwork().endTurn();
+				game.getDice().throwDice();
+				getNetwork().endTurn(game.getDice().getFirst(),game.getDice().getSecond());
 				game.endTurn();				
 				return true;
 			}
