@@ -224,19 +224,19 @@ public class Gameplay extends View implements InputProcessor
 			System.out.println("I received something!!!! "+ tt);
 			if(tt==TradeType.DEAL)
 			{
-				game.getThisPlayer().changeResources("clay", game.getThisPlayer().getResources("clay")-tradeGoods[0]);
-				System.out.println("0 "+  (game.getThisPlayer().getResources("clay")-tradeGoods[0]));
+				game.getThisPlayer().changeResources("clay", -tradeGoods[0]);
+				System.out.println("0 "+  (-tradeGoods[0]));
 				System.out.println("0t "+ tradeGoods[0]);
-				game.getThisPlayer().changeResources("grain", game.getThisPlayer().getResources("grain")-tradeGoods[1]);
-				game.getThisPlayer().changeResources("ore", game.getThisPlayer().getResources("ore")-tradeGoods[2]);
-				game.getThisPlayer().changeResources("sheep", game.getThisPlayer().getResources("sheep")-tradeGoods[3]);
-				game.getThisPlayer().changeResources("wood", game.getThisPlayer().getResources("wood")-tradeGoods[4]);
+				game.getThisPlayer().changeResources("grain",-tradeGoods[1]);
+				game.getThisPlayer().changeResources("ore", -tradeGoods[2]);
+				game.getThisPlayer().changeResources("sheep",-tradeGoods[3]);
+				game.getThisPlayer().changeResources("wood", -tradeGoods[4]);
 				
-				game.getThisPlayer().changeResources("clay", game.getThisPlayer().getResources("clay")+tradeGoods[5]);
-				game.getThisPlayer().changeResources("grain", game.getThisPlayer().getResources("grain")+tradeGoods[6]);
-				game.getThisPlayer().changeResources("ore", game.getThisPlayer().getResources("ore")+tradeGoods[7]);
-				game.getThisPlayer().changeResources("sheep", game.getThisPlayer().getResources("sheep")+tradeGoods[8]);
-				game.getThisPlayer().changeResources("wood", game.getThisPlayer().getResources("wood")+tradeGoods[9]);
+				game.getThisPlayer().changeResources("clay", tradeGoods[5]);
+				game.getThisPlayer().changeResources("grain", tradeGoods[6]);
+				game.getThisPlayer().changeResources("ore", tradeGoods[7]);
+				game.getThisPlayer().changeResources("sheep", tradeGoods[8]);
+				game.getThisPlayer().changeResources("wood",tradeGoods[9]);
 				
 	
 			}
@@ -1298,17 +1298,17 @@ private boolean buildingTouch(int x, int y)
 
 private void setResources()
 {
-	game.getThisPlayer().changeResources("clay", game.getThisPlayer().getResources("clay")+tradeGoods[0]);
-	game.getThisPlayer().changeResources("grain", game.getThisPlayer().getResources("grain")+tradeGoods[1]);
-	game.getThisPlayer().changeResources("ore", game.getThisPlayer().getResources("ore")+tradeGoods[2]);
-	game.getThisPlayer().changeResources("sheep", game.getThisPlayer().getResources("sheep")+tradeGoods[3]);
-	game.getThisPlayer().changeResources("wood", game.getThisPlayer().getResources("wood")+tradeGoods[4]);
+	game.getThisPlayer().changeResources("clay",tradeGoods[0]);
+	game.getThisPlayer().changeResources("grain", tradeGoods[1]);
+	game.getThisPlayer().changeResources("ore", tradeGoods[2]);
+	game.getThisPlayer().changeResources("sheep",tradeGoods[3]);
+	game.getThisPlayer().changeResources("wood",tradeGoods[4]);
 	
-	game.getThisPlayer().changeResources("clay", game.getThisPlayer().getResources("clay")-tradeGoods[5]);
-	game.getThisPlayer().changeResources("grain", game.getThisPlayer().getResources("grain")-tradeGoods[6]);
-	game.getThisPlayer().changeResources("ore", game.getThisPlayer().getResources("ore")-tradeGoods[7]);
-	game.getThisPlayer().changeResources("sheep", game.getThisPlayer().getResources("sheep")-tradeGoods[8]);
-	game.getThisPlayer().changeResources("wood", game.getThisPlayer().getResources("wood")-tradeGoods[9]);
+	game.getThisPlayer().changeResources("clay", tradeGoods[5]);
+	game.getThisPlayer().changeResources("grain",tradeGoods[6]);
+	game.getThisPlayer().changeResources("ore",tradeGoods[7]);
+	game.getThisPlayer().changeResources("sheep", tradeGoods[8]);
+	game.getThisPlayer().changeResources("wood",tradeGoods[9]);
 }
 
 
