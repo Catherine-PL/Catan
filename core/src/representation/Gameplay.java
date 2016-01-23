@@ -220,6 +220,8 @@ public class Gameplay extends View implements InputProcessor
 		TradeMessage.TradeType tt = ((ObserverTrade)getNetwork().invObservers.get(2)).getStateGame();
 		if(tt!=null)
 		{
+			
+			System.out.println("I received something!!!! "+ tt);
 			if(tt==TradeType.DEAL)
 			{
 				game.getThisPlayer().changeResources("clay", game.getThisPlayer().getResources("clay")-tradeGoods[0]);

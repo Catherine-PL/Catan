@@ -282,6 +282,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 			catanCom.putInv(nick, InvStatus.WAIT);
 		}
 		((GameCommunication)this.catanCom).setTradeState(TradeType.END_TRADE);
+		Communication.sleep(100);
 		((GameCommunication)this.catanCom).setTradeState(null);
 		
 	}
