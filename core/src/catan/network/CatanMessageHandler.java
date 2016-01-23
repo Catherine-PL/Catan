@@ -253,7 +253,7 @@ public class CatanMessageHandler extends GameMessageHandler {
 		System.out.println("What he wants: " + give);
 		System.out.println("What i would get: " + get);
 		System.out.println();
-		
+				
 		((GameCommunication)this.catanCom).setTradeState(TradeMessage.TradeType.OFFERT,get,give);					
 		
 	}

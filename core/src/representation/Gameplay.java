@@ -222,7 +222,39 @@ public class Gameplay extends View implements InputProcessor
 			if(tt==TradeType.OFFERT)
 			{
 				tradeState = TradeState.RESPOND_OFFER;
+				HashMap<String,Integer> get = ((ObserverTrade)getNetwork().invObservers.get(2)).get;
+				HashMap<String,Integer> give = ((ObserverTrade)getNetwork().invObservers.get(2)).get;
+				for(String s : get.keySet())
+				{
+					if(s.equals("clay"))
+						tradeGoods[0]=get.get(s);
+					if(s.equals("grain"))
+						tradeGoods[1]=get.get(s);
+					if(s.equals("ore"))
+						tradeGoods[2]=get.get(s);
+					if(s.equals("sheep"))
+						tradeGoods[3]=get.get(s);
+					if(s.equals("wood"))
+						tradeGoods[4]=get.get(s);						
+				}
+				for(String s : give.keySet())
+				{
+					if(s.equals("clay"))
+						tradeGoods[5]=give.get(s);
+					if(s.equals("grain"))
+						tradeGoods[6]=give.get(s);
+					if(s.equals("ore"))
+						tradeGoods[7]=give.get(s);
+					if(s.equals("sheep"))
+						tradeGoods[8]=give.get(s);
+					if(s.equals("wood"))
+						tradeGoods[9]=give.get(s);						
+				}
+				
 			}
+			
+			
+			
 		}
 	}	
 	
@@ -430,11 +462,12 @@ public class Gameplay extends View implements InputProcessor
 			}
 			font.getData().setScale(1.5f, 1.5f);
 		}
-		
+		//dostalismy oferte
 		if (tradeState==TradeState.RESPOND_OFFER)
 		{
-			//TODO imie proponuj¹cego
+
 			batch.draw(reviewoffer,0,screensizeY-173);
+			font.draw(batch, game.getActualPlayer().getName(), 30, screensizeY-25);
 			
 			//wyswietlanie liczb
 			for(int i=0;i<5;i++)
