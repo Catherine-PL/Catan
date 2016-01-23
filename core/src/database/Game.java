@@ -93,9 +93,12 @@ public class Game implements Serializable{
 				
 		if((dice.getFirst()+dice.getSecond())!=7){
 			for(Player player:players){
+				System.out.println("Player: " + player.getName());
 				for(Node node: player.getPlayerNodes()){
-					System.out.println(node.getNodeNumber());
+					System.out.println("--Node: " + node.getNodeNumber());
 					for(Tile tile:node.getNearResources()){
+						System.out.println("----tile: " + tile.getNumber());
+						System.out.println(tile.getDiceNumber()==(dice.getFirst()+dice.getSecond()));
 						if(tile.getDiceNumber()==(dice.getFirst()+dice.getSecond())){
 							//jesli osada zwiekszy o 1, jesli miasto zwiekszy zasob o 2
 							if(tile.getType()=="Forest")
