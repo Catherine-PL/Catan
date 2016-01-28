@@ -213,7 +213,7 @@ W naszym projekcie wzorzec ten znajduje zastosowanie przy tworzeniu planszy, kt�
 
 Kreacyjny wzorzec projektowy, który pozwala tworzyć całe rodziny produktów. Dostarcza on interfejs do tworzenia różnych obiektów jednego typu bez specyfikowania ich konkretnych klas.
 
-Wzorzec ten wykorzysytwany będzie przy konstruowaniu kafli oraz generowaniu kart.
+%Wzorzec ten wykorzysytwany będzie przy konstruowaniu kafli oraz generowaniu kart.
 
 
 	\subsection{Observer}
@@ -222,22 +222,31 @@ Wzorzec ten wykorzysytwany będzie przy konstruowaniu kafli oraz generowaniu kar
 %	"That’s what the observer pattern is for. It lets one piece of code announce that something interesting happened without actually caring who receives the notification."\\
 %	komunikacja\\
 Wzorzec ten pomoże nam w komunikacji między graczami. Będziemy wysyłać informacje o tym co się zmieniło na planszy. A OBSERVER każdego gracza będzie je wyłapywał i egzekwował.
-	\subsection{State}
-	\indent
-We wzorcy ''State'' zachowanie klasy zmienia się w zależności od jej stanu. Ten typ wzorca wchodzi pod wzorce czynnościowe.\\
+
+\subsection{Decorator}
+Wzorzec dekoratora polega na opakowaniu oryginalnej klasy w nową klasę "dekorującą". Zwykle przekazuje się oryginalny obiekt jako parametr konstruktora dekoratora, metody dekoratora wywołują metody oryginalnego obiektu i dodatkowo implementują nową funkcję.\\
+
+\subsection{Prototyp}
+Konstrukcyjny wzorzec projektowy, którego celem jest umożliwienie tworzenia obiektów danej klasy bądź klas z wykorzystaniem już istniejącego obiektu, zwanego prototypem. Głównym celem tego wzorca jest uniezależnienie systemu od sposobu w jaki tworzone są w nim produkty.\\
+
+\subsection{Fasada}
+
+	%\subsection{State}
+%	\indent
+%We wzorcy ''State'' zachowanie klasy zmienia się w zależności od jej stanu. Ten typ wzorca wchodzi pod wzorce czynnościowe.\\
 %	In State pattern a class behavior changes based on its state. This type of design pattern comes under behavior pattern.
-Tworzymy obiekty, które reprezentują różne stany i konteksty obiektu, którego zachowanie zmienia się tak jak jego stan.
+%Tworzymy obiekty, które reprezentują różne stany i konteksty obiektu, którego zachowanie zmienia się tak jak jego stan.
 %%In State pattern, we create objects which represent various states and a context object whose behavior varies as its state object changes.\\
-W zależności od tego jaką kartę zagramy stan planszy może się zmienić. Możemy wybudować drogi, wejść w interakcję z innymi graczami, czy zablokować dochód z danego pola. Dlatego potrzebujemy wzorca odpowiedzialnego za zajmowanie się stanem klasy.
+%W zależności od tego jaką kartę zagramy stan planszy może się zmienić. Możemy wybudować drogi, wejść w interakcję z innymi graczami, czy zablokować dochód z danego pola. Dlatego potrzebujemy wzorca odpowiedzialnego za zajmowanie się stanem klasy.
 %złodziej,karty specjalne, drogi\\
-	\subsection{Command}
+	%\subsection{Command}
 	
 	%Command pattern is a data driven design pattern and falls under behavioral pattern category. A request is wrapped under an object as command and passed to invoker object. Invoker object looks for the appropriate object which can handle this command and passes the command to the corresponding object which executes the command.
-	Wzorzec ''Command'' opakowuje żądania w obiekty jako rozkaz i przesyła do obiektu wzywającego (z ang. invoker). Obiekt wzywający szuka obiektu właściwego, który może zająć się tym rozkazem i   przesyła rozkaz do odpowiedniego obiektu który wykonuje rozkaz.\\  
-	Wzorzec ten należy do wzorców czynnościowych, czyli opisujących sposób przepływu danych w złożonych aplikacjach.%to z Polskiej strony mam
-	??? Skorzystamy z niego, by móc zagrywać karty rozwoju, które są swoistymi rozkazami. Wzorzec ten będzie musiał u nas współpracować z kodem napisanym pod wzorzec ''State''. %??? co wy na to
-	TO DO gdzie z tego skorzystamy
-	Commands are an object-oriented replacement for callbacks.\\
+%Wzorzec ''Command'' opakowuje żądania w obiekty jako rozkaz i przesyła do obiektu wzywającego (z ang. invoker). Obiekt wzywający szuka obiektu właściwego, który może zająć się tym rozkazem i   przesyła rozkaz do odpowiedniego obiektu który wykonuje rozkaz.\\  
+	%Wzorzec ten należy do wzorców czynnościowych, czyli opisujących sposób przepływu danych w złożonych aplikacjach.%to z Polskiej strony mam
+	%??? Skorzystamy z niego, by móc zagrywać karty rozwoju, które są swoistymi rozkazami. Wzorzec ten będzie musiał u nas współpracować z kodem napisanym pod wzorzec ''State''. %??? co wy na to
+%	TO DO gdzie z tego skorzystamy
+	%Commands are an object-oriented replacement for callbacks.\\
 	
 	
 	\section{Użyte biblioteki zewnętrzne}
@@ -290,6 +299,7 @@ W zależności od tego jaką kartę zagramy stan planszy może się zmienić. Mo
 	\begin{itemize}
 	\item Po zdefiniowaniu problemu należy sprawdzić, czy jakiś wzorzec nie pomoże w jego rozwiązaniu,
 	\item Nie stosować wzorców na siłę, wzorzec nie musi zawsze pomóc,
+	\item Uprzednie zaprojektowanie (np. w UMLu) projektu bardzo by pomogło i przyspieszyło implementację,
 	\item GitHub jest wygodnym narzędziem do pracy grupowej i kontrolowania wersji projektu,
 	\item Trello pomaga wytyczać cele i przydzielać zadania.
 	\end{itemize}
