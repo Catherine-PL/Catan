@@ -62,39 +62,6 @@ public class Node extends Element {
 		return true;
 		
 	}
-	/*
-	public Boolean neighboursHasBuildins(){
-		
-		Boolean have=false;		
-		for(Node nod:this.neighbours)
-		{
-			//System.out.println("for1");
-			//if(nod.getBuilding()>0){
-			if(nod.getPlayer()!=null){
-				have=true;
-				break;
-			}
-			else
-			{	
-				have=false;
-			}
-		}
-		
-		return have;
-		
-		/*
-		for(int i=0;i<this.neighbours.size();i++)
-		{
-			if(this.neighbours.get(i).getBuilding()>0){
-				return true;
-				
-			}
-			else
-				have=false;
-		}
-		return have;
-	
-	}*/
 	//####buildings
 	public int getBuilding(){
 		return this.building;
@@ -163,21 +130,6 @@ public class Node extends Element {
 		this.noRoads=noRoads;
 	}
 
-/*
-	//zwraca nam, Tile z kt�rego b�dziemy chcieli pobra� surowiec
-	public Tile getIntResource(int number) {
-		return intResources.get(number);
-	}
-	
-	public void setIntResources() {
-		Board board=Board.getInstance();
-		for(Tile temp: this.nearResources){
-			
-		}
-			
-		this.intResources.put(temp, );
-	}
-	*/
 	
 	//Kasi whisList
 	

@@ -22,8 +22,7 @@ public class Road extends Element{
 		this.to=to2;
 		this.state=-1;
 		this.ownerID=-1;
-	//	System.out.println("Inicjalizacja drogi \t"+from.getNodeNumber()+" ---- "+to.getNodeNumber());
-
+	
 	}
 	
 	
@@ -50,8 +49,7 @@ public class Road extends Element{
 						
 						
 						player.setLongestRoadDistance(player.getLongestRoadDistance()+1);
-						//dopisaæ tu sprawdzanie nad³u¿szej drogi
-						
+									
 						
 						if(Board.getInstance().getWhoRoad()==null){
 							if(player.getLongestRoadDistance()>=5 )

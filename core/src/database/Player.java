@@ -22,11 +22,9 @@ public class Player implements Serializable{
 	private	int id;							//metody set,get
 	private String name=null;
 	private transient Texture avatar=null;
-	//private	ArrayList<DevelopType> cards=new ArrayList <DevelopType>();			//metody add,rm,get
 	private HashMap <DevelopType,Integer> developCards= new HashMap <DevelopType,Integer>();
 	private	int points;						//metody get,set,check
 	private HashMap <String,Integer> resources=new HashMap <String,Integer>();	//get,change
-	private	ArrayList <SpecialCard> specialCards=new ArrayList <SpecialCard>();//add,rm,get
 	private int soldierCount;
 	private boolean biggestArmy;
 	private int longestRoadDistance;
@@ -109,16 +107,7 @@ public class Player implements Serializable{
 	public void setId(int id) {
 		this.id = id;
 	}
-	//KARY SPECIALNE
-	public ArrayList<SpecialCard> getSpecialCards() {
-		return specialCards;
-	}
-	public void addSpecialCard( SpecialCard card) {
-		this.specialCards.add(card);
-	}
-	public void rmSpecialCard(SpecialCard card){
-		this.specialCards.remove(card);
-	}
+
 	
 	//PUNKTY
 	public int getPoints() {
@@ -138,12 +127,7 @@ public class Player implements Serializable{
 	    if(player.getPoints() >= 10) 
 	    {
 	    	System.out.println(text); //wygra³ gracz (i jego ID do wyœwietlenia)
-	    	
-	    	//czeœæ zwi¹zana z propagacj¹
-	    	//zakomentowane bo wywa³a³o i error na razie
-	    //	MsgText msg=new MsgText(text);//przygotowanie obiekty MsgText do wys³ania
-	      //  Peer.send(msg);// tak to ma wygl¹daæ Sebastianie, chodzi mi o to czy tak bêdzie wygl¹daæ wysy³anie
-	    	
+	  
 	    }
 	}
 	
