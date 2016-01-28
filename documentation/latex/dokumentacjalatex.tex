@@ -161,7 +161,7 @@ Co daje punkty zwycięstwa:
 
 Wyjaśnienie kart rozwoju:
 \begin{itemize}
-\item Karta żołnierza-zwiększa liczbe armi gracza o 1, pozwala przesunąć złodzieja,
+\item Karta żołnierza-zwiększa liczebność armii gracza o 1, pozwala przesunąć złodzieja,
 \item Karta monopolu- pozwala wybrać zmonopolizowany surowiec, wszyscy gracze muszą oddać cały stan tego surowca zagrywającemu tę kartę,
 \item Karta urodzaju- pozwala wybrać 2 darmowe surowce,
 \item Karta punktu zwycięstwa- zagrywający dostaje 1 punkt zwycięstwa,
@@ -177,10 +177,6 @@ Koszty:
 \end{itemize}
 
 
-%	automaty gdzies!!!!!!\\
-	
-	
-	
 	
 	
 	\section{Użyte wzorce projektowe}
@@ -191,7 +187,7 @@ Singleton jest kreacyjnym wzorcem projektowym, którego zadaniem jest ograniczen
 
 Singleton implementuje się poprzez stworzenie klasy, która posiada statyczną metodę, która sprawdza czy istnieje instancja danej klasy, w razie potrzeby tworząc ją. Następnie instancja zwracana jest przez referencję. Aby uniemożliwić tworzenie dodatkowych instancji, konstruktor klasy deklaruje się jako prywatny lub chroniony.
 
-Wzorzec ten ma u nas zastosowanie w przypadku klas odpowiadajacych za kostkę, planszę. Zapewnia on globalny dostęp oraz ogranicza możliwość tworzenia większej liczby instancji. 
+Wzorzec ten ma u nas zastosowanie w przypadku klas odpowiadających za kostkę, planszę. Zapewnia on globalny dostęp oraz ogranicza możliwość tworzenia większej liczby instancji. 
 
 	\subsection{Builder}
 	\indent
@@ -204,7 +200,7 @@ Konstruowanie obiektu następuje poprzez wcześniejsze stworzenie jego fragment�
 Na wzorzec składa się:
 \begin{itemize}
 
-\item Builder - dostarcza inferfejs do tworzenia obiektów nazywanych produktami,
+\item Builder - dostarcza interfejs do tworzenia obiektów nazywanych produktami,
 \item ConcreteBuilder - tworzy konkretne reprezentacje produktów przy pomocy zaimplementowanego interfejsu Builder,
 \item Director - zleca konstrukcję produktów poprzez obiekt Builder.
 \end{itemize}
@@ -221,14 +217,14 @@ Wzorzec ten wykorzysytwany będzie przy konstruowaniu kafli oraz generowaniu kar
 
 
 	\subsection{Observer}
-	Wzorzec "Observer" jest używany jeśli występuje relacja jeden do wielu pomiędzy obiektami. Modyfikacja jednego obiektu powoduje, że zależne obiekty są powiadamiane automatycznie. Wzorzec ten podchodzi pod kategorię wzorców czynnościowych.\\
+	Wzorzec ''Observer'' jest używany jeśli występuje relacja jeden do wielu pomiędzy obiektami. Modyfikacja jednego obiektu powoduje, że zależne obiekty są powiadamiane automatycznie. Wzorzec ten podchodzi pod kategorię wzorców czynnościowych.\\
 	%Observer pattern is used when there is one-to-many relationship between objects such as if one object is modified, its depenedent objects are to be notified automatically. Observer pattern falls under behavioral pattern category.\\
 %	"That’s what the observer pattern is for. It lets one piece of code announce that something interesting happened without actually caring who receives the notification."\\
 %	komunikacja\\
 Wzorzec ten pomoże nam w komunikacji między graczami. Będziemy wysyłać informacje o tym co się zmieniło na planszy. A OBSERVER każdego gracza będzie je wyłapywał i egzekwował.
 	\subsection{State}
 	\indent
-We wzorcy "State" zachowanie klasy zmienia się w zalezności od jej stanu. Ten typ wzorca wchodzi pod wzorce czynnościowe.\\
+We wzorcy ''State'' zachowanie klasy zmienia się w zależności od jej stanu. Ten typ wzorca wchodzi pod wzorce czynnościowe.\\
 %	In State pattern a class behavior changes based on its state. This type of design pattern comes under behavior pattern.
 Tworzymy obiekty, które reprezentują różne stany i konteksty obiektu, którego zachowanie zmienia się tak jak jego stan.
 %%In State pattern, we create objects which represent various states and a context object whose behavior varies as its state object changes.\\
@@ -237,17 +233,19 @@ W zależności od tego jaką kartę zagramy stan planszy może się zmienić. Mo
 	\subsection{Command}
 	
 	%Command pattern is a data driven design pattern and falls under behavioral pattern category. A request is wrapped under an object as command and passed to invoker object. Invoker object looks for the appropriate object which can handle this command and passes the command to the corresponding object which executes the command.
-	Wzorzec "Command" opakowuje żądania w obiekty jako rozkaz i przesyła do obiektu wzywającego (z ang. invoker). Obiekt wzywający szuka obiektu właściwego, który może zająć się tym rozkazem i   przesyła rozkaz do odpowiedniego obiektu który wykonuje rozkaz.\\  
+	Wzorzec ''Command'' opakowuje żądania w obiekty jako rozkaz i przesyła do obiektu wzywającego (z ang. invoker). Obiekt wzywający szuka obiektu właściwego, który może zająć się tym rozkazem i   przesyła rozkaz do odpowiedniego obiektu który wykonuje rozkaz.\\  
 	Wzorzec ten należy do wzorców czynnościowych, czyli opisujących sposób przepływu danych w złożonych aplikacjach.%to z Polskiej strony mam
-	??? Skorzystamy z niego, by móc zagrywać karty rozwoju, które są swoistymi rozkazami. Wzorzec ten będzie musiał u nas współpracować z kodem napisanym pod wzorzec "State". %??? co wy na to
+	??? Skorzystamy z niego, by móc zagrywać karty rozwoju, które są swoistymi rozkazami. Wzorzec ten będzie musiał u nas współpracować z kodem napisanym pod wzorzec ''State''. %??? co wy na to
 	TO DO gdzie z tego skorzystamy
 	Commands are an object-oriented replacement for callbacks.\\
+	
+	
 	\section{Użyte biblioteki zewnętrzne}
 	\subsection{Biblioteka graficzna}
-	libgtx\\
+	LibGDX to wieloplatformowe narzędzie do tworzenia gier i wizualizacji.\\
 	 https://libgdx.badlogicgames.com/
 	\subsection{Biblioteka sieciowa}
-	jxta\\
+	Jxta jest to zbiór uogólnionych i otwartych protokołów pozwalającym na komunikację w stylu peer-to-peer. \\
 	https://jxta.kenai.com/
 	\section{Architektura}
 	\indent
@@ -258,36 +256,43 @@ W zależności od tego jaką kartę zagramy stan planszy może się zmienić. Mo
 		\includegraphics[scale=0.5]{uml/main.jpg}\caption{Podział na warstwy}
 	\end{figure}
 
-	\subsection{Warstwa prezentacji}	
-	\begin{figure}[H]%[!htb]
-		\includegraphics[scale=0.5]{uml/main.jpg}
-	\end{figure}
-	\subsection{Warstwa interakcji}
-	\begin{figure}[H]%[!htb]
-		\includegraphics[scale=0.5]{uml/main.jpg}
-	\end{figure}	
-	\subsection{Warstwa logiki gry}	
-	\begin{figure}[H]%[!htb]
-		\includegraphics[scale=0.5]{uml/main.jpg}
-	\end{figure}
-	\subsection{Warstwa baz danych}	
-	\begin{figure}[H]%[!htb]
-		\includegraphics[scale=0.5]{uml/main.jpg}
-	\end{figure}
-	\subsection{Warstwa komunikacji sieciowej}
-	\begin{figure}[H]%[!htb]
-		\includegraphics[scale=0.5]{uml/main.jpg}
-	\end{figure}	
+%	\subsection{Warstwa prezentacji}	
+%	\begin{figure}[H]%[!htb]
+%		\includegraphics[scale=0.5]{uml/main.jpg}
+%	\end{figure}
+%	\subsection{Warstwa interakcji}
+%	\begin{figure}[H]%[!htb]
+%		\includegraphics[scale=0.5]{uml/main.jpg}
+%	\end{figure}	
+%	\subsection{Warstwa logiki gry}	
+%	\begin{figure}[H]%[!htb]
+%		\includegraphics[scale=0.5]{uml/main.jpg}
+%	\end{figure}
+%	\subsection{Warstwa baz danych}	
+%	\begin{figure}[H]%[!htb]
+%		\includegraphics[scale=0.5]{uml/main.jpg}
+%	\end{figure}
+%	\subsection{Warstwa komunikacji sieciowej}
+%	\begin{figure}[H]%[!htb]
+%		\includegraphics[scale=0.5]{uml/main.jpg}
+%	\end{figure}	
 	
 	
 	
 	\section{Podsumowanie}
+	Wspólna praca pozwoliła nam poprawić zdolność do pracy w zespole i pozwoliła przekonać się jak zmiany w kodzie jednej osoby wpływają na działanie kodu drugiej. Podział pracy na kilka warstw pozwolił na nam działać trochę niezależnie i równolegle, jednakże skutkowało to większym nakładem pracy nad połączeniem poszczególnych części. Przekonaliśmy się jak  wzorce projektowe ułatwiają życie i czytelność kody. Ostatecznie udało się nam wyprodukować działająca grę, co cieszy nas niezmiernie.
 	
 
 	\section{Testy}
-	
+	Dzięki stałemu testowaniu, byliśmy w stanie wyłapywać różne błędy logiki gry na bieżąco. Niektóre wymagały zmian podejścia do danych problemów i innych metod nimi zarządzających. 
 
 	\section{Wnioski}
+	\begin{itemize}
+	\item Po zdefiniowaniu problemu należy sprawdzić, czy jakiś wzorzec nie pomoże w jego rozwiązaniu,
+	\item Nie stosować wzorców na siłę, wzorzec nie musi zawsze pomóc,
+	\item GitHub jest wygodnym narzędziem do pracy grupowej i kontrolowania wersji projektu,
+	\item Trello pomaga wytyczać cele i przydzielać zadania.
+	\end{itemize}
 	
 
 	\section{Literatura}
